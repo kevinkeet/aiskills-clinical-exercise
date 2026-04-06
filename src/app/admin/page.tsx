@@ -147,7 +147,7 @@ export default function AdminPage() {
             Average Time per Task
           </h2>
           <div className="grid grid-cols-6 gap-3">
-            {[1, 2, 3, 4, 5, 6].map((t) => {
+            {[1, 2, 3, 4, 5].map((t) => {
               const secs = stats?.avgTimeByTask?.[t] || 0;
               const mins = Math.floor(secs / 60);
               const s = secs % 60;

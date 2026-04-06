@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
   });
   participants?.forEach((p) => {
     if (
-      (tasksByParticipant[p.participant_id] || 0) >= 6 &&
+      (tasksByParticipant[p.participant_id] || 0) >= 5 &&
       (assessmentByParticipant[p.participant_id] || 0) >= 12
     ) {
       completedParticipants.add(p.participant_id);
@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
 
   // Average time per task
   const avgTimeByTask: Record<number, number> = {};
-  for (let t = 1; t <= 6; t++) {
+  for (let t = 1; t <= 5; t++) {
     const times =
       taskResponses
         ?.filter((tr) => tr.task_number === t)

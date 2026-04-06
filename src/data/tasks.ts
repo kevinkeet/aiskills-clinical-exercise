@@ -38,13 +38,6 @@ export const tasks: Task[] = [
   },
   {
     number: 5,
-    title: 'Order Set',
-    prompt:
-      'The patient has confirmed Fabry disease with multi-organ involvement. Create a comprehensive order set for initial management. Organize by category (medications, referrals, labs/monitoring, imaging, patient education) and include specific doses, frequencies, and rationale where applicable.',
-    minChars: 300,
-  },
-  {
-    number: 6,
     title: 'Patient Instructions',
     prompt:
       'Write after-visit patient instructions for Marcus Thompson. He has just been given the diagnosis of Fabry disease. Write at an 8th-grade reading level, use an empathetic tone, and cover: what the diagnosis means, next steps, medications, lifestyle modifications, warning signs to watch for, and family implications. Aim for approximately 1 page.',
