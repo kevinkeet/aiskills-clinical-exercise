@@ -18,7 +18,8 @@ export default function ExercisePage() {
   const [response, setResponse] = useState('');
   const [taskStartTime, setTaskStartTime] = useState<Date>(new Date());
   const [submitting, setSubmitting] = useState(false);
-  const [charWarning, setCharWarning] = useState('');
+  const [promptCopied, setPromptCopied] = useState(false);
+  const [findingsCopied, setFindingsCopied] = useState(false);
 
   useEffect(() => {
     const pid = sessionStorage.getItem('participantId');
@@ -48,15 +49,7 @@ export default function ExercisePage() {
   const submitTask = useCallback(async () => {
     if (!task) return;
 
-    if (response.length < task.minChars) {
-      setCharWarning(
-        `Please write at least ${task.minChars} characters. Current: ${response.length}`
-      );
-      return;
-    }
-
     setSubmitting(true);
-    setCharWarning('');
 
     const timeSpent = Math.floor(
       (Date.now() - taskStartTime.getTime()) / 1000
@@ -135,8 +128,8 @@ export default function ExercisePage() {
         }`}
       >
         {group === 'ai'
-          ? 'You may use the AI assistant on the right to help with Tasks 1\u20136. Do NOT use AI for the Knowledge Assessment.'
-          : 'You may use UpToDate on the right to help with Tasks 1\u20136. Do NOT use any AI tools. Do NOT use external resources for the Knowledge Assessment.'}
+          ? 'You may use the AI assistant on the right to help with Tasks 1\u20135. Do NOT use AI for the Knowledge Assessment.'
+          : 'You may use UpToDate on the right to help with Tasks 1\u20135. Do NOT use any AI tools. Do NOT use external resources for the Knowledge Assessment.'}
       </div>
 
       {/* Main content area */}
@@ -153,8 +146,21 @@ export default function ExercisePage() {
 
               {task.showAdditionalFindings && (
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
-                  <div className="font-semibold text-amber-800 text-sm mb-2">
-                    Additional Findings
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="font-semibold text-amber-800 text-sm">
+                      Additional Findings
+                    </div>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(additionalFindings.replace(/\*\*/g, ''));
+                        setFindingsCopied(true);
+                        setTimeout(() => setFindingsCopied(false), 2000);
+                      }}
+                      className="text-xs text-amber-600 hover:text-amber-800 px-1.5 py-0.5 rounded hover:bg-amber-100 transition-colors"
+                      title="Copy findings to clipboard"
+                    >
+                      {findingsCopied ? 'Copied' : 'Copy'}
+                    </button>
                   </div>
                   <div className="text-sm text-amber-900 findings-box whitespace-pre-line">
                     {additionalFindings.split('\n\n').map((para, i) => (
@@ -172,38 +178,31 @@ export default function ExercisePage() {
                 </div>
               )}
 
-              <p className="text-sm text-foreground mb-4 leading-relaxed">
-                {task.prompt}
-              </p>
+              <div className="flex items-start justify-between gap-2 mb-4">
+                <p className="text-sm text-foreground leading-relaxed">
+                  {task.prompt}
+                </p>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(task.prompt);
+                    setPromptCopied(true);
+                    setTimeout(() => setPromptCopied(false), 2000);
+                  }}
+                  className="flex-shrink-0 text-xs text-muted hover:text-foreground px-1.5 py-0.5 rounded hover:bg-slate-100 transition-colors"
+                  title="Copy prompt to clipboard"
+                >
+                  {promptCopied ? 'Copied' : 'Copy'}
+                </button>
+              </div>
 
               <textarea
                 value={response}
-                onChange={(e) => {
-                  setResponse(e.target.value);
-                  if (charWarning && e.target.value.length >= task.minChars) {
-                    setCharWarning('');
-                  }
-                }}
+                onChange={(e) => setResponse(e.target.value)}
                 placeholder="Type your response here..."
                 className="w-full h-64 px-4 py-3 border border-border rounded-lg text-sm resize-y focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary leading-relaxed"
               />
 
-              <div className="flex items-center justify-between mt-3">
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-muted">
-                    {response.length} characters
-                    {response.length < task.minChars && (
-                      <span className="text-amber-600">
-                        {' '}
-                        (min: {task.minChars})
-                      </span>
-                    )}
-                  </span>
-                  {charWarning && (
-                    <span className="text-xs text-red-600">{charWarning}</span>
-                  )}
-                </div>
-
+              <div className="flex items-center justify-end mt-3">
                 <button
                   onClick={submitTask}
                   disabled={submitting}

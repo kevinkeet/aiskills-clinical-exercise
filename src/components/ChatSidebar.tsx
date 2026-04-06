@@ -119,7 +119,7 @@ export default function ChatSidebar({
           AI Assistant
         </div>
         <div className="text-xs text-muted">
-          Ask questions to help with the clinical case
+          Ask anything
         </div>
       </div>
 
@@ -127,10 +127,7 @@ export default function ChatSidebar({
         {messages.length === 0 && (
           <div className="text-center text-muted text-sm py-8">
             <div className="text-3xl mb-2">💬</div>
-            <p>Ask me anything to help with this task.</p>
-            <p className="text-xs mt-1">
-              I can help you think through the clinical case.
-            </p>
+            <p>Send a message to get started.</p>
           </div>
         )}
         {messages.map((msg, i) => (

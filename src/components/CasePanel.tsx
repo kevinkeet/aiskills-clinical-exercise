@@ -5,6 +5,37 @@ import { caseVignette } from '@/data/case';
 
 export default function CasePanel() {
   const [isOpen, setIsOpen] = useState(true);
+  const [copied, setCopied] = useState(false);
+
+  function getCaseText() {
+    const labs = caseVignette.labs
+      .map((l) => `${l.test}: ${l.result}${l.reference ? ` (ref: ${l.reference})` : ''}`)
+      .join('\n');
+    return `Patient: Marcus Thompson, 32M — Suspected Fabry Disease
+
+Chief Complaint: ${caseVignette.chiefComplaint}
+
+HPI: ${caseVignette.hpi}
+
+PMH: ${caseVignette.pmh}
+Medications: ${caseVignette.medications}
+Allergies: ${caseVignette.allergies}
+Social History: ${caseVignette.socialHistory}
+Family History: ${caseVignette.familyHistory}
+ROS: ${caseVignette.ros}
+
+Vitals: ${caseVignette.vitals}
+
+Labs:
+${labs}`;
+  }
+
+  function copyCase(e: React.MouseEvent) {
+    e.stopPropagation();
+    navigator.clipboard.writeText(getCaseText());
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
 
   return (
     <div
@@ -19,21 +50,32 @@ export default function CasePanel() {
         <span className="font-semibold text-sm text-foreground">
           Patient Case: Marcus Thompson, 32M &mdash; Suspected Fabry Disease
         </span>
-        <svg
-          className={`w-4 h-4 text-muted transition-transform ${
-            isOpen ? 'rotate-180' : ''
-          }`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
+        <div className="flex items-center gap-2">
+          {isOpen && (
+            <span
+              onClick={copyCase}
+              className="text-xs text-muted hover:text-foreground cursor-pointer px-1.5 py-0.5 rounded hover:bg-slate-200 transition-colors"
+              title="Copy case to clipboard"
+            >
+              {copied ? 'Copied' : 'Copy'}
+            </span>
+          )}
+          <svg
+            className={`w-4 h-4 text-muted transition-transform ${
+              isOpen ? 'rotate-180' : ''
+            }`}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </div>
       </button>
 
       {isOpen && (
