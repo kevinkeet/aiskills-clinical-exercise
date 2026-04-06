@@ -11,28 +11,28 @@ export const tasks: Task[] = [
     number: 1,
     title: 'Additional History',
     prompt:
-      'This patient has progressive CKD of unclear etiology, chronic neuropathic pain, and several other symptoms. Based on the information provided, what additional history questions would you want to ask? List at least 8 specific questions and briefly explain your reasoning for each.',
+      'This patient has progressive CKD of unclear etiology, chronic neuropathic pain, and several other symptoms. Fabry disease is suspected. Based on the information provided, what additional history questions would you want to ask? List at least 8 specific questions and briefly explain your reasoning for each.',
     minChars: 200,
   },
   {
     number: 2,
     title: 'Physical Examination',
     prompt:
-      'What physical exam maneuvers would be most important for this patient? For each, describe what specific finding you are looking for and why it would be relevant to the clinical picture.',
+      'Fabry disease is suspected. What physical exam maneuvers would be most important for this patient? For each, describe what specific finding you are looking for and why it would be relevant to the clinical picture.',
     minChars: 200,
   },
   {
     number: 3,
     title: 'Diagnostic Workup',
     prompt:
-      'Based on your evaluation so far, what laboratory tests, imaging, and other diagnostic studies would you order for this patient? For each test, explain what you are looking for and how the result would change your management.',
+      'Fabry disease is the leading diagnosis. What laboratory tests, imaging, and other diagnostic studies would you order to confirm the diagnosis and assess for organ involvement? For each test, explain what you are looking for and how the result would change your management.',
     minChars: 200,
   },
   {
     number: 4,
     title: 'Assessment & Plan',
     prompt:
-      'You are now provided with the following additional findings from the physical exam and diagnostic workup. Using all available information, write a comprehensive Assessment and Plan as you would in a clinical note.',
+      'You are now provided with the following additional findings from the physical exam and diagnostic workup. The diagnosis of Fabry disease is confirmed. Using all available information, write a comprehensive Assessment and Plan as you would in a clinical note.',
     minChars: 500,
     showAdditionalFindings: true,
   },
@@ -40,7 +40,7 @@ export const tasks: Task[] = [
     number: 5,
     title: 'Order Set',
     prompt:
-      'Create a comprehensive order set for this patient\u2019s initial management. Organize by category (medications, referrals, labs/monitoring, imaging, patient education) and include specific doses, frequencies, and rationale where applicable.',
+      'The patient has confirmed Fabry disease with multi-organ involvement. Create a comprehensive order set for initial management. Organize by category (medications, referrals, labs/monitoring, imaging, patient education) and include specific doses, frequencies, and rationale where applicable.',
     minChars: 300,
   },
   {

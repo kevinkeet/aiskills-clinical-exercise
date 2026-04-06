@@ -69,7 +69,7 @@ export default function LandingPage() {
             AI-Assisted Learning in Clinical Medicine
           </h1>
           <p className="text-muted text-lg">
-            Clinical Case Exercise &amp; Knowledge Assessment
+            Clinical Case Exercise &amp; Knowledge Assessment: Fabry Disease
           </p>
           <div className="mt-3 inline-block bg-blue-50 text-primary px-4 py-1.5 rounded-full text-sm font-medium">
             Estimated Time: 60&ndash;90 minutes
@@ -79,7 +79,9 @@ export default function LandingPage() {
         <div className="bg-slate-50 rounded-lg p-5 mb-6 text-sm text-foreground leading-relaxed">
           <p className="mb-3">
             You will work through a clinical case involving a patient with
-            progressive chronic kidney disease. The exercise includes{' '}
+            suspected <strong>Fabry disease</strong>, a rare lysosomal storage
+            disorder presenting with progressive chronic kidney disease and
+            multi-organ involvement. The exercise includes{' '}
             <strong>6 clinical tasks</strong> followed by a{' '}
             <strong>12-question knowledge assessment</strong>.
           </p>

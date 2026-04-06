@@ -17,7 +17,7 @@ export default function CasePanel() {
         className="w-full px-4 py-2.5 flex items-center justify-between bg-slate-50 hover:bg-slate-100 transition-colors sticky top-0 z-10"
       >
         <span className="font-semibold text-sm text-foreground">
-          Patient Case: Marcus Thompson, 32M
+          Patient Case: Marcus Thompson, 32M &mdash; Suspected Fabry Disease
         </span>
         <svg
           className={`w-4 h-4 text-muted transition-transform ${

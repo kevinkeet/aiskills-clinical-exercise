@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'AI Skills in Clinical Medicine',
   description:
-    'Clinical Case Exercise & Knowledge Assessment - AI-Assisted Learning in Clinical Medicine',
+    'Fabry Disease Clinical Case Exercise & Knowledge Assessment - AI-Assisted Learning in Clinical Medicine',
 };
 
 export default function RootLayout({
