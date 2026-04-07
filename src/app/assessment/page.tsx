@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { questions } from '@/data/questions';
 
@@ -11,6 +11,12 @@ export default function AssessmentPage() {
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [showTransition, setShowTransition] = useState(true);
+  const [assessmentStartTime, setAssessmentStartTime] = useState<Date | null>(null);
+  const [elapsed, setElapsed] = useState(0);
+
+  // Track time per question
+  const questionTimesRef = useRef<Record<number, number>>({});
+  const questionStartRef = useRef<Date>(new Date());
 
   useEffect(() => {
     const pid = sessionStorage.getItem('participantId');
@@ -21,28 +27,68 @@ export default function AssessmentPage() {
     setParticipantId(pid);
   }, [router]);
 
+  // Timer tick
+  useEffect(() => {
+    if (!assessmentStartTime) return;
+    const interval = setInterval(() => {
+      setElapsed(Math.floor((Date.now() - assessmentStartTime.getTime()) / 1000));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [assessmentStartTime]);
+
+  function startAssessment() {
+    setShowTransition(false);
+    setAssessmentStartTime(new Date());
+    questionStartRef.current = new Date();
+  }
+
+  function recordQuestionTime() {
+    const qNum = questions[currentQuestion].number;
+    const timeOnQuestion = Math.floor(
+      (Date.now() - questionStartRef.current.getTime()) / 1000
+    );
+    questionTimesRef.current[qNum] =
+      (questionTimesRef.current[qNum] || 0) + timeOnQuestion;
+    questionStartRef.current = new Date();
+  }
+
   function selectAnswer(questionNumber: number, answer: string) {
     setAnswers((prev) => ({ ...prev, [questionNumber]: answer }));
   }
 
   function nextQuestion() {
     if (currentQuestion < questions.length - 1) {
+      recordQuestionTime();
       setCurrentQuestion((prev) => prev + 1);
     }
   }
 
   function prevQuestion() {
     if (currentQuestion > 0) {
+      recordQuestionTime();
       setCurrentQuestion((prev) => prev - 1);
+    }
+  }
+
+  function goToQuestion(idx: number) {
+    if (idx !== currentQuestion) {
+      recordQuestionTime();
+      setCurrentQuestion(idx);
     }
   }
 
   async function submitAssessment() {
     setSubmitting(true);
+    recordQuestionTime();
+
+    const totalTimeSeconds = assessmentStartTime
+      ? Math.floor((Date.now() - assessmentStartTime.getTime()) / 1000)
+      : 0;
 
     const answerArray = Object.entries(answers).map(([qNum, ans]) => ({
       questionNumber: parseInt(qNum),
       selectedAnswer: ans,
+      timeSpentSeconds: questionTimesRef.current[parseInt(qNum)] || 0,
     }));
 
     try {
@@ -52,6 +98,7 @@ export default function AssessmentPage() {
         body: JSON.stringify({
           participantId,
           answers: answerArray,
+          totalTimeSeconds,
         }),
       });
     } catch {
@@ -92,7 +139,7 @@ export default function AssessmentPage() {
             ability based on what you have learned.
           </p>
           <button
-            onClick={() => setShowTransition(false)}
+            onClick={startAssessment}
             className="px-8 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition-colors"
           >
             Begin Assessment
@@ -105,6 +152,8 @@ export default function AssessmentPage() {
   const q = questions[currentQuestion];
   const answeredCount = Object.keys(answers).length;
   const allAnswered = answeredCount === questions.length;
+  const mins = Math.floor(elapsed / 60);
+  const secs = elapsed % 60;
 
   return (
     <div className="min-h-screen bg-background">
@@ -114,6 +163,14 @@ export default function AssessmentPage() {
           Knowledge Assessment
         </h1>
         <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 text-sm text-muted">
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="font-mono tabular-nums text-xs">
+              {mins.toString().padStart(2, '0')}:{secs.toString().padStart(2, '0')}
+            </span>
+          </div>
           <div className="bg-red-50 text-red-700 px-3 py-1 rounded-full text-xs font-medium">
             No external resources allowed
           </div>
@@ -129,7 +186,7 @@ export default function AssessmentPage() {
           {questions.map((_, i) => (
             <button
               key={i}
-              onClick={() => setCurrentQuestion(i)}
+              onClick={() => goToQuestion(i)}
               className={`w-7 h-7 rounded-full text-xs font-medium transition-colors ${
                 i === currentQuestion
                   ? 'bg-primary text-white'

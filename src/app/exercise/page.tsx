@@ -17,6 +17,7 @@ export default function ExercisePage() {
   const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
   const [response, setResponse] = useState('');
   const [taskStartTime, setTaskStartTime] = useState<Date>(new Date());
+  const [exerciseStartTime] = useState<Date>(new Date());
   const [submitting, setSubmitting] = useState(false);
   const [promptCopied, setPromptCopied] = useState(false);
   const [findingsCopied, setFindingsCopied] = useState(false);
@@ -112,7 +113,8 @@ export default function ExercisePage() {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <Timer startTime={taskStartTime} />
+          <Timer startTime={exerciseStartTime} label="Total" />
+          <Timer startTime={taskStartTime} label="Task" />
           <div className="w-48">
             <ProgressBar current={currentTaskIndex + 1} total={tasks.length} />
           </div>
@@ -136,11 +138,11 @@ export default function ExercisePage() {
       <div className="flex-1 flex overflow-hidden">
         {/* Left panel: Case + Task */}
         <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-          <CasePanel />
+          <CasePanel defaultOpen={currentTaskIndex === 0} />
 
           <div className="flex-1 overflow-y-auto p-5">
             <div className="max-w-3xl">
-              <h2 className="text-lg font-bold text-foreground mb-1">
+              <h2 className="text-lg font-bold text-foreground mb-3">
                 Task {task.number}: {task.title}
               </h2>
 
@@ -178,21 +180,24 @@ export default function ExercisePage() {
                 </div>
               )}
 
-              <div className="flex items-start justify-between gap-2 mb-4">
-                <p className="text-sm text-foreground leading-relaxed">
-                  {task.prompt}
-                </p>
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(task.prompt);
-                    setPromptCopied(true);
-                    setTimeout(() => setPromptCopied(false), 2000);
-                  }}
-                  className="flex-shrink-0 text-xs text-muted hover:text-foreground px-1.5 py-0.5 rounded hover:bg-slate-100 transition-colors"
-                  title="Copy prompt to clipboard"
-                >
-                  {promptCopied ? 'Copied' : 'Copy'}
-                </button>
+              {/* Task prompt as a distinct card */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <div className="flex items-start justify-between gap-2">
+                  <p className="text-sm text-blue-900 leading-relaxed">
+                    {task.prompt}
+                  </p>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(task.prompt);
+                      setPromptCopied(true);
+                      setTimeout(() => setPromptCopied(false), 2000);
+                    }}
+                    className="flex-shrink-0 text-xs text-blue-500 hover:text-blue-700 px-1.5 py-0.5 rounded hover:bg-blue-100 transition-colors"
+                    title="Copy prompt to clipboard"
+                  >
+                    {promptCopied ? 'Copied' : 'Copy'}
+                  </button>
+                </div>
               </div>
 
               <textarea

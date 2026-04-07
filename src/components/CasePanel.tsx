@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { caseVignette } from '@/data/case';
 
-export default function CasePanel() {
-  const [isOpen, setIsOpen] = useState(true);
+export default function CasePanel({ defaultOpen = true }: { defaultOpen?: boolean }) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
   const [copied, setCopied] = useState(false);
 
   function getCaseText() {

@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 
 interface Message {
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'separator';
   content: string;
 }
 
@@ -17,12 +18,31 @@ export default function ChatSidebar({
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
+  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const prevTaskRef = useRef(taskNumber);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Add separator when task changes
+  useEffect(() => {
+    if (prevTaskRef.current !== taskNumber && messages.length > 0) {
+      setMessages((prev) => [
+        ...prev,
+        { role: 'separator', content: `Task ${taskNumber}` },
+      ]);
+    }
+    prevTaskRef.current = taskNumber;
+  }, [taskNumber, messages.length]);
+
+  function copyMessage(content: string, idx: number) {
+    navigator.clipboard.writeText(content);
+    setCopiedIdx(idx);
+    setTimeout(() => setCopiedIdx(null), 2000);
+  }
 
   async function sendMessage() {
     if (!input.trim() || isStreaming) return;
@@ -33,6 +53,11 @@ export default function ChatSidebar({
     setInput('');
     setIsStreaming(true);
 
+    // Filter out separators for API call
+    const apiMessages = newMessages
+      .filter((m) => m.role !== 'separator')
+      .map((m) => ({ role: m.role, content: m.content }));
+
     const assistantMessage: Message = { role: 'assistant', content: '' };
     setMessages([...newMessages, assistantMessage]);
 
@@ -41,7 +66,7 @@ export default function ChatSidebar({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: newMessages,
+          messages: apiMessages,
           participantId,
           taskNumber,
         }),
@@ -130,31 +155,57 @@ export default function ChatSidebar({
             <p>Send a message to get started.</p>
           </div>
         )}
-        {messages.map((msg, i) => (
-          <div
-            key={i}
-            className={`flex ${
-              msg.role === 'user' ? 'justify-end' : 'justify-start'
-            }`}
-          >
+        {messages.map((msg, i) => {
+          if (msg.role === 'separator') {
+            return (
+              <div key={i} className="flex items-center gap-2 py-1">
+                <div className="flex-1 border-t border-border" />
+                <span className="text-xs text-muted font-medium px-2">
+                  {msg.content}
+                </span>
+                <div className="flex-1 border-t border-border" />
+              </div>
+            );
+          }
+          return (
             <div
-              className={`max-w-[85%] rounded-lg px-3 py-2 text-sm chat-message ${
-                msg.role === 'user'
-                  ? 'bg-primary text-white'
-                  : 'bg-slate-100 text-foreground'
+              key={i}
+              className={`flex ${
+                msg.role === 'user' ? 'justify-end' : 'justify-start'
               }`}
             >
-              <div className="whitespace-pre-wrap break-words">
-                {msg.content}
-                {isStreaming &&
-                  i === messages.length - 1 &&
-                  msg.role === 'assistant' && (
-                    <span className="inline-block w-1.5 h-4 bg-muted animate-pulse ml-0.5 align-text-bottom" />
-                  )}
+              <div
+                className={`max-w-[85%] rounded-lg px-3 py-2 text-sm group relative ${
+                  msg.role === 'user'
+                    ? 'bg-primary text-white'
+                    : 'bg-slate-100 text-foreground'
+                }`}
+              >
+                {msg.role === 'assistant' ? (
+                  <div className="prose prose-sm prose-slate max-w-none break-words [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_p]:my-1.5 [&_ul]:my-1.5 [&_ol]:my-1.5 [&_li]:my-0.5 [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm [&_h1]:font-bold [&_h2]:font-semibold [&_h3]:font-semibold [&_h1]:mt-3 [&_h2]:mt-2 [&_h3]:mt-2 [&_code]:text-xs [&_code]:bg-slate-200 [&_code]:px-1 [&_code]:rounded">
+                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    {isStreaming &&
+                      i === messages.length - 1 && (
+                        <span className="inline-block w-1.5 h-4 bg-muted animate-pulse ml-0.5 align-text-bottom" />
+                      )}
+                  </div>
+                ) : (
+                  <div className="whitespace-pre-wrap break-words">
+                    {msg.content}
+                  </div>
+                )}
+                {msg.role === 'assistant' && msg.content && !isStreaming && (
+                  <button
+                    onClick={() => copyMessage(msg.content, i)}
+                    className="absolute -bottom-5 right-0 text-[10px] text-muted hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    {copiedIdx === i ? 'Copied' : 'Copy'}
+                  </button>
+                )}
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         <div ref={messagesEndRef} />
       </div>
 
