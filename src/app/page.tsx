@@ -72,7 +72,7 @@ export default function LandingPage() {
             Clinical Case Exercise &amp; Knowledge Assessment: Fabry Disease
           </p>
           <div className="mt-3 inline-block bg-blue-50 text-primary px-4 py-1.5 rounded-full text-sm font-medium">
-            Estimated Time: 60&ndash;90 minutes
+            Estimated Time: 20&ndash;30 minutes
           </div>
         </div>
 
@@ -82,7 +82,7 @@ export default function LandingPage() {
             suspected <strong>Fabry disease</strong>, a rare lysosomal storage
             disorder presenting with progressive chronic kidney disease and
             multi-organ involvement. The exercise includes{' '}
-            <strong>6 clinical tasks</strong> followed by a{' '}
+            <strong>5 clinical tasks</strong> followed by a{' '}
             <strong>12-question knowledge assessment</strong>.
           </p>
           <p className="mb-3">
@@ -131,7 +131,7 @@ export default function LandingPage() {
               >
                 <div className="font-semibold text-sm">AI Group</div>
                 <div className="text-xs text-muted mt-1">
-                  AI chat assistant for Tasks 1&ndash;6
+                  AI chat assistant for Tasks 1&ndash;5
                 </div>
               </button>
               <button
@@ -145,7 +145,7 @@ export default function LandingPage() {
               >
                 <div className="font-semibold text-sm">Control Group</div>
                 <div className="text-xs text-muted mt-1">
-                  UpToDate access for Tasks 1&ndash;6
+                  UpToDate access for Tasks 1&ndash;5
                 </div>
               </button>
             </div>

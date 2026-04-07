@@ -6,326 +6,333 @@ export interface Question {
 }
 
 export const questions: Question[] = [
+  // --- HISTORY TAKING (Questions 1-3, relates to Task 1) ---
   {
     number: 1,
-    text: 'What is the primary substrate that accumulates in Fabry disease due to alpha-galactosidase A deficiency?',
+    text: 'A 32-year-old male with progressive CKD of unclear etiology reports burning pain in his hands and feet since childhood. Which historical feature would most strongly support suspecting Fabry disease over other causes of small fiber neuropathy?',
     options: [
       {
         label: 'A',
         value:
-          'Sphingomyelin, a phospholipid component of cell membranes and myelin sheaths',
+          'The pain worsens with cold exposure and improves with warming of the extremities',
       },
       {
         label: 'B',
         value:
-          'Glucocerebroside (glucosylceramide), a glycosphingolipid found in macrophage cell membranes',
+          'The pain is triggered or worsened by febrile illness, exercise, or heat exposure',
       },
       {
         label: 'C',
         value:
-          'Ganglioside GM2, a complex glycosphingolipid concentrated in neuronal cell membranes',
+          'The pain follows a dermatomal distribution and is associated with vesicular skin lesions',
       },
       {
         label: 'D',
         value:
-          'Globotriaosylceramide (Gb3/GL-3), a glycosphingolipid that deposits in vascular endothelium and visceral organs',
-      },
-    ],
-    correctAnswer: 'D',
-  },
-  {
-    number: 2,
-    text: 'Fabry disease has two recognized clinical phenotypes. The "later-onset" (previously called "atypical") phenotype is characterized by:',
-    options: [
-      {
-        label: 'A',
-        value:
-          'Predominant cardiac and/or renal involvement presenting in adulthood, often without the childhood pain or skin findings',
-      },
-      {
-        label: 'B',
-        value:
-          'Onset in infancy with severe neurodegeneration and progressive loss of motor and cognitive milestones by age 2\u20133',
-      },
-      {
-        label: 'C',
-        value:
-          'Isolated corneal verticillata and mild acroparesthesias with no progression to renal or cardiac disease throughout life',
-      },
-      {
-        label: 'D',
-        value:
-          'Exclusive manifestation in female carriers due to skewed X-inactivation favoring the mutant allele in later decades',
-      },
-    ],
-    correctAnswer: 'A',
-  },
-  {
-    number: 3,
-    text: 'A patient with Fabry disease undergoes nerve conduction studies (NCS) and EMG to evaluate their neuropathic pain. The most likely result is:',
-    options: [
-      {
-        label: 'A',
-        value:
-          'Severe demyelinating pattern with prolonged distal latencies and conduction block, consistent with an inflammatory neuropathy',
-      },
-      {
-        label: 'B',
-        value:
-          'Length-dependent axonal sensorimotor polyneuropathy with reduced amplitudes in distal nerves and denervation on EMG',
-      },
-      {
-        label: 'C',
-        value:
-          'Normal NCS/EMG results, because Fabry neuropathy affects small unmyelinated fibers not captured by standard electrodiagnostic testing',
-      },
-      {
-        label: 'D',
-        value:
-          'Asymmetric mononeuritis multiplex pattern with focal conduction abnormalities across multiple individual nerve territories',
-      },
-    ],
-    correctAnswer: 'C',
-  },
-  {
-    number: 4,
-    text: 'Cerebrovascular events in Fabry disease most commonly involve which vascular territory, and what is the predominant mechanism?',
-    options: [
-      {
-        label: 'A',
-        value:
-          'Anterior cerebral artery territory; vasospasm triggered by autonomic dysfunction and endothelial Gb3 accumulation',
-      },
-      {
-        label: 'B',
-        value:
-          'Middle cerebral artery territory; cardioembolism from Fabry-related atrial fibrillation and left atrial enlargement',
-      },
-      {
-        label: 'C',
-        value:
-          'Posterior (vertebrobasilar) circulation; endothelial Gb3 deposition causing progressive vasculopathy and dolichoectasia',
-      },
-      {
-        label: 'D',
-        value:
-          'Penetrating arterioles diffusely; chronic hypertension from renal disease leading to widespread lacunar infarctions',
-      },
-    ],
-    correctAnswer: 'C',
-  },
-  {
-    number: 5,
-    text: 'On renal biopsy, the characteristic ultrastructural finding in Fabry disease on electron microscopy is:',
-    options: [
-      {
-        label: 'A',
-        value:
-          'Subepithelial electron-dense deposits along the glomerular basement membrane with a "spike and dome" pattern',
-      },
-      {
-        label: 'B',
-        value:
-          'Randomly arranged fibrils measuring 8\u201312 nm in diameter within the mesangium, showing apple-green birefringence on Congo red',
-      },
-      {
-        label: 'C',
-        value:
-          'Lamellar myelin-like inclusions ("zebra bodies") within podocytes, tubular epithelial cells, and endothelial cells',
-      },
-      {
-        label: 'D',
-        value:
-          'Diffuse foot process effacement with no immune deposits, consistent with a podocytopathy such as minimal change disease',
-      },
-    ],
-    correctAnswer: 'C',
-  },
-  {
-    number: 6,
-    text: 'Enzyme replacement therapy (ERT) with agalsidase beta for Fabry disease is administered by which route and schedule?',
-    options: [
-      {
-        label: 'A',
-        value:
-          'Subcutaneous injection at 1 mg/kg once weekly, self-administered at home after initial training period',
-      },
-      {
-        label: 'B',
-        value:
-          'Intravenous infusion at 1 mg/kg every two weeks, typically requiring 2\u20134 hours per session',
-      },
-      {
-        label: 'C',
-        value:
-          'Oral capsule at 150 mg every other day, taken on an empty stomach with specific dietary restrictions',
-      },
-      {
-        label: 'D',
-        value:
-          'Intramuscular injection at 0.5 mg/kg once monthly, administered in clinic with 30-minute observation afterward',
+          'The pain began after age 30 and is associated with impaired fasting glucose levels',
       },
     ],
     correctAnswer: 'B',
   },
   {
-    number: 7,
-    text: 'Migalastat (Galafold) works by a fundamentally different mechanism than enzyme replacement therapy. Its mechanism is:',
+    number: 2,
+    text: 'When taking a family history from a patient with suspected Fabry disease, which pattern of inheritance should raise your suspicion?',
     options: [
       {
         label: 'A',
         value:
-          'It inhibits glucosylceramide synthase to reduce upstream production of Gb3, thereby decreasing substrate accumulation in tissues',
+          'Father-to-son transmission with no affected females in the family',
       },
       {
         label: 'B',
         value:
-          'It is a pharmacological chaperone that binds to and stabilizes the patient\u2019s own misfolded GLA enzyme, improving its trafficking to lysosomes',
+          'Affected maternal relatives (males and some females) with no male-to-male transmission',
       },
       {
         label: 'C',
         value:
-          'It delivers a functional copy of the GLA gene via an adeno-associated virus vector, enabling endogenous enzyme production in hepatocytes',
+          'Both parents are unaffected carriers and 25% of siblings are affected regardless of sex',
       },
       {
         label: 'D',
         value:
-          'It provides recombinant alpha-galactosidase A produced in a mammalian cell line, supplementing the deficient enzyme directly',
+          'Spontaneous new mutation in the patient with no family history expected in the vast majority of cases',
+      },
+    ],
+    correctAnswer: 'B',
+  },
+  {
+    number: 3,
+    text: 'Which gastrointestinal symptom pattern in the history is characteristic of Fabry disease and often leads to misdiagnosis?',
+    options: [
+      {
+        label: 'A',
+        value:
+          'Progressive dysphagia and weight loss due to esophageal glycolipid deposition',
+      },
+      {
+        label: 'B',
+        value:
+          'Recurrent postprandial abdominal pain, diarrhea, and nausea frequently diagnosed as irritable bowel syndrome',
+      },
+      {
+        label: 'C',
+        value:
+          'Chronic constipation and megacolon from autonomic ganglion cell destruction',
+      },
+      {
+        label: 'D',
+        value:
+          'Recurrent pancreatitis from glycosphingolipid deposition in the pancreatic duct',
+      },
+    ],
+    correctAnswer: 'B',
+  },
+
+  // --- PHYSICAL EXAM (Questions 4-6, relates to Task 2) ---
+  {
+    number: 4,
+    text: 'During a physical exam of a patient with suspected Fabry disease, you observe clusters of small dark-red papules on the lower abdomen, periumbilical area, and upper thighs. These lesions are most likely:',
+    options: [
+      {
+        label: 'A',
+        value:
+          'Cherry angiomas, which are benign vascular proliferations common in adults over age 30',
+      },
+      {
+        label: 'B',
+        value:
+          'Angiokeratomas, which result from glycolipid deposition in dermal vessel walls causing vascular ectasia',
+      },
+      {
+        label: 'C',
+        value:
+          'Petechiae from thrombocytopenia secondary to splenic sequestration and bone marrow infiltration',
+      },
+      {
+        label: 'D',
+        value:
+          'Eruptive xanthomas from hypertriglyceridemia associated with nephrotic-range proteinuria',
+      },
+    ],
+    correctAnswer: 'B',
+  },
+  {
+    number: 5,
+    text: 'Cornea verticillata found on slit-lamp examination in a patient with suspected Fabry disease is characterized by:',
+    options: [
+      {
+        label: 'A',
+        value:
+          'Brown copper deposits in the peripheral Descemet membrane forming a ring-like pattern',
+      },
+      {
+        label: 'B',
+        value:
+          'Bilateral whorl-like (vortex) corneal opacities in the epithelium that typically do not impair vision',
+      },
+      {
+        label: 'C',
+        value:
+          'Central corneal clouding with progressive visual loss requiring early corneal transplantation',
+      },
+      {
+        label: 'D',
+        value:
+          'Band-shaped calcification deposits across the central cornea at the level of Bowman layer',
+      },
+    ],
+    correctAnswer: 'B',
+  },
+  {
+    number: 6,
+    text: 'Which cardiovascular finding on physical examination is most consistent with the cardiac involvement seen in Fabry disease?',
+    options: [
+      {
+        label: 'A',
+        value:
+          'Wide fixed splitting of S2 with a right ventricular heave suggesting an atrial septal defect',
+      },
+      {
+        label: 'B',
+        value:
+          'An S4 gallop reflecting decreased ventricular compliance from concentric left ventricular hypertrophy',
+      },
+      {
+        label: 'C',
+        value:
+          'A loud holosystolic murmur at the apex radiating to the axilla from severe mitral valve prolapse',
+      },
+      {
+        label: 'D',
+        value:
+          'A pericardial friction rub with distant heart sounds from constrictive pericarditis',
+      },
+    ],
+    correctAnswer: 'B',
+  },
+
+  // --- DIAGNOSTIC WORKUP & TREATMENT (Questions 7-9, relates to Tasks 3-4) ---
+  {
+    number: 7,
+    text: 'Which initial diagnostic test is most appropriate for confirming Fabry disease in a male patient?',
+    options: [
+      {
+        label: 'A',
+        value:
+          'Renal biopsy with electron microscopy to identify characteristic lamellar inclusion bodies',
+      },
+      {
+        label: 'B',
+        value:
+          'Measurement of alpha-galactosidase A enzyme activity in leukocytes or plasma',
+      },
+      {
+        label: 'C',
+        value:
+          'Plasma lyso-Gb3 level, which is the most sensitive and specific single test in both sexes',
+      },
+      {
+        label: 'D',
+        value:
+          'GLA gene sequencing, since enzyme activity levels can be normal in males with later-onset variants',
       },
     ],
     correctAnswer: 'B',
   },
   {
     number: 8,
-    text: 'Regarding female heterozygous carriers of Fabry disease, which statement is most accurate?',
+    text: 'A patient with confirmed Fabry disease has concentric left ventricular hypertrophy on echocardiography. On cardiac MRI, which finding helps distinguish Fabry cardiomyopathy from other causes of LVH?',
     options: [
       {
         label: 'A',
         value:
-          'They are uniformly asymptomatic throughout life because the normal X chromosome provides sufficient enzyme activity for all tissues',
+          'Low native T1 values on parametric mapping, reflecting intracellular glycosphingolipid accumulation within cardiomyocytes',
       },
       {
         label: 'B',
         value:
-          'They develop symptoms only after menopause when declining estrogen leads to reduced GLA enzyme transcription and late-onset disease',
+          'Diffusely elevated native T1 values, reflecting myocardial edema and extracellular expansion from fibrosis',
       },
       {
         label: 'C',
         value:
-          'They can range from asymptomatic to severely affected due to random X-inactivation (lyonization), and approximately 70% develop some manifestations',
+          'Asymmetric septal hypertrophy with systolic anterior motion of the mitral valve on cine imaging',
       },
       {
         label: 'D',
         value:
-          'They are always as severely affected as hemizygous males because the GLA gene escapes X-inactivation and both alleles are expressed',
+          'Diffuse subendocardial late gadolinium enhancement in a circumferential pattern with pericardial effusion',
       },
     ],
-    correctAnswer: 'C',
+    correctAnswer: 'A',
   },
   {
     number: 9,
-    text: 'On cardiac MRI, which finding helps distinguish Fabry cardiomyopathy from hypertrophic cardiomyopathy (HCM) and other infiltrative diseases?',
+    text: 'When developing a treatment plan for a patient with Fabry disease and stage 3 CKD, which adjunctive medication is a cornerstone of renal protection regardless of whether the patient receives disease-specific therapy?',
     options: [
       {
         label: 'A',
         value:
-          'Diffusely increased native T1 values on parametric mapping, reflecting expansion of the extracellular space by protein deposition',
+          'A calcineurin inhibitor such as tacrolimus to reduce proteinuria through afferent arteriole vasoconstriction',
       },
       {
         label: 'B',
         value:
-          'Low (decreased) native T1 values on parametric mapping, reflecting intracellular glycosphingolipid (Gb3) storage within cardiomyocytes',
+          'An ACE inhibitor or ARB titrated to maximize reduction of proteinuria and control blood pressure',
       },
       {
         label: 'C',
         value:
-          'Asymmetric septal hypertrophy with systolic anterior motion of the mitral valve and dynamic outflow tract obstruction on cine imaging',
+          'A high-dose statin regardless of lipid levels to stabilize renal endothelial glycocalyx function',
       },
       {
         label: 'D',
         value:
-          'Diffuse subendocardial late gadolinium enhancement with associated circumferential pericardial effusion and restrictive filling pattern',
+          'Low-dose aspirin to prevent glomerular microthrombosis from endothelial glycolipid deposition',
       },
     ],
     correctAnswer: 'B',
   },
+
+  // --- PATIENT EDUCATION & LIFESTYLE (Questions 10-12, relates to Task 5) ---
   {
     number: 10,
-    text: 'In untreated males with classic Fabry disease, which of the following best describes the natural history?',
+    text: 'When counseling a patient newly diagnosed with Fabry disease about family implications, which statement is most accurate?',
     options: [
       {
         label: 'A',
         value:
-          'Acroparesthesias begin in childhood; progressive renal, cardiac, and cerebrovascular disease develop in the 3rd\u20135th decades, reducing life expectancy by 15\u201320 years',
+          'All of the patient\'s daughters will inherit the GLA mutation, but none of his sons will be affected',
       },
       {
         label: 'B',
         value:
-          'The disease presents with isolated renal failure in the 4th decade; cardiac and neurological complications are rare if dialysis is initiated promptly',
+          'Each of the patient\'s children has a 50% chance of inheriting the mutation regardless of sex',
       },
       {
         label: 'C',
         value:
-          'Symptoms are limited to episodic pain crises in childhood and adolescence that spontaneously resolve by early adulthood without organ damage',
+          'Only the patient\'s sons are at risk since the condition follows autosomal dominant inheritance',
       },
       {
         label: 'D',
         value:
-          'Progressive neurodegeneration beginning in adolescence leads to cognitive decline and dementia as the primary cause of morbidity and mortality',
+          'There is a 25% chance of having an affected child, and genetic testing of siblings is not necessary',
       },
     ],
     correctAnswer: 'A',
   },
   {
     number: 11,
-    text: 'Why is enzyme activity testing alone INSUFFICIENT for diagnosing Fabry disease in females?',
+    text: 'Which lifestyle recommendation is most appropriate for a patient with Fabry disease who experiences acroparesthesias triggered by physical activity?',
     options: [
       {
         label: 'A',
         value:
-          'The standard leukocyte enzyme assay has poor sensitivity in all patients and requires confirmation with plasma lyso-Gb3 regardless of sex',
+          'Strict avoidance of all exercise to prevent pain crises and reduce cardiac workload',
       },
       {
         label: 'B',
         value:
-          'Due to random X-inactivation, heterozygous females can have enzyme levels ranging from very low to completely normal, so a normal result does not rule out the disease',
+          'Continue regular moderate exercise but avoid overheating, stay well-hydrated, and use cooling strategies',
       },
       {
         label: 'C',
         value:
-          'Estrogen and progesterone interfere with the fluorometric enzyme assay, producing falsely elevated activity levels in premenopausal women',
+          'Switch to exclusively high-intensity interval training, which has been shown to reduce neuropathic pain episodes',
       },
       {
         label: 'D',
         value:
-          'Females produce a different isoform of alpha-galactosidase A that is catalytically active but unable to degrade Gb3 in vivo',
+          'Exercise only in heated pools, as warmth improves peripheral blood flow and reduces small fiber neuropathy symptoms',
       },
     ],
     correctAnswer: 'B',
   },
   {
     number: 12,
-    text: 'Current expert consensus recommends initiating Fabry-specific therapy (ERT or chaperone) at which point?',
+    text: 'A patient with Fabry disease asks what warning signs should prompt them to seek immediate medical attention. Which of the following is most important to emphasize?',
     options: [
       {
         label: 'A',
         value:
-          'At or before the onset of clinically significant organ damage, because established fibrosis is largely irreversible and responds poorly to treatment',
+          'Sudden severe headache, facial drooping, speech difficulty, or limb weakness, as Fabry patients have increased stroke risk particularly in the posterior circulation',
       },
       {
         label: 'B',
         value:
-          'Only after GFR falls below 30 mL/min, because earlier treatment has not demonstrated benefit in randomized controlled trials',
+          'Worsening of chronic hand and foot pain during a mild febrile illness, as this suggests disease progression requiring therapy adjustment',
       },
       {
         label: 'C',
         value:
-          'After confirming disease progression with serial biomarkers over a minimum 2-year observation period to avoid treating non-progressive variants',
+          'Development of new angiokeratomas on the trunk, as rapid appearance of new skin lesions correlates with acute organ damage',
       },
       {
         label: 'D',
         value:
-          'Only in males with the classic phenotype and confirmed null mutations, as later-onset variants do not benefit from enzyme replacement',
+          'Any episode of diarrhea or abdominal pain, since bowel ischemia from mesenteric vasculopathy is a common emergency in Fabry disease',
       },
     ],
     correctAnswer: 'A',
