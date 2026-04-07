@@ -19,12 +19,12 @@ export const questions: Question[] = [
       {
         label: 'B',
         value:
-          'The pain is triggered or worsened by febrile illness, exercise, or heat exposure',
+          'The pain follows a dermatomal distribution and is associated with vesicular skin lesions',
       },
       {
         label: 'C',
         value:
-          'The pain follows a dermatomal distribution and is associated with vesicular skin lesions',
+          'The pain is triggered or worsened by febrile illness, exercise, or heat exposure',
       },
       {
         label: 'D',
@@ -32,7 +32,7 @@ export const questions: Question[] = [
           'The pain began after age 30 and is associated with impaired fasting glucose levels',
       },
     ],
-    correctAnswer: 'B',
+    correctAnswer: 'C',
   },
   {
     number: 2,
@@ -46,20 +46,20 @@ export const questions: Question[] = [
       {
         label: 'B',
         value:
-          'Affected maternal relatives (males and some females) with no male-to-male transmission',
+          'Both parents are unaffected carriers and 25% of siblings are affected regardless of sex',
       },
       {
         label: 'C',
         value:
-          'Both parents are unaffected carriers and 25% of siblings are affected regardless of sex',
+          'Spontaneous new mutation in the patient with no family history expected in the vast majority of cases',
       },
       {
         label: 'D',
         value:
-          'Spontaneous new mutation in the patient with no family history expected in the vast majority of cases',
+          'Affected maternal relatives (males and some females) with no male-to-male transmission',
       },
     ],
-    correctAnswer: 'B',
+    correctAnswer: 'D',
   },
   {
     number: 3,
@@ -68,25 +68,25 @@ export const questions: Question[] = [
       {
         label: 'A',
         value:
-          'Progressive dysphagia and weight loss due to esophageal glycolipid deposition',
+          'Recurrent postprandial abdominal pain, diarrhea, and nausea frequently diagnosed as irritable bowel syndrome',
       },
       {
         label: 'B',
         value:
-          'Recurrent postprandial abdominal pain, diarrhea, and nausea frequently diagnosed as irritable bowel syndrome',
+          'Progressive dysphagia and weight loss due to esophageal glycolipid deposition',
       },
       {
         label: 'C',
         value:
-          'Chronic constipation and megacolon from autonomic ganglion cell destruction',
+          'Recurrent pancreatitis from glycosphingolipid deposition in the pancreatic duct',
       },
       {
         label: 'D',
         value:
-          'Recurrent pancreatitis from glycosphingolipid deposition in the pancreatic duct',
+          'Chronic constipation and megacolon from autonomic ganglion cell destruction',
       },
     ],
-    correctAnswer: 'B',
+    correctAnswer: 'A',
   },
 
   // --- PHYSICAL EXAM (Questions 4-6, relates to Task 2) ---
@@ -129,20 +129,20 @@ export const questions: Question[] = [
       {
         label: 'B',
         value:
-          'Bilateral whorl-like (vortex) corneal opacities in the epithelium that typically do not impair vision',
+          'Central corneal clouding with progressive visual loss requiring early corneal transplantation',
       },
       {
         label: 'C',
         value:
-          'Central corneal clouding with progressive visual loss requiring early corneal transplantation',
+          'Band-shaped calcification deposits across the central cornea at the level of Bowman layer',
       },
       {
         label: 'D',
         value:
-          'Band-shaped calcification deposits across the central cornea at the level of Bowman layer',
+          'Bilateral whorl-like (vortex) corneal opacities in the epithelium that typically do not impair vision',
       },
     ],
-    correctAnswer: 'B',
+    correctAnswer: 'D',
   },
   {
     number: 6,
@@ -156,12 +156,12 @@ export const questions: Question[] = [
       {
         label: 'B',
         value:
-          'An S4 gallop reflecting decreased ventricular compliance from concentric left ventricular hypertrophy',
+          'A loud holosystolic murmur at the apex radiating to the axilla from severe mitral valve prolapse',
       },
       {
         label: 'C',
         value:
-          'A loud holosystolic murmur at the apex radiating to the axilla from severe mitral valve prolapse',
+          'An S4 gallop reflecting decreased ventricular compliance from concentric left ventricular hypertrophy',
       },
       {
         label: 'D',
@@ -169,7 +169,7 @@ export const questions: Question[] = [
           'A pericardial friction rub with distant heart sounds from constrictive pericarditis',
       },
     ],
-    correctAnswer: 'B',
+    correctAnswer: 'C',
   },
 
   // --- DIAGNOSTIC WORKUP & TREATMENT (Questions 7-9, relates to Tasks 3-4) ---
@@ -180,12 +180,12 @@ export const questions: Question[] = [
       {
         label: 'A',
         value:
-          'Renal biopsy with electron microscopy to identify characteristic lamellar inclusion bodies',
+          'Measurement of alpha-galactosidase A enzyme activity in leukocytes or plasma',
       },
       {
         label: 'B',
         value:
-          'Measurement of alpha-galactosidase A enzyme activity in leukocytes or plasma',
+          'Renal biopsy with electron microscopy to identify characteristic lamellar inclusion bodies',
       },
       {
         label: 'C',
@@ -198,7 +198,7 @@ export const questions: Question[] = [
           'GLA gene sequencing, since enzyme activity levels can be normal in males with later-onset variants',
       },
     ],
-    correctAnswer: 'B',
+    correctAnswer: 'A',
   },
   {
     number: 8,
@@ -207,17 +207,17 @@ export const questions: Question[] = [
       {
         label: 'A',
         value:
-          'Low native T1 values on parametric mapping, reflecting intracellular glycosphingolipid accumulation within cardiomyocytes',
+          'Diffusely elevated native T1 values, reflecting myocardial edema and extracellular expansion from fibrosis',
       },
       {
         label: 'B',
         value:
-          'Diffusely elevated native T1 values, reflecting myocardial edema and extracellular expansion from fibrosis',
+          'Asymmetric septal hypertrophy with systolic anterior motion of the mitral valve on cine imaging',
       },
       {
         label: 'C',
         value:
-          'Asymmetric septal hypertrophy with systolic anterior motion of the mitral valve on cine imaging',
+          'Low native T1 values on parametric mapping, reflecting intracellular glycosphingolipid accumulation within cardiomyocytes',
       },
       {
         label: 'D',
@@ -225,7 +225,7 @@ export const questions: Question[] = [
           'Diffuse subendocardial late gadolinium enhancement in a circumferential pattern with pericardial effusion',
       },
     ],
-    correctAnswer: 'A',
+    correctAnswer: 'C',
   },
   {
     number: 9,
@@ -263,25 +263,25 @@ export const questions: Question[] = [
       {
         label: 'A',
         value:
-          'All of the patient\'s daughters will inherit the GLA mutation, but none of his sons will be affected',
+          'Each of the patient\'s children has a 50% chance of inheriting the mutation regardless of sex',
       },
       {
         label: 'B',
         value:
-          'Each of the patient\'s children has a 50% chance of inheriting the mutation regardless of sex',
+          'Only the patient\'s sons are at risk since the condition follows autosomal dominant inheritance',
       },
       {
         label: 'C',
         value:
-          'Only the patient\'s sons are at risk since the condition follows autosomal dominant inheritance',
+          'There is a 25% chance of having an affected child, and genetic testing of siblings is not necessary',
       },
       {
         label: 'D',
         value:
-          'There is a 25% chance of having an affected child, and genetic testing of siblings is not necessary',
+          'All of the patient\'s daughters will inherit the GLA mutation, but none of his sons will be affected',
       },
     ],
-    correctAnswer: 'A',
+    correctAnswer: 'D',
   },
   {
     number: 11,
@@ -295,12 +295,12 @@ export const questions: Question[] = [
       {
         label: 'B',
         value:
-          'Continue regular moderate exercise but avoid overheating, stay well-hydrated, and use cooling strategies',
+          'Switch to exclusively high-intensity interval training, which has been shown to reduce neuropathic pain episodes',
       },
       {
         label: 'C',
         value:
-          'Switch to exclusively high-intensity interval training, which has been shown to reduce neuropathic pain episodes',
+          'Continue regular moderate exercise but avoid overheating, stay well-hydrated, and use cooling strategies',
       },
       {
         label: 'D',
@@ -308,7 +308,7 @@ export const questions: Question[] = [
           'Exercise only in heated pools, as warmth improves peripheral blood flow and reduces small fiber neuropathy symptoms',
       },
     ],
-    correctAnswer: 'B',
+    correctAnswer: 'C',
   },
   {
     number: 12,
