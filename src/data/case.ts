@@ -52,6 +52,37 @@ He mentions that his mother has "some kind of heart problem" and that a cousin o
   ],
 };
 
+/**
+ * Plain-text version of the patient case suitable for pasting into the AI chat.
+ * Optionally appends the new workup findings (revealed at Task 4).
+ */
+export function getCaseAsText(includeAdditionalFindings = false): string {
+  const labs = caseVignette.labs
+    .map((l) => `${l.test}: ${l.result}${l.reference ? ` (ref: ${l.reference})` : ''}`)
+    .join('\n');
+  const base = `Patient: Marcus Thompson, 32M — Suspected Fabry Disease
+
+Chief Complaint: ${caseVignette.chiefComplaint}
+
+HPI: ${caseVignette.hpi}
+
+PMH: ${caseVignette.pmh}
+Medications: ${caseVignette.medications}
+Allergies: ${caseVignette.allergies}
+Social History: ${caseVignette.socialHistory}
+Family History: ${caseVignette.familyHistory}
+ROS: ${caseVignette.ros}
+
+Vitals: ${caseVignette.vitals}
+
+Labs:
+${labs}`;
+  if (includeAdditionalFindings) {
+    return `${base}\n\nNew Findings:\n${additionalFindings.replace(/\*\*/g, '')}`;
+  }
+  return base;
+}
+
 export const additionalFindings = `**Physical exam:** Clusters of small dark-red papules on lower abdomen, periumbilical area, and bilateral upper thighs. S4 gallop on cardiac auscultation. Decreased pinprick sensation in bilateral feet and hands with preserved vibration sense. Orthostatic vitals: BP drops from 138/88 sitting to 112/74 standing with HR increase 78 to 96.
 
 **Ophthalmology consult:** Cornea verticillata (bilateral whorl-like corneal opacities) confirmed on slit-lamp exam. No visual impairment.

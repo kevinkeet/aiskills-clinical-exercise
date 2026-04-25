@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { tasks } from '@/data/tasks';
-import { additionalFindings } from '@/data/case';
+import { additionalFindings, getCaseAsText } from '@/data/case';
 import CasePanel from '@/components/CasePanel';
 import ChatSidebar from '@/components/ChatSidebar';
 import UpToDateSidebar from '@/components/UpToDateSidebar';
@@ -22,7 +22,6 @@ export default function ExercisePage() {
   const [exerciseStartTime] = useState<Date>(new Date());
   const [submitting, setSubmitting] = useState(false);
   const [promptCopied, setPromptCopied] = useState(false);
-  const [findingsCopied, setFindingsCopied] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Resolve arm from server-side session cookie. Never trust client storage.
@@ -153,49 +152,18 @@ export default function ExercisePage() {
       <div className="flex-1 flex overflow-hidden">
         {/* Left panel: Case + Task */}
         <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-          <CasePanel defaultOpen={currentTaskIndex === 0} />
+          <CasePanel
+            defaultOpen={currentTaskIndex === 0}
+            additionalFindings={
+              task.showAdditionalFindings ? additionalFindings : undefined
+            }
+          />
 
           <div className="flex-1 overflow-y-auto p-5">
             <div className="max-w-3xl">
               <h2 className="text-lg font-bold text-foreground mb-3">
                 Task {task.number}: {task.title}
               </h2>
-
-              {task.showAdditionalFindings && (
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="font-semibold text-amber-800 text-sm">
-                      Additional Findings
-                    </div>
-                    <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(
-                          additionalFindings.replace(/\*\*/g, '')
-                        );
-                        setFindingsCopied(true);
-                        setTimeout(() => setFindingsCopied(false), 2000);
-                      }}
-                      className="text-xs text-amber-600 hover:text-amber-800 px-1.5 py-0.5 rounded hover:bg-amber-100 transition-colors"
-                      title="Copy findings to clipboard"
-                    >
-                      {findingsCopied ? 'Copied' : 'Copy'}
-                    </button>
-                  </div>
-                  <div className="text-sm text-amber-900 findings-box whitespace-pre-line">
-                    {additionalFindings.split('\n\n').map((para, i) => (
-                      <p key={i} className="mb-2">
-                        {para.split('**').map((segment, j) =>
-                          j % 2 === 1 ? (
-                            <strong key={j}>{segment}</strong>
-                          ) : (
-                            <span key={j}>{segment}</span>
-                          )
-                        )}
-                      </p>
-                    ))}
-                  </div>
-                </div>
-              )}
 
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                 <div className="flex items-start justify-between gap-2">
@@ -258,7 +226,12 @@ export default function ExercisePage() {
         {/* Right sidebar: arm-determined; never labelled by arm name */}
         <div className="w-96 flex-shrink-0 hidden lg:flex flex-col">
           {arm === 'AI' ? (
-            <ChatSidebar participantId={participantId} taskNumber={task.number} />
+            <ChatSidebar
+              participantId={participantId}
+              taskNumber={task.number}
+              caseContext={getCaseAsText(!!task.showAdditionalFindings)}
+              taskPrompt={task.prompt}
+            />
           ) : (
             <UpToDateSidebar />
           )}

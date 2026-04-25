@@ -1,38 +1,29 @@
 'use client';
 
-import { useState } from 'react';
-import { caseVignette } from '@/data/case';
+import { useEffect, useState } from 'react';
+import { caseVignette, getCaseAsText } from '@/data/case';
 
-export default function CasePanel({ defaultOpen = true }: { defaultOpen?: boolean }) {
+export default function CasePanel({
+  defaultOpen = true,
+  additionalFindings,
+}: {
+  defaultOpen?: boolean;
+  /** When provided, rendered as a highlighted "New Findings" section at the
+   *  bottom of the panel (used at Task 4). Pass undefined to hide. */
+  additionalFindings?: string;
+}) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [copied, setCopied] = useState(false);
 
-  function getCaseText() {
-    const labs = caseVignette.labs
-      .map((l) => `${l.test}: ${l.result}${l.reference ? ` (ref: ${l.reference})` : ''}`)
-      .join('\n');
-    return `Patient: Marcus Thompson, 32M — Suspected Fabry Disease
-
-Chief Complaint: ${caseVignette.chiefComplaint}
-
-HPI: ${caseVignette.hpi}
-
-PMH: ${caseVignette.pmh}
-Medications: ${caseVignette.medications}
-Allergies: ${caseVignette.allergies}
-Social History: ${caseVignette.socialHistory}
-Family History: ${caseVignette.familyHistory}
-ROS: ${caseVignette.ros}
-
-Vitals: ${caseVignette.vitals}
-
-Labs:
-${labs}`;
-  }
+  // When additional findings appear (Task 4), force the panel open so the
+  // participant sees the new info even if they had collapsed it.
+  useEffect(() => {
+    if (additionalFindings) setIsOpen(true);
+  }, [additionalFindings]);
 
   function copyCase(e: React.MouseEvent) {
     e.stopPropagation();
-    navigator.clipboard.writeText(getCaseText());
+    navigator.clipboard.writeText(getCaseAsText(!!additionalFindings));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
@@ -40,15 +31,20 @@ ${labs}`;
   return (
     <div
       className={`bg-card border-b border-border transition-all duration-300 ${
-        isOpen ? 'max-h-[50vh] overflow-y-auto' : 'max-h-12'
+        isOpen ? 'max-h-[55vh] overflow-y-auto' : 'max-h-12'
       }`}
     >
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full px-4 py-2.5 flex items-center justify-between bg-slate-50 hover:bg-slate-100 transition-colors sticky top-0 z-10"
       >
-        <span className="font-semibold text-sm text-foreground">
+        <span className="font-semibold text-sm text-foreground flex items-center gap-2">
           Patient Case: Marcus Thompson, 32M &mdash; Suspected Fabry Disease
+          {additionalFindings && (
+            <span className="text-[10px] font-bold uppercase bg-amber-200 text-amber-900 px-1.5 py-0.5 rounded">
+              Updated
+            </span>
+          )}
         </span>
         <div className="flex items-center gap-2">
           {isOpen && (
@@ -147,6 +143,32 @@ ${labs}`;
               </table>
             </div>
           </div>
+
+          {additionalFindings && (
+            <div className="border-l-4 border-amber-400 bg-amber-50/60 rounded-r-lg p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="font-semibold text-amber-900">
+                  New Findings
+                </span>
+                <span className="text-[10px] font-bold uppercase bg-amber-200 text-amber-900 px-1.5 py-0.5 rounded">
+                  Just in
+                </span>
+              </div>
+              <div className="text-sm text-amber-950 findings-box whitespace-pre-line leading-relaxed">
+                {additionalFindings.split('\n\n').map((para, i) => (
+                  <p key={i} className="mb-2 last:mb-0">
+                    {para.split('**').map((segment, j) =>
+                      j % 2 === 1 ? (
+                        <strong key={j}>{segment}</strong>
+                      ) : (
+                        <span key={j}>{segment}</span>
+                      )
+                    )}
+                  </p>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

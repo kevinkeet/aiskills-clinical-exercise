@@ -11,14 +11,22 @@ interface Message {
 export default function ChatSidebar({
   participantId,
   taskNumber,
+  caseContext,
+  taskPrompt,
 }: {
   participantId: string;
   taskNumber: number;
+  /** Plain-text patient case (with new findings if revealed). Inserted into
+   *  the textarea when the participant clicks "Insert case info". */
+  caseContext?: string;
+  /** Current task prompt; appended after the case when inserting. */
+  taskPrompt?: string;
 }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+  const [justInserted, setJustInserted] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const prevTaskRef = useRef(taskNumber);
@@ -42,6 +50,24 @@ export default function ChatSidebar({
     navigator.clipboard.writeText(content);
     setCopiedIdx(idx);
     setTimeout(() => setCopiedIdx(null), 2000);
+  }
+
+  function insertCaseContext() {
+    if (!caseContext) return;
+    const block = `${caseContext}${taskPrompt ? `\n\nCURRENT TASK:\n${taskPrompt}` : ''}\n\n`;
+    setInput((prev) => (prev.trim() ? `${prev.trim()}\n\n${block}` : block));
+    setJustInserted(true);
+    setTimeout(() => setJustInserted(false), 2000);
+    // Focus the textarea and place cursor at the end so the participant can
+    // immediately type their question.
+    setTimeout(() => {
+      const ta = textareaRef.current;
+      if (ta) {
+        ta.focus();
+        ta.setSelectionRange(ta.value.length, ta.value.length);
+        ta.scrollTop = ta.scrollHeight;
+      }
+    }, 0);
   }
 
   async function sendMessage() {
@@ -143,9 +169,7 @@ export default function ChatSidebar({
         <div className="font-semibold text-sm text-foreground">
           AI Assistant
         </div>
-        <div className="text-xs text-muted">
-          Ask anything
-        </div>
+        <div className="text-xs text-muted">Ask anything</div>
       </div>
       <div className="px-3 py-1.5 bg-amber-50 border-b border-amber-100 text-[11px] text-amber-800 leading-tight">
         Do not enter real patient identifiers (names, MRNs, dates of birth, etc.) in this chat. The
@@ -214,6 +238,19 @@ export default function ChatSidebar({
       </div>
 
       <div className="p-3 border-t border-border">
+        {caseContext && (
+          <button
+            type="button"
+            onClick={insertCaseContext}
+            className="mb-2 inline-flex items-center gap-1.5 text-xs text-primary hover:text-primary-dark hover:bg-blue-50 px-2 py-1 rounded transition-colors"
+            title="Insert the patient case and current task into the message box"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+            </svg>
+            {justInserted ? 'Inserted into message' : 'Insert case info into context'}
+          </button>
+        )}
         <div className="flex gap-2">
           <textarea
             ref={textareaRef}
