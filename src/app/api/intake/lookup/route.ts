@@ -20,7 +20,16 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const sb = getSupabase();
+  let sb;
+  try {
+    sb = getSupabase();
+  } catch (e) {
+    return NextResponse.json(
+      { error: `Server config error: ${e instanceof Error ? e.message : 'unknown'}` },
+      { status: 500 }
+    );
+  }
+
   const { data: participant, error } = await sb
     .from('participants')
     .select(
@@ -30,7 +39,12 @@ export async function POST(req: NextRequest) {
     .maybeSingle();
 
   if (error) {
-    return NextResponse.json({ error: 'Lookup failed' }, { status: 500 });
+    // Surface the real DB error so misconfiguration (missing column, table not migrated, etc.)
+    // is visible in the response rather than swallowed as "Lookup failed".
+    return NextResponse.json(
+      { error: `Database error: ${error.message}` },
+      { status: 500 }
+    );
   }
   if (!participant) {
     return NextResponse.json(
@@ -69,10 +83,26 @@ export async function POST(req: NextRequest) {
     updates.current_step = 'demographics';
   }
   if (Object.keys(updates).length > 0) {
-    await sb.from('participants').update(updates).eq('participant_id', raw);
+    const { error: updErr } = await sb
+      .from('participants')
+      .update(updates)
+      .eq('participant_id', raw);
+    if (updErr) {
+      return NextResponse.json(
+        { error: `Database error on update: ${updErr.message}` },
+        { status: 500 }
+      );
+    }
   }
 
-  await setSessionCookie(raw);
+  try {
+    await setSessionCookie(raw);
+  } catch (e) {
+    return NextResponse.json(
+      { error: `Session config error: ${e instanceof Error ? e.message : 'unknown'}` },
+      { status: 500 }
+    );
+  }
 
   return NextResponse.json({
     participantId: participant.participant_id,

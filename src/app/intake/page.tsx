@@ -125,6 +125,7 @@ export default function IntakePage() {
     setEnrollmentError('');
     setLookingUp(true);
     let lastErr = '';
+    let serverResponded = false;
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
         const res = await fetch('/api/intake/lookup', {
@@ -135,6 +136,7 @@ export default function IntakePage() {
             consentTimestamp,
           }),
         });
+        serverResponded = true;
         if (res.status === 404) {
           setEnrollmentError(
             'We could not find that enrollment number. Please check with the study coordinator.'
@@ -145,6 +147,18 @@ export default function IntakePage() {
         if (res.status === 409) {
           setEnrollmentError(
             'This enrollment number has already been used to complete the study.'
+          );
+          setLookingUp(false);
+          return;
+        }
+        if (res.status >= 500) {
+          // Server reachable but it returned an error — surface it directly,
+          // do not retry (config errors won't fix themselves).
+          const body = await res.json().catch(() => ({}));
+          setEnrollmentError(
+            body.error
+              ? `Server error: ${body.error}`
+              : `Server error (HTTP ${res.status}). Please contact the study coordinator.`
           );
           setLookingUp(false);
           return;
@@ -173,7 +187,13 @@ export default function IntakePage() {
       }
       await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
     }
-    setEnrollmentError(`Could not reach the server. ${lastErr} Please try again.`);
+    if (serverResponded) {
+      setEnrollmentError(`Server error: ${lastErr}. Please try again.`);
+    } else {
+      setEnrollmentError(
+        `Could not reach the server. ${lastErr || ''} Please check your connection and try again.`.trim()
+      );
+    }
     setLookingUp(false);
   }
 
