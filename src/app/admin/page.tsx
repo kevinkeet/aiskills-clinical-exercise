@@ -14,6 +14,27 @@ interface Participant {
   session_completed_at?: string | null;
   current_step?: string | null;
   created_at: string;
+  // Per-participant quiz/comfort fields, populated by /api/admin/stats
+  correct?: number;
+  mcq_answered?: number;
+  total_graded?: number;
+  pre_comfort?: number | null;
+  post_comfort?: number | null;
+}
+
+interface ArmQuizStats {
+  arm: 'AI' | 'CONTROL';
+  participants: number;
+  completers: number;
+  meanScore: number | null;
+  meanScorePct: number | null;
+  totalGradedQuestions: number;
+  meanPreComfort: number | null;
+  nWithPreComfort: number;
+  meanPostComfort: number | null;
+  nWithPostComfort: number;
+  meanComfortDelta: number | null;
+  nWithComfortPair: number;
 }
 
 interface Stats {
@@ -22,7 +43,10 @@ interface Stats {
   aiGroupCount: number;
   controlGroupCount: number;
   completedCount: number;
+  totalGradedQuestions: number;
   avgTimeByTask: Record<number, number>;
+  aiQuizStats?: ArmQuizStats;
+  controlQuizStats?: ArmQuizStats;
   recentParticipants: Participant[];
 }
 
@@ -151,6 +175,8 @@ export default function AdminPage() {
     );
   }
 
+  const totalGraded = stats?.totalGradedQuestions ?? 12;
+
   return (
     <div className="min-h-screen bg-background">
       <div className="bg-card border-b border-border px-6 py-3 flex items-center justify-between">
@@ -195,6 +221,22 @@ export default function AdminPage() {
           />
         </div>
 
+        {/* Quiz performance by arm */}
+        <div className="bg-card rounded-xl border border-border p-5">
+          <h2 className="font-semibold text-foreground mb-1">
+            Quiz Performance by Arm
+          </h2>
+          <p className="text-xs text-muted mb-4">
+            Mean score is computed only over participants who answered all{' '}
+            {totalGraded} graded multiple-choice questions. Comfort change is
+            paired (post − pre) over participants with both ratings.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ArmQuizCard label="AI Group" stats={stats?.aiQuizStats} accent="blue" />
+            <ArmQuizCard label="Control Group" stats={stats?.controlQuizStats} accent="emerald" />
+          </div>
+        </div>
+
         {/* Avg time per task */}
         <div className="bg-card rounded-xl border border-border p-5">
           <h2 className="font-semibold text-foreground mb-3">
@@ -225,8 +267,8 @@ export default function AdminPage() {
           <h2 className="font-semibold text-foreground mb-1">Export Data</h2>
           <p className="text-xs text-muted mb-3">
             Mail-merge CSV is the coordinator&apos;s starting point for sending
-            P-NNN values to residents. Intake CSV flattens demographics +
-            self-rated familiarity for analysis.
+            P-NNN values to residents. Intake CSV flattens demographics for
+            analysis.
           </p>
           <div className="flex flex-wrap gap-2">
             {EXPORT_TYPES.map(({ type, label }) => (
@@ -256,55 +298,76 @@ export default function AdminPage() {
                     <th className="pb-2 font-medium pr-3">Arm</th>
                     <th className="pb-2 font-medium pr-3">Step</th>
                     <th className="pb-2 font-medium pr-3">Intake</th>
+                    <th className="pb-2 font-medium pr-3">Score</th>
+                    <th className="pb-2 font-medium pr-3">Comfort (pre→post)</th>
                     <th className="pb-2 font-medium pr-3">Done</th>
                     <th className="pb-2 font-medium pr-3">Created</th>
                     <th className="pb-2 font-medium">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {stats.recentParticipants.map((p) => (
-                    <tr
-                      key={p.participant_id}
-                      className="border-b border-border/50"
-                    >
-                      <td className="py-2 pr-3 font-mono text-xs">
-                        {p.participant_id}
-                      </td>
-                      <td className="py-2 pr-3 text-xs">{p.pgy ?? '—'}</td>
-                      <td className="py-2 pr-3">
-                        <span
-                          className={`text-xs px-2 py-0.5 rounded-full ${
-                            p.arm === 'AI'
-                              ? 'bg-blue-100 text-blue-700'
-                              : 'bg-emerald-100 text-emerald-700'
-                          }`}
-                        >
-                          {p.arm ?? '—'}
-                        </span>
-                      </td>
-                      <td className="py-2 pr-3 text-xs text-muted">
-                        {p.current_step ?? 'consent'}
-                      </td>
-                      <td className="py-2 pr-3 text-xs">
-                        {p.intake_complete ? '✓' : '—'}
-                      </td>
-                      <td className="py-2 pr-3 text-xs">
-                        {p.session_completed_at ? '✓' : '—'}
-                      </td>
-                      <td className="py-2 pr-3 text-xs text-muted">
-                        {new Date(p.created_at).toLocaleString()}
-                      </td>
-                      <td className="py-2">
-                        <button
-                          onClick={() => resetParticipant(p.participant_id)}
-                          disabled={resettingId === p.participant_id}
-                          className="text-xs text-red-600 hover:text-red-800 hover:underline disabled:opacity-40"
-                        >
-                          {resettingId === p.participant_id ? 'Resetting…' : 'Reset'}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {stats.recentParticipants.map((p) => {
+                    const total = p.total_graded ?? totalGraded;
+                    const correct = p.correct ?? 0;
+                    const answered = p.mcq_answered ?? 0;
+                    const scoreLabel =
+                      answered === 0
+                        ? '—'
+                        : answered < total
+                        ? `${correct}/${total} (${answered} answered)`
+                        : `${correct}/${total}`;
+                    return (
+                      <tr
+                        key={p.participant_id}
+                        className="border-b border-border/50"
+                      >
+                        <td className="py-2 pr-3 font-mono text-xs">
+                          {p.participant_id}
+                        </td>
+                        <td className="py-2 pr-3 text-xs">{p.pgy ?? '—'}</td>
+                        <td className="py-2 pr-3">
+                          <span
+                            className={`text-xs px-2 py-0.5 rounded-full ${
+                              p.arm === 'AI'
+                                ? 'bg-blue-100 text-blue-700'
+                                : 'bg-emerald-100 text-emerald-700'
+                            }`}
+                          >
+                            {p.arm ?? '—'}
+                          </span>
+                        </td>
+                        <td className="py-2 pr-3 text-xs text-muted">
+                          {p.current_step ?? 'consent'}
+                        </td>
+                        <td className="py-2 pr-3 text-xs">
+                          {p.intake_complete ? '✓' : '—'}
+                        </td>
+                        <td className="py-2 pr-3 text-xs font-mono">
+                          {scoreLabel}
+                        </td>
+                        <td className="py-2 pr-3 text-xs font-mono">
+                          {p.pre_comfort != null || p.post_comfort != null
+                            ? `${p.pre_comfort ?? '—'} → ${p.post_comfort ?? '—'}`
+                            : '—'}
+                        </td>
+                        <td className="py-2 pr-3 text-xs">
+                          {p.session_completed_at ? '✓' : '—'}
+                        </td>
+                        <td className="py-2 pr-3 text-xs text-muted">
+                          {new Date(p.created_at).toLocaleString()}
+                        </td>
+                        <td className="py-2">
+                          <button
+                            onClick={() => resetParticipant(p.participant_id)}
+                            disabled={resettingId === p.participant_id}
+                            className="text-xs text-red-600 hover:text-red-800 hover:underline disabled:opacity-40"
+                          >
+                            {resettingId === p.participant_id ? 'Resetting…' : 'Reset'}
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -312,8 +375,8 @@ export default function AdminPage() {
             <p className="text-sm text-muted">No participants yet.</p>
           )}
           <p className="text-xs text-muted mt-3">
-            Showing the 10 most recently created. Use the Mail-merge CSV
-            export to see all participants.
+            Showing the 10 most recently created. Use the Assessment-Responses
+            CSV for per-question detail across all participants.
           </p>
         </div>
       </div>
@@ -343,6 +406,97 @@ function StatCard({
     >
       <div className="text-xs text-muted mb-1">{label}</div>
       <div className="text-2xl font-bold text-foreground">{value}</div>
+    </div>
+  );
+}
+
+function ArmQuizCard({
+  label,
+  stats,
+  accent,
+}: {
+  label: string;
+  stats?: ArmQuizStats;
+  accent: 'blue' | 'emerald';
+}) {
+  const accentClass =
+    accent === 'blue'
+      ? 'border-blue-200 bg-blue-50/50'
+      : 'border-emerald-200 bg-emerald-50/50';
+  const labelChip =
+    accent === 'blue'
+      ? 'bg-blue-100 text-blue-700'
+      : 'bg-emerald-100 text-emerald-700';
+
+  if (!stats) {
+    return (
+      <div className={`rounded-xl border p-4 ${accentClass}`}>
+        <div className="flex items-center gap-2 mb-2">
+          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${labelChip}`}>
+            {label}
+          </span>
+        </div>
+        <p className="text-sm text-muted">No data yet.</p>
+      </div>
+    );
+  }
+
+  const scoreText =
+    stats.meanScore !== null && stats.meanScorePct !== null
+      ? `${stats.meanScore.toFixed(1)} / ${stats.totalGradedQuestions} (${stats.meanScorePct}%)`
+      : '—';
+  const preText =
+    stats.meanPreComfort !== null
+      ? `${stats.meanPreComfort.toFixed(1)} (n=${stats.nWithPreComfort})`
+      : '—';
+  const postText =
+    stats.meanPostComfort !== null
+      ? `${stats.meanPostComfort.toFixed(1)} (n=${stats.nWithPostComfort})`
+      : '—';
+  const deltaText =
+    stats.meanComfortDelta !== null
+      ? `${stats.meanComfortDelta > 0 ? '+' : ''}${stats.meanComfortDelta.toFixed(1)} (n=${stats.nWithComfortPair})`
+      : '—';
+
+  return (
+    <div className={`rounded-xl border p-4 ${accentClass}`}>
+      <div className="flex items-center justify-between mb-3">
+        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${labelChip}`}>
+          {label}
+        </span>
+        <span className="text-xs text-muted">
+          {stats.completers}/{stats.participants} completed quiz
+        </span>
+      </div>
+      <dl className="space-y-2 text-sm">
+        <Row label="Mean correct" value={scoreText} emphasize />
+        <Row label="Pre-test comfort" value={preText} />
+        <Row label="Post-test comfort" value={postText} />
+        <Row label="Comfort change" value={deltaText} />
+      </dl>
+    </div>
+  );
+}
+
+function Row({
+  label,
+  value,
+  emphasize,
+}: {
+  label: string;
+  value: string;
+  emphasize?: boolean;
+}) {
+  return (
+    <div className="flex items-baseline justify-between gap-3">
+      <dt className="text-xs text-muted">{label}</dt>
+      <dd
+        className={`font-mono ${
+          emphasize ? 'text-base font-semibold text-foreground' : 'text-sm text-foreground'
+        }`}
+      >
+        {value}
+      </dd>
     </div>
   );
 }
