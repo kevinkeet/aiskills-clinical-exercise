@@ -29,11 +29,31 @@
  * question so that "longest option" cannot be used as a guessing heuristic.
  */
 
-export interface Question {
+/** Multiple-choice question (default). */
+export interface MCQQuestion {
   number: number;
+  type?: 'mcq';
   text: string;
   options: { label: string; value: string }[];
   correctAnswer: string;
+}
+
+/** Numeric-scale question (e.g., 0–10 comfort rating). No correct answer. */
+export interface ScaleQuestion {
+  number: number;
+  type: 'scale';
+  text: string;
+  min: number;
+  max: number;
+  minLabel?: string;
+  maxLabel?: string;
+}
+
+export type Question = MCQQuestion | ScaleQuestion;
+
+/** Type guard convenience */
+export function isMCQ(q: Question): q is MCQQuestion {
+  return !q.type || q.type === 'mcq';
 }
 
 export const questions: Question[] = [
@@ -342,5 +362,19 @@ export const questions: Question[] = [
       },
     ],
     correctAnswer: 'D',
+  },
+
+  // --- POST-TEST COMFORT (Q13) ---
+  // Same wording as the intake comfort item (src/data/intakeContent.ts).
+  // Stored as the participant's selected_answer string ("0".."10");
+  // not graded — `is_correct` is left blank in CSV exports.
+  {
+    number: 13,
+    type: 'scale',
+    text: 'How comfortable would you be taking care of a patient with Fabry disease?',
+    min: 0,
+    max: 10,
+    minLabel: 'Not at all comfortable',
+    maxLabel: 'Very comfortable',
   },
 ];

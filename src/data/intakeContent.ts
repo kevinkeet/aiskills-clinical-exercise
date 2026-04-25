@@ -54,14 +54,7 @@ export const CONSENT_CHECKBOX_LABEL =
 export type DemographicField =
   | { key: 'pgy'; label: string; type: 'radio'; options: { value: string; label: string }[] }
   | { key: 'track'; label: string; type: 'radio'; options: { value: string; label: string }[] }
-  | { key: 'medSchoolGradYear'; label: string; type: 'numberYear'; min: number; max: number }
-  | { key: 'sex'; label: string; type: 'radio'; options: { value: string; label: string }[] }
-  | {
-      key: 'priorAiUseFrequency';
-      label: string;
-      type: 'radio';
-      options: { value: string; label: string }[];
-    };
+  | { key: 'medSchoolGradYear'; label: string; type: 'numberYear'; min: number; max: number };
 
 export const DEMOGRAPHIC_FIELDS = (currentYear: number): DemographicField[] => [
   {
@@ -90,115 +83,17 @@ export const DEMOGRAPHIC_FIELDS = (currentYear: number): DemographicField[] => [
     min: 2015,
     max: currentYear,
   },
-  {
-    key: 'sex',
-    label: 'Sex',
-    type: 'radio',
-    options: [
-      { value: 'Male', label: 'Male' },
-      { value: 'Female', label: 'Female' },
-      { value: 'Other', label: 'Other' },
-      { value: 'Prefer not to say', label: 'Prefer not to say' },
-    ],
-  },
-  {
-    key: 'priorAiUseFrequency',
-    label:
-      'How often do you currently use a generative AI tool (e.g., a chatbot or large language model) for clinical questions in your training?',
-    type: 'radio',
-    options: [
-      { value: 'Never', label: 'Never' },
-      { value: 'Less than once a month', label: 'Less than once a month' },
-      { value: 'A few times a month', label: 'A few times a month' },
-      { value: 'A few times a week', label: 'A few times a week' },
-      { value: 'Daily or more', label: 'Daily or more' },
-    ],
-  },
 ];
 
-// --- Step 4: Self-rated familiarity ---
+// --- Step 4: Clinical comfort (single 0-10 question) ---
+//
+// Same wording is reused as the post-test comfort item (Q13 of the
+// assessment) so the change in self-rated comfort can be measured.
 
-export const FAMILIARITY_CONDITIONS = [
-  'Fabry disease',
-  'IgA nephropathy',
-  'Sarcoidosis',
-  'Light-chain (AL) amyloidosis',
-] as const;
+export const COMFORT_QUESTION_TEXT =
+  'How comfortable would you be taking care of a patient with Fabry disease?';
 
-export const FAMILIARITY_SCALE: ReadonlyArray<{ value: number; label: string }> = [
-  { value: 1, label: 'Not at all familiar' },
-  { value: 2, label: 'Slightly familiar' },
-  { value: 3, label: 'Moderately familiar' },
-  { value: 4, label: 'Very familiar' },
-  { value: 5, label: 'Expert' },
-];
-
-export const CONFIDENCE_SCALE: ReadonlyArray<{ value: number; label: string }> = [
-  { value: 1, label: '1' },
-  { value: 2, label: '2' },
-  { value: 3, label: '3' },
-  { value: 4, label: '4' },
-  { value: 5, label: '5' },
-];
-
-// Sub-items intentionally name the focus condition since the question must.
-// This is the only place the word "Fabry" appears on the intake page.
-export const FABRY_SUBITEMS: ReadonlyArray<{
-  key: string;
-  label: string;
-  type: 'likert5' | 'yesno';
-}> = [
-  { key: 'inheritancePattern', label: 'I can describe the inheritance pattern.', type: 'likert5' },
-  {
-    key: 'organSystems',
-    label: 'I can list at least three organ systems involved.',
-    type: 'likert5',
-  },
-  {
-    key: 'diseaseSpecificTherapy',
-    label: 'I can name a disease-specific therapy.',
-    type: 'likert5',
-  },
-  {
-    key: 'everSeenPatient',
-    label: 'I have ever cared for or seen a patient with this condition.',
-    type: 'yesno',
-  },
-];
-
-/**
- * Deterministic seeded order for the four conditions, keyed by participantId.
- * Uses a tiny xmur3 hash + mulberry32 PRNG so the same participantId always
- * sees the same order across visits.
- */
-function xmur3(str: string): () => number {
-  let h = 1779033703 ^ str.length;
-  for (let i = 0; i < str.length; i++) {
-    h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
-    h = (h << 13) | (h >>> 19);
-  }
-  return function () {
-    h = Math.imul(h ^ (h >>> 16), 2246822507);
-    h = Math.imul(h ^ (h >>> 13), 3266489909);
-    h ^= h >>> 16;
-    return h >>> 0;
-  };
-}
-function mulberry32(seed: number): () => number {
-  return function () {
-    let t = (seed += 0x6d2b79f5);
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-export function shuffledConditionsForParticipant(participantId: string): string[] {
-  const seedFn = xmur3(participantId || 'unknown');
-  const rng = mulberry32(seedFn());
-  const arr = FAMILIARITY_CONDITIONS.slice();
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
+export const COMFORT_SCALE_MIN = 0;
+export const COMFORT_SCALE_MAX = 10;
+export const COMFORT_SCALE_MIN_LABEL = 'Not at all comfortable';
+export const COMFORT_SCALE_MAX_LABEL = 'Very comfortable';

@@ -11,10 +11,11 @@ import {
   PRINT_REMINDER,
   CONSENT_CHECKBOX_LABEL,
   DEMOGRAPHIC_FIELDS,
-  FAMILIARITY_SCALE,
-  CONFIDENCE_SCALE,
-  FABRY_SUBITEMS,
-  shuffledConditionsForParticipant,
+  COMFORT_QUESTION_TEXT,
+  COMFORT_SCALE_MIN,
+  COMFORT_SCALE_MAX,
+  COMFORT_SCALE_MIN_LABEL,
+  COMFORT_SCALE_MAX_LABEL,
   type DemographicField,
 } from '@/data/intakeContent';
 
@@ -24,7 +25,7 @@ const STEP_LABELS: Record<Step, string> = {
   consent: 'Consent',
   enrollment: 'Enrollment number',
   demographics: 'Background',
-  fabryPretest: 'Self-rated familiarity',
+  fabryPretest: 'Clinical comfort',
 };
 
 interface LookupResult {
@@ -54,13 +55,8 @@ export default function IntakePage() {
   const [demoErrors, setDemoErrors] = useState<Record<string, string>>({});
   const [pgyMismatchAck, setPgyMismatchAck] = useState(false);
 
-  // Step 4
-  const conditionOrder = useMemo(
-    () => (lookup ? shuffledConditionsForParticipant(lookup.participantId) : []),
-    [lookup]
-  );
-  const [familiarityRatings, setFamiliarityRatings] = useState<Record<string, number>>({});
-  const [fabrySubitemAnswers, setFabrySubitemAnswers] = useState<Record<string, string>>({});
+  // Step 4 (single 0–10 comfort question)
+  const [comfortRating, setComfortRating] = useState<number | null>(null);
   const [pretestErrors, setPretestErrors] = useState<string>('');
 
   const [submitting, setSubmitting] = useState(false);
@@ -244,28 +240,16 @@ export default function IntakePage() {
     goNext('fabryPretest');
   }
 
-  // ---------------- Step 4: Self-rated familiarity ----------------
-  function setFamiliarity(condition: string, value: number) {
-    setFamiliarityRatings((prev) => ({ ...prev, [condition]: value }));
-    setPretestErrors('');
-  }
-  function setFabrySubitem(key: string, value: string) {
-    setFabrySubitemAnswers((prev) => ({ ...prev, [key]: value }));
+  // ---------------- Step 4: Clinical comfort ----------------
+  function setComfort(value: number) {
+    setComfortRating(value);
     setPretestErrors('');
   }
 
   function validatePretest(): boolean {
-    for (const c of conditionOrder) {
-      if (!familiarityRatings[c]) {
-        setPretestErrors('Please rate your familiarity with each condition.');
-        return false;
-      }
-    }
-    for (const sub of FABRY_SUBITEMS) {
-      if (!fabrySubitemAnswers[sub.key]) {
-        setPretestErrors('Please answer each item in the second section.');
-        return false;
-      }
+    if (comfortRating === null) {
+      setPretestErrors('Please choose a value on the scale.');
+      return false;
     }
     setPretestErrors('');
     return true;
@@ -289,9 +273,7 @@ export default function IntakePage() {
     const payload = {
       demographics,
       fabryPretest: {
-        conditionOrder,
-        conditionRatings: familiarityRatings,
-        fabrySubitems: fabrySubitemAnswers,
+        comfortRating,
       },
       mismatchFlags,
     };
@@ -398,13 +380,10 @@ export default function IntakePage() {
               onBack={goBack}
             />
           )}
-          {step === 'fabryPretest' && lookup && (
-            <FabryPretestStep
-              conditionOrder={conditionOrder}
-              ratings={familiarityRatings}
-              setRating={setFamiliarity}
-              subitemAnswers={fabrySubitemAnswers}
-              setSubitemAnswer={setFabrySubitem}
+          {step === 'fabryPretest' && (
+            <ComfortStep
+              value={comfortRating}
+              setValue={setComfort}
               error={pretestErrors}
               submitting={submitting}
               submitError={submitError}
@@ -674,25 +653,19 @@ function DemographicsStep({
 }
 
 // =================================================================
-// Step 4: Self-rated familiarity
+// Step 4: Clinical comfort (single 0–10 question)
 // =================================================================
-function FabryPretestStep({
-  conditionOrder,
-  ratings,
-  setRating,
-  subitemAnswers,
-  setSubitemAnswer,
+function ComfortStep({
+  value,
+  setValue,
   error,
   submitting,
   submitError,
   onSubmit,
   onBack,
 }: {
-  conditionOrder: string[];
-  ratings: Record<string, number>;
-  setRating: (c: string, v: number) => void;
-  subitemAnswers: Record<string, string>;
-  setSubitemAnswer: (k: string, v: string) => void;
+  value: number | null;
+  setValue: (v: number) => void;
   error: string;
   submitting: boolean;
   submitError: string;
@@ -701,128 +674,28 @@ function FabryPretestStep({
 }) {
   return (
     <div>
-      <h2 className="text-lg font-bold text-foreground mb-1">
-        Self-rated familiarity with selected clinical conditions
-      </h2>
+      <h2 className="text-lg font-bold text-foreground mb-1">Clinical comfort</h2>
       <p className="text-sm text-muted mb-6">
-        Please rate your overall familiarity with each of the following conditions.
+        One brief question before you begin the case.
       </p>
 
-      {/* Four-condition global rating */}
-      <div className="space-y-6">
-        {conditionOrder.map((condition) => (
-          <fieldset key={condition}>
-            <legend className="text-sm font-semibold text-foreground mb-2">
-              How would you rate your overall familiarity with{' '}
-              <span className="font-bold">{condition}</span>?
-              <span className="text-red-600 ml-1" aria-hidden>
-                *
-              </span>
-            </legend>
-            <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
-              {FAMILIARITY_SCALE.map((opt) => (
-                <label
-                  key={opt.value}
-                  className={`flex items-start gap-2 px-3 py-2 border rounded-lg cursor-pointer text-sm transition-colors ${
-                    ratings[condition] === opt.value
-                      ? 'border-primary bg-blue-50'
-                      : 'border-border hover:border-muted'
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name={`fam-${condition}`}
-                    value={opt.value}
-                    checked={ratings[condition] === opt.value}
-                    onChange={() => setRating(condition, opt.value)}
-                    className="mt-0.5 h-4 w-4 text-primary"
-                  />
-                  <span>
-                    <span className="font-semibold mr-1">{opt.value}.</span>
-                    {opt.label}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
-        ))}
-      </div>
-
-      <hr className="my-7 border-border" />
-
-      {/* Fabry sub-items */}
-      <div>
-        <p className="text-sm font-semibold text-foreground mb-4">
-          Please rate how confident you are with each of the following with respect to{' '}
-          <span className="font-bold">Fabry disease</span>:
-        </p>
-
-        <div className="space-y-5">
-          {FABRY_SUBITEMS.map((sub) => (
-            <fieldset key={sub.key}>
-              <legend className="text-sm text-foreground mb-2">
-                {sub.label}
-                <span className="text-red-600 ml-1" aria-hidden>
-                  *
-                </span>
-              </legend>
-
-              {sub.type === 'likert5' && (
-                <div className="flex flex-wrap gap-2">
-                  {CONFIDENCE_SCALE.map((opt) => (
-                    <label
-                      key={opt.value}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 border rounded-lg cursor-pointer text-sm transition-colors ${
-                        subitemAnswers[sub.key] === String(opt.value)
-                          ? 'border-primary bg-blue-50'
-                          : 'border-border hover:border-muted'
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name={`sub-${sub.key}`}
-                        value={opt.value}
-                        checked={subitemAnswers[sub.key] === String(opt.value)}
-                        onChange={(e) => setSubitemAnswer(sub.key, e.target.value)}
-                        className="h-4 w-4 text-primary"
-                      />
-                      <span>{opt.label}</span>
-                    </label>
-                  ))}
-                  <span className="text-xs text-muted self-center ml-1">
-                    1 = not at all confident, 5 = very confident
-                  </span>
-                </div>
-              )}
-
-              {sub.type === 'yesno' && (
-                <div className="flex gap-2">
-                  {['Yes', 'No'].map((v) => (
-                    <label
-                      key={v}
-                      className={`flex items-center gap-2 px-4 py-1.5 border rounded-lg cursor-pointer text-sm transition-colors ${
-                        subitemAnswers[sub.key] === v
-                          ? 'border-primary bg-blue-50'
-                          : 'border-border hover:border-muted'
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name={`sub-${sub.key}`}
-                        value={v}
-                        checked={subitemAnswers[sub.key] === v}
-                        onChange={(e) => setSubitemAnswer(sub.key, e.target.value)}
-                        className="h-4 w-4 text-primary"
-                      />
-                      <span>{v}</span>
-                    </label>
-                  ))}
-                </div>
-              )}
-            </fieldset>
-          ))}
-        </div>
-      </div>
+      <fieldset>
+        <legend className="text-sm font-semibold text-foreground mb-3">
+          {COMFORT_QUESTION_TEXT}
+          <span className="text-red-600 ml-1" aria-hidden>
+            *
+          </span>
+        </legend>
+        <ScaleInput
+          min={COMFORT_SCALE_MIN}
+          max={COMFORT_SCALE_MAX}
+          minLabel={COMFORT_SCALE_MIN_LABEL}
+          maxLabel={COMFORT_SCALE_MAX_LABEL}
+          value={value}
+          onChange={setValue}
+          name="comfort"
+        />
+      </fieldset>
 
       {error && (
         <p role="alert" className="mt-5 text-sm text-red-700">
@@ -852,6 +725,57 @@ function FabryPretestStep({
           {submitting ? 'Submitting…' : 'Submit and begin the case'}
         </button>
       </div>
+    </div>
+  );
+}
+
+// =================================================================
+// ScaleInput: 0–10 button row used for the comfort question.
+// =================================================================
+function ScaleInput({
+  min,
+  max,
+  minLabel,
+  maxLabel,
+  value,
+  onChange,
+  name,
+}: {
+  min: number;
+  max: number;
+  minLabel?: string;
+  maxLabel?: string;
+  value: number | null;
+  onChange: (v: number) => void;
+  name: string;
+}) {
+  const values = Array.from({ length: max - min + 1 }, (_, i) => min + i);
+  return (
+    <div>
+      <div className="grid grid-cols-11 gap-1">
+        {values.map((v) => (
+          <button
+            key={v}
+            type="button"
+            onClick={() => onChange(v)}
+            aria-pressed={value === v}
+            aria-label={`${name} ${v}`}
+            className={`py-2 rounded-md border text-sm font-medium transition-colors ${
+              value === v
+                ? 'border-primary bg-primary text-white'
+                : 'border-border bg-card text-foreground hover:border-primary/50 hover:bg-blue-50'
+            }`}
+          >
+            {v}
+          </button>
+        ))}
+      </div>
+      {(minLabel || maxLabel) && (
+        <div className="mt-2 flex justify-between text-xs text-muted">
+          <span>{minLabel ? `${min} — ${minLabel}` : ''}</span>
+          <span>{maxLabel ? `${max} — ${maxLabel}` : ''}</span>
+        </div>
+      )}
     </div>
   );
 }

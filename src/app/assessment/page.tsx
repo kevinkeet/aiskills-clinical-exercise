@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { questions } from '@/data/questions';
+import { questions, isMCQ } from '@/data/questions';
 
 export default function AssessmentPage() {
   const router = useRouter();
@@ -218,22 +218,51 @@ export default function AssessmentPage() {
           {q.text}
         </h2>
 
-        <div className="space-y-3">
-          {q.options.map((option) => (
-            <button
-              key={option.label}
-              onClick={() => selectAnswer(q.number, option.label)}
-              className={`w-full text-left p-4 rounded-lg border-2 transition-all text-sm ${
-                answers[q.number] === option.label
-                  ? 'border-primary bg-blue-50'
-                  : 'border-border hover:border-muted'
-              }`}
-            >
-              <span className="font-semibold mr-2">{option.label}.</span>
-              {option.value}
-            </button>
-          ))}
-        </div>
+        {isMCQ(q) ? (
+          <div className="space-y-3">
+            {q.options.map((option) => (
+              <button
+                key={option.label}
+                onClick={() => selectAnswer(q.number, option.label)}
+                className={`w-full text-left p-4 rounded-lg border-2 transition-all text-sm ${
+                  answers[q.number] === option.label
+                    ? 'border-primary bg-blue-50'
+                    : 'border-border hover:border-muted'
+                }`}
+              >
+                <span className="font-semibold mr-2">{option.label}.</span>
+                {option.value}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div>
+            <div className="grid grid-cols-11 gap-1">
+              {Array.from({ length: q.max - q.min + 1 }, (_, i) => q.min + i).map((v) => (
+                <button
+                  key={v}
+                  type="button"
+                  onClick={() => selectAnswer(q.number, String(v))}
+                  aria-pressed={answers[q.number] === String(v)}
+                  aria-label={`Rating ${v}`}
+                  className={`py-2 rounded-md border text-sm font-medium transition-colors ${
+                    answers[q.number] === String(v)
+                      ? 'border-primary bg-primary text-white'
+                      : 'border-border bg-card text-foreground hover:border-primary/50 hover:bg-blue-50'
+                  }`}
+                >
+                  {v}
+                </button>
+              ))}
+            </div>
+            {(q.minLabel || q.maxLabel) && (
+              <div className="mt-2 flex justify-between text-xs text-muted">
+                <span>{q.minLabel ? `${q.min} — ${q.minLabel}` : ''}</span>
+                <span>{q.maxLabel ? `${q.max} — ${q.maxLabel}` : ''}</span>
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="flex items-center justify-between mt-8">
           <button

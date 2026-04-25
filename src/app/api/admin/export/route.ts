@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabase } from '@/lib/supabase';
-import { questions } from '@/data/questions';
+import { questions, isMCQ } from '@/data/questions';
 
 export async function GET(req: NextRequest) {
   const password = req.headers.get('x-admin-password');
@@ -41,14 +41,23 @@ export async function GET(req: NextRequest) {
       .order('participant_id')
       .order('question_number');
 
-    // Add correct/incorrect column
+    // Add correct/incorrect column. Scale-type questions (e.g., the
+    // post-test comfort rating Q13) have no right answer, so leave both
+    // correct_answer and is_correct blank for those rows.
     const enriched =
       assessmentData?.map((row) => {
         const q = questions.find((q) => q.number === row.question_number);
+        if (q && isMCQ(q)) {
+          return {
+            ...row,
+            correct_answer: q.correctAnswer,
+            is_correct: q.correctAnswer === row.selected_answer ? 'TRUE' : 'FALSE',
+          };
+        }
         return {
           ...row,
-          correct_answer: q?.correctAnswer || '',
-          is_correct: q?.correctAnswer === row.selected_answer ? 'TRUE' : 'FALSE',
+          correct_answer: '',
+          is_correct: '',
         };
       }) || [];
 
@@ -110,8 +119,6 @@ export async function GET(req: NextRequest) {
     const flat = (intakeRows ?? []).map((row) => {
       const demo = (row.demographics ?? {}) as Record<string, unknown>;
       const pretest = (row.fabry_pretest ?? {}) as Record<string, unknown>;
-      const ratings = (pretest.conditionRatings ?? {}) as Record<string, number>;
-      const subitems = (pretest.fabrySubitems ?? {}) as Record<string, unknown>;
       const meta = armByPid[row.participant_id] ?? {};
       return {
         participant_id: row.participant_id,
@@ -120,16 +127,9 @@ export async function GET(req: NextRequest) {
         pgy_self_reported: demo.pgy ?? '',
         track: demo.track ?? '',
         med_school_grad_year: demo.medSchoolGradYear ?? '',
-        sex: demo.sex ?? '',
-        prior_ai_use_frequency: demo.priorAiUseFrequency ?? '',
-        familiarity_fabry: ratings['Fabry disease'] ?? '',
-        familiarity_iga_nephropathy: ratings['IgA nephropathy'] ?? '',
-        familiarity_sarcoidosis: ratings['Sarcoidosis'] ?? '',
-        familiarity_al_amyloidosis: ratings['Light-chain (AL) amyloidosis'] ?? '',
-        fabry_inheritance_pattern: subitems.inheritancePattern ?? '',
-        fabry_organ_systems: subitems.organSystems ?? '',
-        fabry_disease_specific_therapy: subitems.diseaseSpecificTherapy ?? '',
-        fabry_ever_seen_patient: subitems.everSeenPatient ?? '',
+        // Pre-test comfort rating (0–10). Same item is repeated as Q13 in
+        // the assessment for paired pre/post analysis.
+        pretest_comfort_rating: pretest.comfortRating ?? '',
         mismatch_flags: JSON.stringify(row.mismatch_flags ?? {}),
         submitted_at: row.submitted_at,
       };
@@ -142,16 +142,7 @@ export async function GET(req: NextRequest) {
       'pgy_self_reported',
       'track',
       'med_school_grad_year',
-      'sex',
-      'prior_ai_use_frequency',
-      'familiarity_fabry',
-      'familiarity_iga_nephropathy',
-      'familiarity_sarcoidosis',
-      'familiarity_al_amyloidosis',
-      'fabry_inheritance_pattern',
-      'fabry_organ_systems',
-      'fabry_disease_specific_therapy',
-      'fabry_ever_seen_patient',
+      'pretest_comfort_rating',
       'mismatch_flags',
       'submitted_at',
     ]);

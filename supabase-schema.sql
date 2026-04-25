@@ -58,7 +58,8 @@ create table task_responses (
 create table assessment_responses (
   id uuid default gen_random_uuid() primary key,
   participant_id text not null references participants(participant_id) on delete cascade,
-  question_number integer not null check (question_number between 1 and 12),
+  -- Q1–Q12 are graded MCQ; Q13 is the post-test comfort scale (0–10).
+  question_number integer not null check (question_number between 1 and 13),
   selected_answer text not null,
   time_spent_seconds integer default 0,
   submitted_at timestamptz default now(),
