@@ -1,3 +1,34 @@
+/**
+ * Knowledge assessment for the Fabry disease clinical case exercise.
+ *
+ * Design intent (per study lead):
+ * - Naive resident, no exposure to the case → target ~10–20% correct.
+ *   Distractors are intentionally chosen so that "common medical sense"
+ *   leads to the wrong answer (cold-triggered pain, diabetic-pattern
+ *   neuropathy, autosomal-dominant inheritance, etc.).
+ * - AI group (used Claude during the case) → target ~40–50%. They get
+ *   the gist but the AI may not surface the specific nuances unless
+ *   asked (drug-induced cornea verticillata, X-inactivation in
+ *   heterozygous females, low native T1 on cardiac MRI, the short PR
+ *   on ECG, that migalastat is genotype-specific).
+ * - Control group (UpToDate) → target ~70–80%. UpToDate explicitly
+ *   lists the differentials, the female-diagnosis caveat, the cardiac
+ *   imaging signatures, and the ERT/migalastat distinction.
+ *
+ * Each question maps to one of the five tasks:
+ *   Q1–3  → Task 1 (additional history)
+ *   Q4–6  → Task 2 (physical examination)
+ *   Q7–9  → Task 3 (diagnostic workup)
+ *   Q10–11 → Task 4 (next steps in management)
+ *   Q12   → Task 5 (patient instructions)
+ *
+ * Correct-answer positions are evenly distributed: 3 each of A, B, C, D.
+ * Position pattern: A, B, C, B, C, A, D, A, D, B, C, D
+ *
+ * Distractor lengths are kept similar to the correct answer within each
+ * question so that "longest option" cannot be used as a guessing heuristic.
+ */
+
 export interface Question {
   number: number;
   text: string;
@@ -6,335 +37,310 @@ export interface Question {
 }
 
 export const questions: Question[] = [
-  // --- HISTORY TAKING (Questions 1-3, relates to Task 1) ---
+  // --- TASK 1: HISTORY (Q1–Q3) ---
   {
     number: 1,
-    text: 'A 32-year-old male with progressive CKD of unclear etiology reports burning pain in his hands and feet since childhood. Which historical feature would most strongly support suspecting Fabry disease over other causes of small fiber neuropathy?',
+    text: 'Episodes of severe burning pain in the hands and feet, present since childhood, in this disease are most characteristically triggered by:',
+    options: [
+      { label: 'A', value: 'Heat, fever, and physical exertion' },
+      { label: 'B', value: 'Cold exposure, stress, and certain foods' },
+      { label: 'C', value: 'Sustained pressure on the affected limbs' },
+      { label: 'D', value: 'Prolonged immobility, such as long flights or bed rest' },
+    ],
+    correctAnswer: 'A',
+  },
+  {
+    number: 2,
+    text: 'A 32-year-old man with this disease is asking about inheritance. Which family-history pattern would most support the diagnosis?',
     options: [
       {
         label: 'A',
         value:
-          'The pain worsens with cold exposure and improves with warming of the extremities',
+          'Both parents unaffected, with approximately 25% of siblings affected regardless of sex',
       },
       {
         label: 'B',
         value:
-          'The pain follows a dermatomal distribution and is associated with vesicular skin lesions',
+          'Affected maternal uncles and male cousins, with no father-to-son transmission',
       },
       {
         label: 'C',
         value:
-          'The pain is triggered or worsened by febrile illness, exercise, or heat exposure',
+          'Affected men in multiple generations on the father\u2019s side, including father-to-son transmission',
+      },
+      {
+        label: 'D',
+        value: 'No family history of similar symptoms in any relative',
+      },
+    ],
+    correctAnswer: 'B',
+  },
+  {
+    number: 3,
+    text: 'A patient with this disease has a long-standing diagnosis of irritable bowel syndrome with episodic abdominal pain and diarrhea. This gastrointestinal pattern is most likely:',
+    options: [
+      {
+        label: 'A',
+        value: 'An unrelated comorbidity that should be managed independently',
+      },
+      {
+        label: 'B',
+        value: 'A side effect of long-term gabapentin therapy',
+      },
+      {
+        label: 'C',
+        value:
+          'A direct manifestation of the underlying disease, often delaying its diagnosis',
       },
       {
         label: 'D',
         value:
-          'The pain began after age 30 and is associated with impaired fasting glucose levels',
+          'An indication for empiric antibiotic therapy for small-intestinal bacterial overgrowth',
       },
     ],
     correctAnswer: 'C',
   },
-  {
-    number: 2,
-    text: 'When taking a family history from a patient with suspected Fabry disease, which pattern of inheritance should raise your suspicion?',
-    options: [
-      {
-        label: 'A',
-        value:
-          'Father-to-son transmission with no affected females in the family',
-      },
-      {
-        label: 'B',
-        value:
-          'Both parents are unaffected carriers and 25% of siblings are affected regardless of sex',
-      },
-      {
-        label: 'C',
-        value:
-          'Spontaneous new mutation in the patient with no family history expected in the vast majority of cases',
-      },
-      {
-        label: 'D',
-        value:
-          'Affected maternal relatives (males and some females) with no male-to-male transmission',
-      },
-    ],
-    correctAnswer: 'D',
-  },
-  {
-    number: 3,
-    text: 'Which gastrointestinal symptom pattern in the history is characteristic of Fabry disease and often leads to misdiagnosis?',
-    options: [
-      {
-        label: 'A',
-        value:
-          'Recurrent postprandial abdominal pain, diarrhea, and nausea frequently diagnosed as irritable bowel syndrome',
-      },
-      {
-        label: 'B',
-        value:
-          'Progressive dysphagia and weight loss due to esophageal glycolipid deposition',
-      },
-      {
-        label: 'C',
-        value:
-          'Recurrent pancreatitis from glycosphingolipid deposition in the pancreatic duct',
-      },
-      {
-        label: 'D',
-        value:
-          'Chronic constipation and megacolon from autonomic ganglion cell destruction',
-      },
-    ],
-    correctAnswer: 'A',
-  },
 
-  // --- PHYSICAL EXAM (Questions 4-6, relates to Task 2) ---
+  // --- TASK 2: PHYSICAL EXAMINATION (Q4–Q6) ---
   {
     number: 4,
-    text: 'During a physical exam of a patient with suspected Fabry disease, you observe clusters of small dark-red papules on the lower abdomen, periumbilical area, and upper thighs. These lesions are most likely:',
+    text: 'On physical examination, which of the following dermatologic findings would most strongly support this diagnosis?',
     options: [
       {
         label: 'A',
         value:
-          'Cherry angiomas, which are benign vascular proliferations common in adults over age 30',
+          'Erythematous, scaly plaques on the extensor surfaces of the elbows and knees',
       },
       {
         label: 'B',
         value:
-          'Angiokeratomas, which result from glycolipid deposition in dermal vessel walls causing vascular ectasia',
+          'Clusters of small, dark-red papules on the lower abdomen, groin, and upper thighs',
       },
       {
         label: 'C',
         value:
-          'Petechiae from thrombocytopenia secondary to splenic sequestration and bone marrow infiltration',
+          'Hyperpigmented velvety patches in the axillae and posterior neck',
       },
       {
         label: 'D',
         value:
-          'Eruptive xanthomas from hypertriglyceridemia associated with nephrotic-range proteinuria',
+          'Yellow nodules along the Achilles and extensor tendons of the hands',
       },
     ],
     correctAnswer: 'B',
   },
   {
     number: 5,
-    text: 'Cornea verticillata found on slit-lamp examination in a patient with suspected Fabry disease is characterized by:',
+    text: 'Cornea verticillata (bilateral whorl-like opacities of the corneal epithelium) is observed on slit-lamp examination. Which of the following is true about this finding?',
     options: [
       {
         label: 'A',
         value:
-          'Brown copper deposits in the peripheral Descemet membrane forming a ring-like pattern',
+          'It is pathognomonic for this disease and excludes other diagnoses',
       },
       {
         label: 'B',
         value:
-          'Central corneal clouding with progressive visual loss requiring early corneal transplantation',
+          'It typically causes significant visual loss requiring corneal transplantation',
       },
       {
         label: 'C',
         value:
-          'Band-shaped calcification deposits across the central cornea at the level of Bowman layer',
+          'It is also seen with chronic amiodarone, chloroquine, and other cationic amphiphilic drug use',
       },
       {
         label: 'D',
         value:
-          'Bilateral whorl-like (vortex) corneal opacities in the epithelium that typically do not impair vision',
+          'It is usually asymmetric, affecting only one eye in most patients',
+      },
+    ],
+    correctAnswer: 'C',
+  },
+  {
+    number: 6,
+    text: 'Sensory examination of a patient with this disease typically shows:',
+    options: [
+      {
+        label: 'A',
+        value:
+          'Decreased pinprick and temperature sensation distally, with preserved vibration and proprioception',
+      },
+      {
+        label: 'B',
+        value:
+          'Decreased vibration and proprioception in the feet, with preserved pinprick and temperature',
+      },
+      {
+        label: 'C',
+        value:
+          'A patchy, asymmetric distribution consistent with mononeuritis multiplex',
+      },
+      {
+        label: 'D',
+        value:
+          'A "stocking-glove" loss of all sensory modalities with absent ankle reflexes',
+      },
+    ],
+    correctAnswer: 'A',
+  },
+
+  // --- TASK 3: DIAGNOSTIC WORKUP (Q7–Q9) ---
+  {
+    number: 7,
+    text: 'For a male patient with clinical suspicion of this disease, the most appropriate initial confirmatory test is:',
+    options: [
+      {
+        label: 'A',
+        value:
+          'Renal biopsy with electron microscopy looking for lamellated inclusion bodies',
+      },
+      {
+        label: 'B',
+        value: 'Whole-exome sequencing performed on a peripheral blood sample',
+      },
+      {
+        label: 'C',
+        value: 'Serum protein electrophoresis with immunofixation',
+      },
+      {
+        label: 'D',
+        value:
+          'Plasma or leukocyte alpha-galactosidase A enzyme activity assay',
       },
     ],
     correctAnswer: 'D',
   },
   {
-    number: 6,
-    text: 'Which cardiovascular finding on physical examination is most consistent with the cardiac involvement seen in Fabry disease?',
+    number: 8,
+    text: 'The patient\u2019s 35-year-old sister is being evaluated as a possible carrier. Her plasma alpha-galactosidase A activity is reported as normal. The most appropriate interpretation is:',
     options: [
       {
         label: 'A',
         value:
-          'Wide fixed splitting of S2 with a right ventricular heave suggesting an atrial septal defect',
+          'GLA gene sequencing is required, because enzyme activity is unreliable in heterozygous females',
       },
       {
         label: 'B',
-        value:
-          'A loud holosystolic murmur at the apex radiating to the axilla from severe mitral valve prolapse',
+        value: 'She is definitively unaffected and does not require further evaluation',
       },
       {
         label: 'C',
         value:
-          'An S4 gallop reflecting decreased ventricular compliance from concentric left ventricular hypertrophy',
+          'She has the disease confirmed; her enzyme activity is normal due to compensatory pathways',
       },
       {
         label: 'D',
         value:
-          'A pericardial friction rub with distant heart sounds from constrictive pericarditis',
-      },
-    ],
-    correctAnswer: 'C',
-  },
-
-  // --- DIAGNOSTIC WORKUP & TREATMENT (Questions 7-9, relates to Tasks 3-4) ---
-  {
-    number: 7,
-    text: 'Which initial diagnostic test is most appropriate for confirming Fabry disease in a male patient?',
-    options: [
-      {
-        label: 'A',
-        value:
-          'Measurement of alpha-galactosidase A enzyme activity in leukocytes or plasma',
-      },
-      {
-        label: 'B',
-        value:
-          'Renal biopsy with electron microscopy to identify characteristic lamellar inclusion bodies',
-      },
-      {
-        label: 'C',
-        value:
-          'Plasma lyso-Gb3 level, which is the most sensitive and specific single test in both sexes',
-      },
-      {
-        label: 'D',
-        value:
-          'GLA gene sequencing, since enzyme activity levels can be normal in males with later-onset variants',
+          'She has a 50% chance of being a carrier and should defer testing until she becomes symptomatic',
       },
     ],
     correctAnswer: 'A',
   },
   {
-    number: 8,
-    text: 'A patient with confirmed Fabry disease has concentric left ventricular hypertrophy on echocardiography. On cardiac MRI, which finding helps distinguish Fabry cardiomyopathy from other causes of LVH?',
+    number: 9,
+    text: 'Which of the following ECG findings is characteristic of cardiac involvement in this disease, particularly in earlier stages?',
     options: [
       {
         label: 'A',
-        value:
-          'Diffusely elevated native T1 values, reflecting myocardial edema and extracellular expansion from fibrosis',
+        value: 'A prolonged QTc interval with marked T-wave inversion',
       },
       {
         label: 'B',
-        value:
-          'Asymmetric septal hypertrophy with systolic anterior motion of the mitral valve on cine imaging',
+        value: 'Right bundle branch block with marked right axis deviation',
       },
       {
         label: 'C',
-        value:
-          'Low native T1 values on parametric mapping, reflecting intracellular glycosphingolipid accumulation within cardiomyocytes',
+        value: 'Pathologic Q waves in the inferior and lateral leads',
       },
       {
         label: 'D',
-        value:
-          'Diffuse subendocardial late gadolinium enhancement in a circumferential pattern with pericardial effusion',
+        value: 'A short PR interval, often less than 120 milliseconds',
       },
     ],
-    correctAnswer: 'C',
+    correctAnswer: 'D',
   },
+
+  // --- TASK 4: NEXT STEPS IN MANAGEMENT (Q10–Q11) ---
   {
-    number: 9,
-    text: 'When developing a treatment plan for a patient with Fabry disease and stage 3 CKD, which adjunctive medication is a cornerstone of renal protection regardless of whether the patient receives disease-specific therapy?',
+    number: 10,
+    text: 'Migalastat (Galafold) for this disease:',
     options: [
       {
         label: 'A',
         value:
-          'A calcineurin inhibitor such as tacrolimus to reduce proteinuria through afferent arteriole vasoconstriction',
+          'Is a substrate reduction therapy that inhibits glucosylceramide synthase',
       },
       {
         label: 'B',
         value:
-          'An ACE inhibitor or ARB titrated to maximize reduction of proteinuria and control blood pressure',
+          'Is a pharmacologic chaperone effective only in patients with specific "amenable" GLA mutations',
       },
       {
         label: 'C',
         value:
-          'A high-dose statin regardless of lipid levels to stabilize renal endothelial glycocalyx function',
+          'Is administered intravenously every two weeks alongside enzyme replacement therapy',
       },
       {
         label: 'D',
         value:
-          'Low-dose aspirin to prevent glomerular microthrombosis from endothelial glycolipid deposition',
+          'Is curative when combined with hematopoietic stem cell transplantation',
       },
     ],
     correctAnswer: 'B',
   },
-
-  // --- PATIENT EDUCATION & LIFESTYLE (Questions 10-12, relates to Task 5) ---
-  {
-    number: 10,
-    text: 'When counseling a patient newly diagnosed with Fabry disease about family implications, which statement is most accurate?',
-    options: [
-      {
-        label: 'A',
-        value:
-          'Each of the patient\'s children has a 50% chance of inheriting the mutation regardless of sex',
-      },
-      {
-        label: 'B',
-        value:
-          'Only the patient\'s sons are at risk since the condition follows autosomal dominant inheritance',
-      },
-      {
-        label: 'C',
-        value:
-          'There is a 25% chance of having an affected child, and genetic testing of siblings is not necessary',
-      },
-      {
-        label: 'D',
-        value:
-          'All of the patient\'s daughters will inherit the GLA mutation, but none of his sons will be affected',
-      },
-    ],
-    correctAnswer: 'D',
-  },
   {
     number: 11,
-    text: 'Which lifestyle recommendation is most appropriate for a patient with Fabry disease who experiences acroparesthesias triggered by physical activity?',
+    text: 'In a patient with this disease, stage 3 CKD, and persistent proteinuria, a cornerstone of renal protection \u2014 independent of disease-specific therapy \u2014 is:',
     options: [
       {
         label: 'A',
         value:
-          'Strict avoidance of all exercise to prevent pain crises and reduce cardiac workload',
+          'A high-dose loop diuretic such as furosemide to control fluid overload',
       },
       {
         label: 'B',
-        value:
-          'Switch to exclusively high-intensity interval training, which has been shown to reduce neuropathic pain episodes',
+        value: 'Chronic empiric oral corticosteroids to slow glomerular injury',
       },
       {
         label: 'C',
         value:
-          'Continue regular moderate exercise but avoid overheating, stay well-hydrated, and use cooling strategies',
+          'An ACE inhibitor or angiotensin receptor blocker, titrated to reduce proteinuria',
       },
       {
         label: 'D',
         value:
-          'Exercise only in heated pools, as warmth improves peripheral blood flow and reduces small fiber neuropathy symptoms',
+          'A calcineurin inhibitor such as tacrolimus to suppress glomerular inflammation',
       },
     ],
     correctAnswer: 'C',
   },
+
+  // --- TASK 5: PATIENT INSTRUCTIONS (Q12) ---
   {
     number: 12,
-    text: 'A patient with Fabry disease asks what warning signs should prompt them to seek immediate medical attention. Which of the following is most important to emphasize?',
+    text: 'You are counseling a male patient with this disease about implications for his future children. Which of the following statements is most accurate?',
     options: [
       {
         label: 'A',
         value:
-          'Sudden severe headache, facial drooping, speech difficulty, or limb weakness, as Fabry patients have increased stroke risk particularly in the posterior circulation',
+          'Each of his children, regardless of sex, has a 50% chance of inheriting the mutation',
       },
       {
         label: 'B',
         value:
-          'Worsening of chronic hand and foot pain during a mild febrile illness, as this suggests disease progression requiring therapy adjustment',
+          'Only his sons are at risk; his daughters cannot inherit the mutation',
       },
       {
         label: 'C',
         value:
-          'Development of new angiokeratomas on the trunk, as rapid appearance of new skin lesions correlates with acute organ damage',
+          'None of his children are at increased risk because the disease typically arises de novo',
       },
       {
         label: 'D',
         value:
-          'Any episode of diarrhea or abdominal pain, since bowel ischemia from mesenteric vasculopathy is a common emergency in Fabry disease',
+          'All of his daughters will inherit the mutation; none of his sons will inherit it',
       },
     ],
-    correctAnswer: 'A',
+    correctAnswer: 'D',
   },
 ];
