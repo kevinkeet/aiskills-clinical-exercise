@@ -14,9 +14,9 @@ export default function CompletePage() {
         </p>
         <div className="bg-slate-50 rounded-lg p-4 text-sm text-foreground">
           <p>
-            Your participation contributes to research on AI-assisted learning
-            in clinical medicine. Results will not be shared with your
-            residency program in an identifiable manner.
+            Your participation contributes to research on clinical case-based
+            learning in Internal Medicine residency. Results will be reported
+            only in de-identified, aggregate form.
           </p>
         </div>
         <p className="text-xs text-muted mt-6">

@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { getSupabase } from '@/lib/supabase';
+import { getSessionParticipant } from '@/lib/session';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY || '',
@@ -8,7 +9,17 @@ const anthropic = new Anthropic({
 
 export async function POST(req: NextRequest) {
   try {
-    const { messages, participantId, taskNumber } = await req.json();
+    // Authenticate via session cookie. Reject if not in AI arm.
+    const session = await getSessionParticipant();
+    if (!session || session.arm !== 'AI') {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    const participantId = session.participantId;
+
+    const { messages, taskNumber } = await req.json();
 
     if (!messages || !Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: 'Missing messages' }), {
@@ -19,7 +30,7 @@ export async function POST(req: NextRequest) {
 
     // Log user message to Supabase
     const lastUserMsg = messages[messages.length - 1];
-    if (participantId && lastUserMsg?.role === 'user') {
+    if (lastUserMsg?.role === 'user') {
       await getSupabase().from('chat_logs').insert({
         participant_id: participantId,
         task_number: taskNumber || 0,
@@ -57,7 +68,7 @@ export async function POST(req: NextRequest) {
           }
 
           // Log assistant response
-          if (participantId && fullAssistantResponse) {
+          if (fullAssistantResponse) {
             await getSupabase().from('chat_logs').insert({
               participant_id: participantId,
               task_number: taskNumber || 0,

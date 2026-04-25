@@ -100,8 +100,12 @@ export async function GET(req: NextRequest) {
 
   const csv = toCSV(data || [], [
     'participant_id',
-    'group_assignment',
-    'consent_given',
+    'pgy',
+    'arm',
+    'consent_at',
+    'intake_completed_at',
+    'session_started_at',
+    'session_completed_at',
     'created_at',
   ]);
 

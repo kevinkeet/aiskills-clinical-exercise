@@ -10,10 +10,12 @@ import UpToDateSidebar from '@/components/UpToDateSidebar';
 import ProgressBar from '@/components/ProgressBar';
 import Timer from '@/components/Timer';
 
+type Arm = 'AI' | 'CONTROL';
+
 export default function ExercisePage() {
   const router = useRouter();
   const [participantId, setParticipantId] = useState('');
-  const [group, setGroup] = useState('');
+  const [arm, setArm] = useState<Arm | ''>('');
   const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
   const [response, setResponse] = useState('');
   const [taskStartTime, setTaskStartTime] = useState<Date>(new Date());
@@ -21,47 +23,49 @@ export default function ExercisePage() {
   const [submitting, setSubmitting] = useState(false);
   const [promptCopied, setPromptCopied] = useState(false);
   const [findingsCopied, setFindingsCopied] = useState(false);
+  const [loading, setLoading] = useState(true);
 
+  // Resolve arm from server-side session cookie. Never trust client storage.
   useEffect(() => {
-    const pid = sessionStorage.getItem('participantId');
-    const grp = sessionStorage.getItem('group');
-    const savedTask = sessionStorage.getItem('currentTask');
-
-    if (!pid || !grp) {
-      router.push('/');
-      return;
-    }
-
-    setParticipantId(pid);
-    setGroup(grp);
-
-    if (savedTask) {
-      const taskIdx = parseInt(savedTask) - 1;
-      if (taskIdx >= 0 && taskIdx < tasks.length) {
-        setCurrentTaskIndex(taskIdx);
-      }
-    }
-
-    setTaskStartTime(new Date());
+    let cancelled = false;
+    fetch('/api/session/me')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (cancelled) return;
+        if (!data?.authenticated || !data.intakeComplete) {
+          router.push('/intake');
+          return;
+        }
+        setParticipantId(data.participantId);
+        setArm(data.arm);
+        const savedTask = sessionStorage.getItem('currentTask');
+        if (savedTask) {
+          const taskIdx = parseInt(savedTask, 10) - 1;
+          if (taskIdx >= 0 && taskIdx < tasks.length) {
+            setCurrentTaskIndex(taskIdx);
+          }
+        }
+        setTaskStartTime(new Date());
+        setLoading(false);
+      })
+      .catch(() => router.push('/intake'));
+    return () => {
+      cancelled = true;
+    };
   }, [router]);
 
   const task = tasks[currentTaskIndex];
 
   const submitTask = useCallback(async () => {
     if (!task) return;
-
     setSubmitting(true);
-
-    const timeSpent = Math.floor(
-      (Date.now() - taskStartTime.getTime()) / 1000
-    );
+    const timeSpent = Math.floor((Date.now() - taskStartTime.getTime()) / 1000);
 
     try {
       await fetch('/api/submit-task', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          participantId,
           taskNumber: task.number,
           response,
           timeSpentSeconds: timeSpent,
@@ -84,12 +88,12 @@ export default function ExercisePage() {
     }
 
     setSubmitting(false);
-  }, [task, response, taskStartTime, participantId, currentTaskIndex, router]);
+  }, [task, response, taskStartTime, currentTaskIndex, router]);
 
-  if (!participantId) {
+  if (loading || !participantId) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-muted">Loading...</div>
+        <div className="text-muted">Loading…</div>
       </div>
     );
   }
@@ -102,15 +106,6 @@ export default function ExercisePage() {
           <h1 className="font-bold text-sm text-foreground">
             Clinical Case Exercise
           </h1>
-          <div
-            className={`text-xs px-2.5 py-1 rounded-full font-medium ${
-              group === 'ai'
-                ? 'bg-blue-100 text-blue-700'
-                : 'bg-emerald-100 text-emerald-700'
-            }`}
-          >
-            {group === 'ai' ? 'AI Group' : 'Control Group'}
-          </div>
         </div>
         <div className="flex items-center gap-4">
           <Timer startTime={exerciseStartTime} label="Total" />
@@ -121,17 +116,10 @@ export default function ExercisePage() {
         </div>
       </div>
 
-      {/* Group-specific banner */}
-      <div
-        className={`px-4 py-2 text-xs font-medium ${
-          group === 'ai'
-            ? 'bg-blue-50 text-blue-700 border-b border-blue-100'
-            : 'bg-emerald-50 text-emerald-700 border-b border-emerald-100'
-        }`}
-      >
-        {group === 'ai'
-          ? 'You may use the AI assistant on the right to help with Tasks 1\u20135. Do NOT use AI for the Knowledge Assessment.'
-          : 'You may use UpToDate on the right to help with Tasks 1\u20135. Do NOT use any AI tools. Do NOT use external resources for the Knowledge Assessment.'}
+      {/* Neutral guidance banner — does not name the resource */}
+      <div className="px-4 py-2 text-xs font-medium bg-slate-50 text-foreground border-b border-border">
+        You may use the resource panel on the right to help with Tasks 1&ndash;5. Do
+        NOT use any external resources for the Knowledge Assessment that follows.
       </div>
 
       {/* Main content area */}
@@ -154,7 +142,9 @@ export default function ExercisePage() {
                     </div>
                     <button
                       onClick={() => {
-                        navigator.clipboard.writeText(additionalFindings.replace(/\*\*/g, ''));
+                        navigator.clipboard.writeText(
+                          additionalFindings.replace(/\*\*/g, '')
+                        );
                         setFindingsCopied(true);
                         setTimeout(() => setFindingsCopied(false), 2000);
                       }}
@@ -180,7 +170,6 @@ export default function ExercisePage() {
                 </div>
               )}
 
-              {/* Task prompt as a distinct card */}
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                 <div className="flex items-start justify-between gap-2">
                   <p className="text-sm text-blue-900 leading-relaxed">
@@ -224,13 +213,10 @@ export default function ExercisePage() {
           </div>
         </div>
 
-        {/* Right sidebar: Chat or UpToDate */}
+        {/* Right sidebar: arm-determined; never labelled by arm name */}
         <div className="w-96 flex-shrink-0 hidden lg:flex flex-col">
-          {group === 'ai' ? (
-            <ChatSidebar
-              participantId={participantId}
-              taskNumber={task.number}
-            />
+          {arm === 'AI' ? (
+            <ChatSidebar participantId={participantId} taskNumber={task.number} />
           ) : (
             <UpToDateSidebar />
           )}

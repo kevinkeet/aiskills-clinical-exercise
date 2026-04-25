@@ -1,0 +1,86 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getSupabase } from '@/lib/supabase';
+import { setSessionCookie } from '@/lib/session';
+
+const ENROLLMENT_RE = /^P-\d{1,4}$/;
+
+export async function POST(req: NextRequest) {
+  let body: { enrollmentNumber?: string; consentTimestamp?: string };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+  }
+
+  const raw = (body.enrollmentNumber ?? '').trim().toUpperCase();
+  if (!ENROLLMENT_RE.test(raw)) {
+    return NextResponse.json(
+      { error: 'Enrollment number must be in the format P-NNN.' },
+      { status: 400 }
+    );
+  }
+
+  const sb = getSupabase();
+  const { data: participant, error } = await sb
+    .from('participants')
+    .select(
+      'participant_id,pgy,arm,consent_at,intake_complete,session_completed_at,current_step'
+    )
+    .eq('participant_id', raw)
+    .maybeSingle();
+
+  if (error) {
+    return NextResponse.json({ error: 'Lookup failed' }, { status: 500 });
+  }
+  if (!participant) {
+    return NextResponse.json(
+      { error: 'We could not find that enrollment number. Please check with the study coordinator.' },
+      { status: 404 }
+    );
+  }
+  if (
+    participant.intake_complete === true &&
+    participant.session_completed_at !== null &&
+    participant.session_completed_at !== undefined
+  ) {
+    return NextResponse.json(
+      { error: 'This enrollment number has already been used to complete the study.' },
+      { status: 409 }
+    );
+  }
+
+  // Persist consent_at if not yet on file. Use the timestamp the client
+  // captured when the box was checked, falling back to now.
+  const updates: Record<string, unknown> = {};
+  if (!participant.consent_at) {
+    const ts = body.consentTimestamp ? new Date(body.consentTimestamp) : new Date();
+    if (!isNaN(ts.getTime())) {
+      updates.consent_at = ts.toISOString();
+    } else {
+      updates.consent_at = new Date().toISOString();
+    }
+  }
+  // Advance current_step if we are still at consent or earlier.
+  if (
+    !participant.current_step ||
+    participant.current_step === 'consent' ||
+    participant.current_step === 'enrollment'
+  ) {
+    updates.current_step = 'demographics';
+  }
+  if (Object.keys(updates).length > 0) {
+    await sb.from('participants').update(updates).eq('participant_id', raw);
+  }
+
+  await setSessionCookie(raw);
+
+  return NextResponse.json({
+    participantId: participant.participant_id,
+    pgy: participant.pgy,
+    // arm intentionally returned so the server can configure the next page,
+    // but the frontend MUST NOT display it. Downstream pages re-fetch arm
+    // via /api/session/me from the session cookie, never from client state.
+    arm: participant.arm,
+    resumeStep: updates.current_step ?? participant.current_step ?? 'demographics',
+  });
+}

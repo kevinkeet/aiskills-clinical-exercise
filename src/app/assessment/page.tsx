@@ -14,20 +14,27 @@ export default function AssessmentPage() {
   const [assessmentStartTime, setAssessmentStartTime] = useState<Date | null>(null);
   const [elapsed, setElapsed] = useState(0);
 
-  // Track time per question
   const questionTimesRef = useRef<Record<number, number>>({});
   const questionStartRef = useRef<Date>(new Date());
 
   useEffect(() => {
-    const pid = sessionStorage.getItem('participantId');
-    if (!pid) {
-      router.push('/');
-      return;
-    }
-    setParticipantId(pid);
+    let cancelled = false;
+    fetch('/api/session/me')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (cancelled) return;
+        if (!data?.authenticated) {
+          router.push('/intake');
+          return;
+        }
+        setParticipantId(data.participantId);
+      })
+      .catch(() => router.push('/intake'));
+    return () => {
+      cancelled = true;
+    };
   }, [router]);
 
-  // Timer tick
   useEffect(() => {
     if (!assessmentStartTime) return;
     const interval = setInterval(() => {
@@ -55,21 +62,18 @@ export default function AssessmentPage() {
   function selectAnswer(questionNumber: number, answer: string) {
     setAnswers((prev) => ({ ...prev, [questionNumber]: answer }));
   }
-
   function nextQuestion() {
     if (currentQuestion < questions.length - 1) {
       recordQuestionTime();
       setCurrentQuestion((prev) => prev + 1);
     }
   }
-
   function prevQuestion() {
     if (currentQuestion > 0) {
       recordQuestionTime();
       setCurrentQuestion((prev) => prev - 1);
     }
   }
-
   function goToQuestion(idx: number) {
     if (idx !== currentQuestion) {
       recordQuestionTime();
@@ -80,38 +84,30 @@ export default function AssessmentPage() {
   async function submitAssessment() {
     setSubmitting(true);
     recordQuestionTime();
-
     const totalTimeSeconds = assessmentStartTime
       ? Math.floor((Date.now() - assessmentStartTime.getTime()) / 1000)
       : 0;
-
     const answerArray = Object.entries(answers).map(([qNum, ans]) => ({
-      questionNumber: parseInt(qNum),
+      questionNumber: parseInt(qNum, 10),
       selectedAnswer: ans,
-      timeSpentSeconds: questionTimesRef.current[parseInt(qNum)] || 0,
+      timeSpentSeconds: questionTimesRef.current[parseInt(qNum, 10)] || 0,
     }));
-
     try {
       await fetch('/api/submit-assessment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          participantId,
-          answers: answerArray,
-          totalTimeSeconds,
-        }),
+        body: JSON.stringify({ answers: answerArray, totalTimeSeconds }),
       });
     } catch {
       // Continue even if save fails
     }
-
     router.push('/complete');
   }
 
   if (!participantId) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-muted">Loading...</div>
+        <div className="text-muted">Loading…</div>
       </div>
     );
   }
@@ -130,8 +126,7 @@ export default function AssessmentPage() {
               12-question knowledge assessment.
             </p>
             <p className="text-sm text-red-700 mt-2">
-              You may <strong>NOT</strong> use any external resources (including
-              AI tools or UpToDate) for this section.
+              You may <strong>NOT</strong> use any external resources for this section.
             </p>
           </div>
           <p className="text-sm text-muted mb-6">
@@ -157,11 +152,8 @@ export default function AssessmentPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Top bar */}
       <div className="bg-card border-b border-border px-4 py-2.5 flex items-center justify-between">
-        <h1 className="font-bold text-sm text-foreground">
-          Knowledge Assessment
-        </h1>
+        <h1 className="font-bold text-sm text-foreground">Knowledge Assessment</h1>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 text-sm text-muted">
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -180,7 +172,6 @@ export default function AssessmentPage() {
         </div>
       </div>
 
-      {/* Progress dots */}
       <div className="bg-card border-b border-border px-4 py-2">
         <div className="flex gap-1.5 justify-center">
           {questions.map((_, i) => (
@@ -201,7 +192,6 @@ export default function AssessmentPage() {
         </div>
       </div>
 
-      {/* Question */}
       <div className="max-w-2xl mx-auto p-6">
         <div className="text-xs text-muted mb-2 font-medium">
           Question {currentQuestion + 1} of {questions.length}

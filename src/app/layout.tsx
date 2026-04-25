@@ -13,9 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'AI Skills in Clinical Medicine',
-  description:
-    'Fabry Disease Clinical Case Exercise & Knowledge Assessment - AI-Assisted Learning in Clinical Medicine',
+  title: 'Clinical Case-Based Learning Study',
+  description: 'Stanford Department of Medicine — IRB-86737',
 };
 
 export default function RootLayout({

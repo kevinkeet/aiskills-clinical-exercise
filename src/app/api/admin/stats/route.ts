@@ -20,12 +20,11 @@ export async function GET(req: NextRequest) {
     .from('assessment_responses')
     .select('*');
 
-  const aiCount =
-    participants?.filter((p) => p.group_assignment === 'ai').length || 0;
-  const controlCount =
-    participants?.filter((p) => p.group_assignment === 'control').length || 0;
+  const aiCount = participants?.filter((p) => p.arm === 'AI').length || 0;
+  const controlCount = participants?.filter((p) => p.arm === 'CONTROL').length || 0;
+  const intakeCompleteCount =
+    participants?.filter((p) => p.intake_complete === true).length || 0;
 
-  // Compute completed (all 6 tasks + 12 assessment answers)
   const completedParticipants = new Set<string>();
   const tasksByParticipant: Record<string, number> = {};
   taskResponses?.forEach((tr) => {
@@ -46,7 +45,6 @@ export async function GET(req: NextRequest) {
     }
   });
 
-  // Average time per task
   const avgTimeByTask: Record<number, number> = {};
   for (let t = 1; t <= 5; t++) {
     const times =
@@ -61,6 +59,7 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json({
     totalParticipants: participants?.length || 0,
+    intakeCompleteCount,
     aiGroupCount: aiCount,
     controlGroupCount: controlCount,
     completedCount: completedParticipants.size,

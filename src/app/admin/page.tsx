@@ -4,13 +4,16 @@ import { useState } from 'react';
 
 interface Stats {
   totalParticipants: number;
+  intakeCompleteCount?: number;
   aiGroupCount: number;
   controlGroupCount: number;
   completedCount: number;
   avgTimeByTask: Record<number, number>;
   recentParticipants: {
     participant_id: string;
-    group_assignment: string;
+    pgy?: number;
+    arm?: string;
+    intake_complete?: boolean;
     created_at: string;
   }[];
 }
@@ -197,8 +200,10 @@ export default function AdminPage() {
               <thead>
                 <tr className="text-left text-muted border-b border-border">
                   <th className="pb-2 font-medium">Participant ID</th>
-                  <th className="pb-2 font-medium">Group</th>
-                  <th className="pb-2 font-medium">Joined</th>
+                  <th className="pb-2 font-medium">PGY</th>
+                  <th className="pb-2 font-medium">Arm</th>
+                  <th className="pb-2 font-medium">Intake</th>
+                  <th className="pb-2 font-medium">Created</th>
                 </tr>
               </thead>
               <tbody>
@@ -210,16 +215,20 @@ export default function AdminPage() {
                     <td className="py-2 font-mono text-xs">
                       {p.participant_id}
                     </td>
+                    <td className="py-2 text-xs">{p.pgy ?? '—'}</td>
                     <td className="py-2">
                       <span
                         className={`text-xs px-2 py-0.5 rounded-full ${
-                          p.group_assignment === 'ai'
+                          p.arm === 'AI'
                             ? 'bg-blue-100 text-blue-700'
                             : 'bg-emerald-100 text-emerald-700'
                         }`}
                       >
-                        {p.group_assignment}
+                        {p.arm ?? '—'}
                       </span>
+                    </td>
+                    <td className="py-2 text-xs">
+                      {p.intake_complete ? '✓' : '—'}
                     </td>
                     <td className="py-2 text-xs text-muted">
                       {new Date(p.created_at).toLocaleString()}
