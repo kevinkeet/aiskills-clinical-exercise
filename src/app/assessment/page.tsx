@@ -61,6 +61,24 @@ export default function AssessmentPage() {
 
   function selectAnswer(questionNumber: number, answer: string) {
     setAnswers((prev) => ({ ...prev, [questionNumber]: answer }));
+    // Per-answer autosave: persist this single answer immediately so a
+    // browser crash before "Submit Assessment" doesn't lose the response.
+    // The submit-assessment endpoint upserts by (participant_id, question_number).
+    fetch('/api/submit-assessment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        answers: [
+          {
+            questionNumber,
+            selectedAnswer: answer,
+            timeSpentSeconds: questionTimesRef.current[questionNumber] || 0,
+          },
+        ],
+      }),
+    }).catch(() => {
+      // Silent — final submit will retry the full set anyway.
+    });
   }
   function nextQuestion() {
     if (currentQuestion < questions.length - 1) {
@@ -96,7 +114,7 @@ export default function AssessmentPage() {
       await fetch('/api/submit-assessment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ answers: answerArray, totalTimeSeconds }),
+        body: JSON.stringify({ answers: answerArray, totalTimeSeconds, final: true }),
       });
     } catch {
       // Continue even if save fails

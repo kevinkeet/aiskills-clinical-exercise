@@ -1,11 +1,16 @@
 /**
  * Server-side session: a single HTTP-only, HMAC-signed cookie carrying
- * { participantId, issuedAt }. The arm assignment is NEVER stored in the
- * cookie; downstream routes always look it up from the participants table
- * so the client cannot influence it.
+ * { participantId, sessionId, issuedAt }. The arm assignment is NEVER
+ * stored in the cookie; downstream routes always look it up from the
+ * participants table so the client cannot influence it.
+ *
+ * The sessionId enforces single-active-session: each /api/intake/lookup
+ * generates a fresh sessionId and writes it to participants.active_session_id.
+ * Any cookie carrying a stale sessionId is rejected. This means if the
+ * participant logs in from a second device, the first device is logged out.
  */
 import { cookies } from 'next/headers';
-import { createHmac, timingSafeEqual } from 'node:crypto';
+import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { getSupabase } from './supabase';
 
 const COOKIE_NAME = 'aiskills_sess';
@@ -13,6 +18,7 @@ const MAX_AGE_SECONDS = 60 * 60 * 12; // 12 hours
 
 interface SessionPayload {
   participantId: string;
+  sessionId: string;
   issuedAt: number;
 }
 
@@ -53,7 +59,11 @@ function verify(token: string): SessionPayload | null {
   try {
     const json = Buffer.from(b64, 'base64url').toString('utf8');
     const parsed = JSON.parse(json) as SessionPayload;
-    if (typeof parsed.participantId !== 'string' || typeof parsed.issuedAt !== 'number') {
+    if (
+      typeof parsed.participantId !== 'string' ||
+      typeof parsed.sessionId !== 'string' ||
+      typeof parsed.issuedAt !== 'number'
+    ) {
       return null;
     }
     if (Date.now() - parsed.issuedAt > MAX_AGE_SECONDS * 1000) return null;
@@ -63,8 +73,22 @@ function verify(token: string): SessionPayload | null {
   }
 }
 
-export async function setSessionCookie(participantId: string): Promise<void> {
-  const token = sign({ participantId, issuedAt: Date.now() });
+/**
+ * Create a fresh sessionId, write it to participants.active_session_id,
+ * and set the signed cookie. Any prior session for this participant is
+ * implicitly invalidated.
+ */
+export async function setSessionCookie(participantId: string): Promise<string> {
+  const sessionId = randomBytes(16).toString('hex');
+  const sb = getSupabase();
+  const { error } = await sb
+    .from('participants')
+    .update({ active_session_id: sessionId })
+    .eq('participant_id', participantId);
+  if (error) {
+    throw new Error(`Failed to rotate active session: ${error.message}`);
+  }
+  const token = sign({ participantId, sessionId, issuedAt: Date.now() });
   const store = await cookies();
   store.set(COOKIE_NAME, token, {
     httpOnly: true,
@@ -73,24 +97,12 @@ export async function setSessionCookie(participantId: string): Promise<void> {
     path: '/',
     maxAge: MAX_AGE_SECONDS,
   });
+  return sessionId;
 }
 
 export async function clearSessionCookie(): Promise<void> {
   const store = await cookies();
   store.delete(COOKIE_NAME);
-}
-
-/**
- * Read participantId from the signed cookie. Returns null if missing/invalid.
- * Does NOT trust any other client-supplied participantId — callers should
- * use this and then look up arm from the database.
- */
-export async function getSessionParticipantId(): Promise<string | null> {
-  const store = await cookies();
-  const c = store.get(COOKIE_NAME);
-  if (!c) return null;
-  const payload = verify(c.value);
-  return payload?.participantId ?? null;
 }
 
 export interface ParticipantSession {
@@ -103,18 +115,28 @@ export interface ParticipantSession {
 }
 
 /**
- * Read the full participant record for the session-cookie's participantId.
- * Returns null if no valid session or the participant no longer exists.
+ * Read the full participant record for the session-cookie's participantId,
+ * verifying the sessionId matches the DB's active_session_id (single-session lock).
+ * Returns null if no valid session, sessionId mismatch, or participant missing.
  */
 export async function getSessionParticipant(): Promise<ParticipantSession | null> {
-  const pid = await getSessionParticipantId();
-  if (!pid) return null;
+  const store = await cookies();
+  const c = store.get(COOKIE_NAME);
+  if (!c) return null;
+  const payload = verify(c.value);
+  if (!payload) return null;
   const { data, error } = await getSupabase()
     .from('participants')
-    .select('participant_id,pgy,arm,intake_complete,current_step,session_completed_at')
-    .eq('participant_id', pid)
+    .select(
+      'participant_id,pgy,arm,intake_complete,current_step,session_completed_at,active_session_id'
+    )
+    .eq('participant_id', payload.participantId)
     .maybeSingle();
   if (error || !data) return null;
+  if (data.active_session_id && data.active_session_id !== payload.sessionId) {
+    // Another device has logged in since this cookie was issued.
+    return null;
+  }
   return {
     participantId: data.participant_id,
     pgy: data.pgy,
@@ -123,4 +145,10 @@ export async function getSessionParticipant(): Promise<ParticipantSession | null
     currentStep: data.current_step ?? null,
     sessionCompletedAt: data.session_completed_at ?? null,
   };
+}
+
+/** Convenience wrapper that only returns the participantId (or null). */
+export async function getSessionParticipantId(): Promise<string | null> {
+  const p = await getSessionParticipant();
+  return p?.participantId ?? null;
 }

@@ -56,8 +56,15 @@ export async function POST(req: NextRequest) {
   const idIdx = headers.indexOf('participant_id');
   const pgyIdx = headers.indexOf('pgy');
   const armIdx = headers.indexOf('arm');
+  const emailIdx = headers.indexOf('email'); // optional
 
-  const records: Array<{ participant_id: string; pgy: number; arm: 'AI' | 'CONTROL' }> = [];
+  type Record = {
+    participant_id: string;
+    pgy: number;
+    arm: 'AI' | 'CONTROL';
+    email?: string | null;
+  };
+  const records: Record[] = [];
   for (let i = 1; i < rows.length; i++) {
     const r = rows[i];
     if (r.every((c) => c.trim() === '')) continue;
@@ -82,7 +89,12 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    records.push({ participant_id: id, pgy, arm: arm as 'AI' | 'CONTROL' });
+    const rec: Record = { participant_id: id, pgy, arm: arm as 'AI' | 'CONTROL' };
+    if (emailIdx >= 0) {
+      const email = r[emailIdx]?.trim();
+      rec.email = email && email.length > 0 ? email : null;
+    }
+    records.push(rec);
   }
 
   if (records.length === 0) {

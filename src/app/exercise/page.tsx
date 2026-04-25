@@ -39,12 +39,18 @@ export default function ExercisePage() {
         setParticipantId(data.participantId);
         setArm(data.arm);
         const savedTask = sessionStorage.getItem('currentTask');
+        let resumeIdx = 0;
         if (savedTask) {
           const taskIdx = parseInt(savedTask, 10) - 1;
           if (taskIdx >= 0 && taskIdx < tasks.length) {
             setCurrentTaskIndex(taskIdx);
+            resumeIdx = taskIdx;
           }
         }
+        // Restore any draft from localStorage (per participant + task)
+        const draftKey = `taskDraft:${data.participantId}:${tasks[resumeIdx].number}`;
+        const draft = localStorage.getItem(draftKey);
+        if (draft) setResponse(draft);
         setTaskStartTime(new Date());
         setLoading(false);
       })
@@ -76,11 +82,32 @@ export default function ExercisePage() {
       // Continue even if save fails - don't block participant
     }
 
+    // Clear the draft for the task we just submitted.
+    if (typeof window !== 'undefined' && participantId) {
+      try {
+        localStorage.removeItem(`taskDraft:${participantId}:${task.number}`);
+      } catch {
+        // ignore
+      }
+    }
+
     if (currentTaskIndex < tasks.length - 1) {
       const nextIndex = currentTaskIndex + 1;
       setCurrentTaskIndex(nextIndex);
       sessionStorage.setItem('currentTask', String(nextIndex + 1));
-      setResponse('');
+      // Load draft for the next task if any.
+      let nextDraft = '';
+      if (typeof window !== 'undefined' && participantId) {
+        try {
+          nextDraft =
+            localStorage.getItem(
+              `taskDraft:${participantId}:${tasks[nextIndex].number}`
+            ) ?? '';
+        } catch {
+          nextDraft = '';
+        }
+      }
+      setResponse(nextDraft);
       setTaskStartTime(new Date());
     } else {
       sessionStorage.setItem('currentTask', 'assessment');
@@ -88,7 +115,7 @@ export default function ExercisePage() {
     }
 
     setSubmitting(false);
-  }, [task, response, taskStartTime, currentTaskIndex, router]);
+  }, [task, response, taskStartTime, currentTaskIndex, router, participantId]);
 
   if (loading || !participantId) {
     return (
@@ -191,7 +218,22 @@ export default function ExercisePage() {
 
               <textarea
                 value={response}
-                onChange={(e) => setResponse(e.target.value)}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setResponse(v);
+                  // Per-keystroke localStorage save so a browser crash doesn't
+                  // lose the draft. Cleared on submit.
+                  if (typeof window !== 'undefined' && participantId) {
+                    try {
+                      localStorage.setItem(
+                        `taskDraft:${participantId}:${task.number}`,
+                        v
+                      );
+                    } catch {
+                      // localStorage may be unavailable in private mode; ignore.
+                    }
+                  }
+                }}
                 placeholder="Type your response here..."
                 className="w-full h-64 px-4 py-3 border border-border rounded-lg text-sm resize-y focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary leading-relaxed"
               />

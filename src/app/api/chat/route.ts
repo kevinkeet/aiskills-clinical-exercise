@@ -19,7 +19,9 @@ export async function POST(req: NextRequest) {
     }
     const participantId = session.participantId;
 
-    const { messages, taskNumber } = await req.json();
+    const reqBody = await req.json();
+    const messages = reqBody.messages;
+    const taskNumber = reqBody.taskNumber;
 
     if (!messages || !Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: 'Missing messages' }), {

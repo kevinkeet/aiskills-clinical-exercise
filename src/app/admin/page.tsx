@@ -2,6 +2,20 @@
 
 import { useState } from 'react';
 
+interface Participant {
+  participant_id: string;
+  pgy?: number;
+  arm?: string;
+  email?: string | null;
+  consent_at?: string | null;
+  intake_complete?: boolean;
+  intake_completed_at?: string | null;
+  session_started_at?: string | null;
+  session_completed_at?: string | null;
+  current_step?: string | null;
+  created_at: string;
+}
+
 interface Stats {
   totalParticipants: number;
   intakeCompleteCount?: number;
@@ -9,14 +23,17 @@ interface Stats {
   controlGroupCount: number;
   completedCount: number;
   avgTimeByTask: Record<number, number>;
-  recentParticipants: {
-    participant_id: string;
-    pgy?: number;
-    arm?: string;
-    intake_complete?: boolean;
-    created_at: string;
-  }[];
+  recentParticipants: Participant[];
 }
+
+const EXPORT_TYPES: { type: string; label: string }[] = [
+  { type: 'all', label: 'Participants' },
+  { type: 'intake', label: 'Intake Responses' },
+  { type: 'tasks', label: 'Task Responses' },
+  { type: 'assessment', label: 'Assessment Responses' },
+  { type: 'chat', label: 'Chat Logs' },
+  { type: 'mailmerge', label: 'Mail-merge CSV' },
+];
 
 export default function AdminPage() {
   const [password, setPassword] = useState('');
@@ -24,29 +41,27 @@ export default function AdminPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resettingId, setResettingId] = useState<string | null>(null);
+  const [resetMsg, setResetMsg] = useState('');
 
   async function authenticate() {
     setLoading(true);
     setError('');
-
     try {
       const res = await fetch('/api/admin/stats', {
         headers: { 'x-admin-password': password },
       });
-
       if (!res.ok) {
         setError('Invalid password');
         setLoading(false);
         return;
       }
-
       const data = await res.json();
       setStats(data);
       setAuthenticated(true);
     } catch {
       setError('Connection error');
     }
-
     setLoading(false);
   }
 
@@ -65,17 +80,47 @@ export default function AdminPage() {
 
   function downloadCSV(type: string) {
     const url = `/api/admin/export?type=${type}`;
-    const link = document.createElement('a');
-    // Use fetch with auth header
     fetch(url, { headers: { 'x-admin-password': password } })
       .then((res) => res.blob())
       .then((blob) => {
         const blobUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
         link.href = blobUrl;
         link.download = `${type}.csv`;
         link.click();
         URL.revokeObjectURL(blobUrl);
       });
+  }
+
+  async function resetParticipant(pid: string) {
+    const confirmed = window.confirm(
+      `Reset ${pid}? This wipes all responses (intake, tasks, assessment, chat) ` +
+        `and lets the participant start over with the same arm assignment. This cannot be undone.`
+    );
+    if (!confirmed) return;
+    setResettingId(pid);
+    setResetMsg('');
+    try {
+      const res = await fetch('/api/admin/reset-participant', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-password': password,
+        },
+        body: JSON.stringify({ participantId: pid }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setResetMsg(`Reset failed: ${body.error ?? `HTTP ${res.status}`}`);
+      } else {
+        setResetMsg(`Reset ${pid}.`);
+        await refreshStats();
+      }
+    } catch (e) {
+      setResetMsg(`Reset failed: ${e instanceof Error ? e.message : 'unknown'}`);
+    }
+    setResettingId(null);
+    setTimeout(() => setResetMsg(''), 5000);
   }
 
   if (!authenticated) {
@@ -93,9 +138,7 @@ export default function AdminPage() {
             placeholder="Enter admin password"
             className="w-full px-4 py-2.5 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 mb-3"
           />
-          {error && (
-            <div className="text-red-600 text-sm mb-3">{error}</div>
-          )}
+          {error && <div className="text-red-600 text-sm mb-3">{error}</div>}
           <button
             onClick={authenticate}
             disabled={loading}
@@ -120,12 +163,20 @@ export default function AdminPage() {
         </button>
       </div>
 
-      <div className="max-w-5xl mx-auto p-6 space-y-6">
+      <div className="max-w-6xl mx-auto p-6 space-y-6">
+        {resetMsg && (
+          <div className="bg-amber-50 border border-amber-200 text-amber-900 text-sm px-4 py-2 rounded-lg">
+            {resetMsg}
+          </div>
+        )}
+
         {/* Stats cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <StatCard label="Seeded" value={stats?.totalParticipants || 0} />
           <StatCard
-            label="Total Participants"
-            value={stats?.totalParticipants || 0}
+            label="Intake Complete"
+            value={stats?.intakeCompleteCount || 0}
+            color="blue"
           />
           <StatCard
             label="AI Group"
@@ -138,7 +189,7 @@ export default function AdminPage() {
             color="emerald"
           />
           <StatCard
-            label="Completed"
+            label="Fully Completed"
             value={stats?.completedCount || 0}
             color="amber"
           />
@@ -149,7 +200,7 @@ export default function AdminPage() {
           <h2 className="font-semibold text-foreground mb-3">
             Average Time per Task
           </h2>
-          <div className="grid grid-cols-6 gap-3">
+          <div className="grid grid-cols-5 gap-3">
             {[1, 2, 3, 4, 5].map((t) => {
               const secs = stats?.avgTimeByTask?.[t] || 0;
               const mins = Math.floor(secs / 60);
@@ -171,20 +222,20 @@ export default function AdminPage() {
 
         {/* Export buttons */}
         <div className="bg-card rounded-xl border border-border p-5">
-          <h2 className="font-semibold text-foreground mb-3">Export Data</h2>
-          <div className="flex flex-wrap gap-3">
-            {[
-              { type: 'all', label: 'Participants' },
-              { type: 'tasks', label: 'Task Responses' },
-              { type: 'assessment', label: 'Assessment Responses' },
-              { type: 'chat', label: 'Chat Logs' },
-            ].map(({ type, label }) => (
+          <h2 className="font-semibold text-foreground mb-1">Export Data</h2>
+          <p className="text-xs text-muted mb-3">
+            Mail-merge CSV is the coordinator&apos;s starting point for sending
+            P-NNN values to residents. Intake CSV flattens demographics +
+            self-rated familiarity for analysis.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {EXPORT_TYPES.map(({ type, label }) => (
               <button
                 key={type}
                 onClick={() => downloadCSV(type)}
-                className="px-4 py-2 bg-slate-100 text-foreground rounded-lg text-sm font-medium hover:bg-slate-200 transition-colors"
+                className="px-3 py-2 bg-slate-100 text-foreground rounded-lg text-sm font-medium hover:bg-slate-200 transition-colors"
               >
-                Download {label} CSV
+                Download {label}
               </button>
             ))}
           </div>
@@ -196,50 +247,74 @@ export default function AdminPage() {
             Recent Participants
           </h2>
           {stats?.recentParticipants && stats.recentParticipants.length > 0 ? (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-muted border-b border-border">
-                  <th className="pb-2 font-medium">Participant ID</th>
-                  <th className="pb-2 font-medium">PGY</th>
-                  <th className="pb-2 font-medium">Arm</th>
-                  <th className="pb-2 font-medium">Intake</th>
-                  <th className="pb-2 font-medium">Created</th>
-                </tr>
-              </thead>
-              <tbody>
-                {stats.recentParticipants.map((p) => (
-                  <tr
-                    key={p.participant_id}
-                    className="border-b border-border/50"
-                  >
-                    <td className="py-2 font-mono text-xs">
-                      {p.participant_id}
-                    </td>
-                    <td className="py-2 text-xs">{p.pgy ?? '—'}</td>
-                    <td className="py-2">
-                      <span
-                        className={`text-xs px-2 py-0.5 rounded-full ${
-                          p.arm === 'AI'
-                            ? 'bg-blue-100 text-blue-700'
-                            : 'bg-emerald-100 text-emerald-700'
-                        }`}
-                      >
-                        {p.arm ?? '—'}
-                      </span>
-                    </td>
-                    <td className="py-2 text-xs">
-                      {p.intake_complete ? '✓' : '—'}
-                    </td>
-                    <td className="py-2 text-xs text-muted">
-                      {new Date(p.created_at).toLocaleString()}
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-muted border-b border-border">
+                    <th className="pb-2 font-medium pr-3">ID</th>
+                    <th className="pb-2 font-medium pr-3">PGY</th>
+                    <th className="pb-2 font-medium pr-3">Arm</th>
+                    <th className="pb-2 font-medium pr-3">Step</th>
+                    <th className="pb-2 font-medium pr-3">Intake</th>
+                    <th className="pb-2 font-medium pr-3">Done</th>
+                    <th className="pb-2 font-medium pr-3">Created</th>
+                    <th className="pb-2 font-medium">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {stats.recentParticipants.map((p) => (
+                    <tr
+                      key={p.participant_id}
+                      className="border-b border-border/50"
+                    >
+                      <td className="py-2 pr-3 font-mono text-xs">
+                        {p.participant_id}
+                      </td>
+                      <td className="py-2 pr-3 text-xs">{p.pgy ?? '—'}</td>
+                      <td className="py-2 pr-3">
+                        <span
+                          className={`text-xs px-2 py-0.5 rounded-full ${
+                            p.arm === 'AI'
+                              ? 'bg-blue-100 text-blue-700'
+                              : 'bg-emerald-100 text-emerald-700'
+                          }`}
+                        >
+                          {p.arm ?? '—'}
+                        </span>
+                      </td>
+                      <td className="py-2 pr-3 text-xs text-muted">
+                        {p.current_step ?? 'consent'}
+                      </td>
+                      <td className="py-2 pr-3 text-xs">
+                        {p.intake_complete ? '✓' : '—'}
+                      </td>
+                      <td className="py-2 pr-3 text-xs">
+                        {p.session_completed_at ? '✓' : '—'}
+                      </td>
+                      <td className="py-2 pr-3 text-xs text-muted">
+                        {new Date(p.created_at).toLocaleString()}
+                      </td>
+                      <td className="py-2">
+                        <button
+                          onClick={() => resetParticipant(p.participant_id)}
+                          disabled={resettingId === p.participant_id}
+                          className="text-xs text-red-600 hover:text-red-800 hover:underline disabled:opacity-40"
+                        >
+                          {resettingId === p.participant_id ? 'Resetting…' : 'Reset'}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           ) : (
             <p className="text-sm text-muted">No participants yet.</p>
           )}
+          <p className="text-xs text-muted mt-3">
+            Showing the 10 most recently created. Use the Mail-merge CSV
+            export to see all participants.
+          </p>
         </div>
       </div>
     </div>
@@ -260,7 +335,6 @@ function StatCard({
     emerald: 'bg-emerald-50 border-emerald-200',
     amber: 'bg-amber-50 border-amber-200',
   };
-
   return (
     <div
       className={`rounded-xl border p-4 ${

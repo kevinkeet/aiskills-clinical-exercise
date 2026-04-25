@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSupabase } from '@/lib/supabase';
 import { getSessionParticipantId } from '@/lib/session';
 
+/**
+ * Stores assessment answers (upsert by participant_id + question_number).
+ *
+ * - Per-answer autosave: { answers: [{ questionNumber, selectedAnswer, ... }] }
+ * - Final submit: { answers: [...all], totalTimeSeconds, final: true }
+ *
+ * Only the final submit (`final: true`) marks session_completed_at and
+ * sets current_step = 'done'. Autosaves only persist the row.
+ */
 export async function POST(req: NextRequest) {
   const participantId = await getSessionParticipantId();
   if (!participantId) {
@@ -15,6 +24,7 @@ export async function POST(req: NextRequest) {
       timeSpentSeconds?: number;
     }>;
     totalTimeSeconds?: number;
+    final?: boolean;
   };
   try {
     body = await req.json();
@@ -41,14 +51,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const updates: Record<string, unknown> = {
-    session_completed_at: new Date().toISOString(),
-    current_step: 'done',
-  };
-  if (typeof body.totalTimeSeconds === 'number') {
-    updates.assessment_time_seconds = body.totalTimeSeconds;
+  if (body.final) {
+    const updates: Record<string, unknown> = {
+      session_completed_at: new Date().toISOString(),
+      current_step: 'done',
+    };
+    if (typeof body.totalTimeSeconds === 'number') {
+      updates.assessment_time_seconds = body.totalTimeSeconds;
+    }
+    await sb.from('participants').update(updates).eq('participant_id', participantId);
   }
-  await sb.from('participants').update(updates).eq('participant_id', participantId);
 
   return NextResponse.json({ success: true });
 }

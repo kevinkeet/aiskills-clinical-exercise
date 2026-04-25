@@ -147,6 +147,10 @@ export default function ChatSidebar({
           Ask anything
         </div>
       </div>
+      <div className="px-3 py-1.5 bg-amber-50 border-b border-amber-100 text-[11px] text-amber-800 leading-tight">
+        Do not enter real patient identifiers (names, MRNs, dates of birth, etc.) in this chat. The
+        case patient is fictional.
+      </div>
 
       <div className="flex-1 overflow-y-auto p-3 space-y-3">
         {messages.length === 0 && (

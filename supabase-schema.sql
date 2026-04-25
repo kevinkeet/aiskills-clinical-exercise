@@ -17,6 +17,7 @@ create table participants (
   participant_id        text primary key,
   pgy                   integer not null check (pgy in (1, 2, 3)),
   arm                   text not null check (arm in ('AI', 'CONTROL')),
+  email                 text,        -- optional, for coordinator mailmerge only
   created_at            timestamptz default now(),
   consent_at            timestamptz,
   intake_completed_at   timestamptz,
@@ -27,7 +28,11 @@ create table participants (
                           check (current_step in
                             ('consent','enrollment','demographics',
                              'fabryPretest','case','assessment','done')),
-  assessment_time_seconds integer
+  assessment_time_seconds integer,
+  -- Single-active-session token. Rotated on each /api/intake/lookup so that
+  -- if the participant logs in from a second device, the first session
+  -- becomes invalid (the cookie's sessionId no longer matches this column).
+  active_session_id     text
 );
 
 -- intake_responses: demographics + self-rated familiarity. One row per participant.
