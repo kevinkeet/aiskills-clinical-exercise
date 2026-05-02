@@ -25,9 +25,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }
   const pid = body.participantId?.trim().toUpperCase();
-  if (!pid || !/^P-\d{1,4}$/.test(pid)) {
+  if (!pid || !/^[A-Z][A-Z0-9-]{1,15}$/.test(pid)) {
     return NextResponse.json(
-      { error: 'participantId must be in the format P-NNN' },
+      { error: 'participantId must be a 2–16 character upper-case alphanumeric/dash identifier (e.g., P-001 or AI)' },
       { status: 400 }
     );
   }

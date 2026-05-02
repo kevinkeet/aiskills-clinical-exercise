@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSupabase } from '@/lib/supabase';
 import { setSessionCookie } from '@/lib/session';
 
-const ENROLLMENT_RE = /^P-\d{1,4}$/;
+// Accept the canonical "P-NNN" format used for real recruits, plus
+// alphanumeric test IDs like "AI" or "CONTROL". Normalised to upper
+// case at the call site, so the regex only needs to match upper case.
+const ENROLLMENT_RE = /^[A-Z][A-Z0-9-]{1,15}$/;
 
 export async function POST(req: NextRequest) {
   let body: { enrollmentNumber?: string; consentTimestamp?: string };

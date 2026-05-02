@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
     const id = r[idIdx]?.trim().toUpperCase();
     const pgy = parseInt(r[pgyIdx]?.trim() ?? '', 10);
     const arm = r[armIdx]?.trim().toUpperCase();
-    if (!/^P-\d{1,4}$/.test(id ?? '')) {
+    if (!/^[A-Z][A-Z0-9-]{1,15}$/.test(id ?? '')) {
       return NextResponse.json(
         { error: `Row ${i + 1}: invalid participant_id "${r[idIdx]}"` },
         { status: 400 }

@@ -114,7 +114,10 @@ export default function IntakePage() {
   async function handleEnrollmentSubmit(e: React.FormEvent) {
     e.preventDefault();
     const normalized = enrollmentNumber.trim().toUpperCase();
-    if (!/^P-\d{1,4}$/.test(normalized)) {
+    // Permissive enough to also accept the AI/CONTROL test IDs; real
+    // recruits always get a P-NNN, so the user-facing helper text still
+    // describes that format.
+    if (!/^[A-Z][A-Z0-9-]{1,15}$/.test(normalized)) {
       setEnrollmentError('Enter your enrollment number in the format P-NNN.');
       return;
     }
