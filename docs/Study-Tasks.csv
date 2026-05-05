@@ -1,0 +1,6 @@
+Task #,Title,Prompt,Notes
+1,Additional History,"This patient has progressive CKD of unclear etiology, chronic neuropathic pain, and several other symptoms. Fabry disease is suspected. Based on the information provided, what additional history questions would you want to ask, and briefly explain your reasoning for each.",Free-response
+2,Physical Examination,"What physical exam maneuvers would be important for this patient and why?",Free-response
+3,Diagnostic Workup,"What laboratory tests, imaging, and other diagnostic studies would you order and why?",Free-response
+4,Next Steps in Management,"New findings from the physical exam and diagnostic workup have been added to the patient case panel above. The diagnosis of Fabry disease is confirmed. What would be your next steps in management?","Free-response. The patient case panel reveals additional findings (angiokeratomas, S4 gallop, cornea verticillata, low alpha-Gal A activity, elevated lyso-Gb3, hemizygous GLA pathogenic variant, low native T1 on cardiac MRI, etc.)"
+5,Patient Instructions,"Write after-visit patient instructions for this patient with newly diagnosed Fabry disease.",Free-response
