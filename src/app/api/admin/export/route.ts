@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabase } from '@/lib/supabase';
-import { questions, isMCQ } from '@/data/questions';
+import { isMCQ } from '@/data/questions';
+import { loadQuestions } from '@/lib/content';
 
 export async function GET(req: NextRequest) {
   const password = req.headers.get('x-admin-password');
@@ -40,6 +41,9 @@ export async function GET(req: NextRequest) {
       .select('*')
       .order('participant_id')
       .order('question_number');
+    // Load the current question set from DB so admin edits to correct
+    // answers flow through to the is_correct column.
+    const questions = await loadQuestions();
 
     // Add correct/incorrect column. Scale-type questions (e.g., the
     // post-test comfort rating Q13) have no right answer, so leave both

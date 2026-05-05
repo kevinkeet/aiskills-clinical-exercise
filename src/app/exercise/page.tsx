@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { tasks } from '@/data/tasks';
+import type { Task } from '@/data/tasks';
 import { additionalFindings, getCaseAsText } from '@/data/case';
 import CasePanel from '@/components/CasePanel';
 import ChatSidebar from '@/components/ChatSidebar';
@@ -16,6 +16,7 @@ export default function ExercisePage() {
   const router = useRouter();
   const [participantId, setParticipantId] = useState('');
   const [arm, setArm] = useState<Arm | ''>('');
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
   const [response, setResponse] = useState('');
   const [taskStartTime, setTaskStartTime] = useState<Date>(new Date());
@@ -24,30 +25,39 @@ export default function ExercisePage() {
   const [promptCopied, setPromptCopied] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Resolve arm from server-side session cookie. Never trust client storage.
+  // Resolve arm + load the (DB-backed) task list. Both must succeed before render.
   useEffect(() => {
     let cancelled = false;
-    fetch('/api/session/me')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
+    Promise.all([
+      fetch('/api/session/me').then((r) => (r.ok ? r.json() : null)),
+      fetch('/api/tasks').then((r) => (r.ok ? r.json() : { tasks: [] })),
+    ])
+      .then(([sessionData, tasksData]) => {
         if (cancelled) return;
-        if (!data?.authenticated || !data.intakeComplete) {
+        if (!sessionData?.authenticated || !sessionData.intakeComplete) {
           router.push('/intake');
           return;
         }
-        setParticipantId(data.participantId);
-        setArm(data.arm);
+        const loadedTasks: Task[] = tasksData.tasks ?? [];
+        if (loadedTasks.length === 0) {
+          // Hard error: tasks didn't load. Send to /intake rather than break.
+          router.push('/intake');
+          return;
+        }
+        setTasks(loadedTasks);
+        setParticipantId(sessionData.participantId);
+        setArm(sessionData.arm);
         const savedTask = sessionStorage.getItem('currentTask');
         let resumeIdx = 0;
         if (savedTask) {
           const taskIdx = parseInt(savedTask, 10) - 1;
-          if (taskIdx >= 0 && taskIdx < tasks.length) {
+          if (taskIdx >= 0 && taskIdx < loadedTasks.length) {
             setCurrentTaskIndex(taskIdx);
             resumeIdx = taskIdx;
           }
         }
         // Restore any draft from localStorage (per participant + task)
-        const draftKey = `taskDraft:${data.participantId}:${tasks[resumeIdx].number}`;
+        const draftKey = `taskDraft:${sessionData.participantId}:${loadedTasks[resumeIdx].number}`;
         const draft = localStorage.getItem(draftKey);
         if (draft) setResponse(draft);
         setTaskStartTime(new Date());
@@ -116,7 +126,7 @@ export default function ExercisePage() {
     setSubmitting(false);
   }, [task, response, taskStartTime, currentTaskIndex, router, participantId]);
 
-  if (loading || !participantId) {
+  if (loading || !participantId || !task) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-muted">Loading…</div>

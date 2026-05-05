@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import StudyContentEditor from '@/components/StudyContentEditor';
 
 interface Participant {
   participant_id: string;
@@ -236,6 +237,9 @@ export default function AdminPage() {
             <ArmQuizCard label="Control Group" stats={stats?.controlQuizStats} accent="emerald" />
           </div>
         </div>
+
+        {/* Study content editor (tasks + quiz questions) */}
+        <StudyContentEditor password={password} />
 
         {/* Avg time per task */}
         <div className="bg-card rounded-xl border border-border p-5">

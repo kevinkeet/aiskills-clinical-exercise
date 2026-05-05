@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabase } from '@/lib/supabase';
-import { questions, isMCQ } from '@/data/questions';
+import { isMCQ } from '@/data/questions';
+import { loadQuestions } from '@/lib/content';
 
 const POST_COMFORT_QNUM = 13;
 
@@ -46,6 +47,9 @@ export async function GET(req: NextRequest) {
   const { data: intakeRows } = await sb
     .from('intake_responses')
     .select('participant_id,fabry_pretest');
+
+  // Load questions from DB so admin edits are reflected in scoring.
+  const questions = await loadQuestions();
 
   const aiCount = participants?.filter((p) => p.arm === 'AI').length || 0;
   const controlCount = participants?.filter((p) => p.arm === 'CONTROL').length || 0;

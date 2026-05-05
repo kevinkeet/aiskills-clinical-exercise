@@ -75,6 +75,35 @@ create table chat_logs (
   created_at timestamptz default now()
 );
 
+-- Editable study content. Auto-seeded with src/data/tasks.ts and
+-- src/data/questions.ts on first GET; overridden by admin edits.
+create table tasks (
+  number int primary key check (number between 1 and 5),
+  title text not null,
+  prompt text not null,
+  show_additional_findings boolean not null default false,
+  min_chars int not null default 200,
+  updated_at timestamptz not null default now()
+);
+
+create table quiz_questions (
+  number int primary key check (number between 1 and 13),
+  type text not null check (type in ('mcq','scale')),
+  text text not null,
+  option_a text,
+  option_b text,
+  option_c text,
+  option_d text,
+  correct_answer text check (correct_answer is null or correct_answer in ('A','B','C','D')),
+  scale_min int,
+  scale_max int,
+  scale_min_label text,
+  scale_max_label text,
+  task_domain text,
+  notes text,
+  updated_at timestamptz not null default now()
+);
+
 -- RLS: enabled, but allow all because writes go through the service via the anon key
 -- and all sensitive endpoints are gated server-side.
 alter table participants enable row level security;
@@ -82,9 +111,13 @@ alter table intake_responses enable row level security;
 alter table task_responses enable row level security;
 alter table assessment_responses enable row level security;
 alter table chat_logs enable row level security;
+alter table tasks enable row level security;
+alter table quiz_questions enable row level security;
 
 create policy "Allow all on participants" on participants for all using (true) with check (true);
 create policy "Allow all on intake_responses" on intake_responses for all using (true) with check (true);
 create policy "Allow all on task_responses" on task_responses for all using (true) with check (true);
 create policy "Allow all on assessment_responses" on assessment_responses for all using (true) with check (true);
 create policy "Allow all on chat_logs" on chat_logs for all using (true) with check (true);
+create policy "Allow all on tasks" on tasks for all using (true) with check (true);
+create policy "Allow all on quiz_questions" on quiz_questions for all using (true) with check (true);

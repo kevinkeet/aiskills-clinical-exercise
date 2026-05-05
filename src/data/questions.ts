@@ -56,7 +56,12 @@ export function isMCQ(q: Question): q is MCQQuestion {
   return !q.type || q.type === 'mcq';
 }
 
-export const questions: Question[] = [
+/**
+ * Defaults seeded into the `quiz_questions` Supabase table on first read.
+ * The runtime source of truth is the database (editable from /admin).
+ * Use src/lib/content.ts → loadQuestions() to read questions at runtime.
+ */
+export const defaultQuestions: Question[] = [
   // --- TASK 1: HISTORY (Q1–Q3) ---
   {
     number: 1,

@@ -2,11 +2,12 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { questions, isMCQ } from '@/data/questions';
+import { isMCQ, type Question } from '@/data/questions';
 
 export default function AssessmentPage() {
   const router = useRouter();
   const [participantId, setParticipantId] = useState('');
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -19,15 +20,23 @@ export default function AssessmentPage() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch('/api/session/me')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
+    Promise.all([
+      fetch('/api/session/me').then((r) => (r.ok ? r.json() : null)),
+      fetch('/api/questions').then((r) => (r.ok ? r.json() : { questions: [] })),
+    ])
+      .then(([sessionData, questionsData]) => {
         if (cancelled) return;
-        if (!data?.authenticated) {
+        if (!sessionData?.authenticated) {
           router.push('/intake');
           return;
         }
-        setParticipantId(data.participantId);
+        const loaded: Question[] = questionsData.questions ?? [];
+        if (loaded.length === 0) {
+          router.push('/intake');
+          return;
+        }
+        setQuestions(loaded);
+        setParticipantId(sessionData.participantId);
       })
       .catch(() => router.push('/intake'));
     return () => {
@@ -122,7 +131,7 @@ export default function AssessmentPage() {
     router.push('/complete');
   }
 
-  if (!participantId) {
+  if (!participantId || questions.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-muted">Loading…</div>

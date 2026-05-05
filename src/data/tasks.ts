@@ -6,7 +6,12 @@ export interface Task {
   showAdditionalFindings?: boolean;
 }
 
-export const tasks: Task[] = [
+/**
+ * Defaults seeded into the `tasks` Supabase table on first read.
+ * The runtime source of truth is the database (editable from /admin).
+ * Use src/lib/content.ts → loadTasks() to read tasks at runtime.
+ */
+export const defaultTasks: Task[] = [
   {
     number: 1,
     title: 'Additional History',
