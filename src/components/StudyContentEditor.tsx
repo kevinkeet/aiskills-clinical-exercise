@@ -6,13 +6,18 @@ import type { Question, MCQQuestion, ScaleQuestion } from '@/data/questions';
 import { isMCQ } from '@/data/questions';
 
 /**
- * Inline editor for study tasks (5) and quiz questions (13). Lives inside
- * the admin dashboard.
+ * Inline editor for study tasks and quiz questions. Lives inside the
+ * admin dashboard.
  *
- * - Lists each item; click "Edit" to expand an inline form.
- * - Saving POSTs to /api/admin/tasks or /api/admin/questions with the
- *   admin password. On success the list refreshes from /api/tasks /
- *   /api/questions so what you see matches what participants will see.
+ * Features:
+ * - Edit any existing item (POST to /api/admin/{tasks,questions}).
+ * - Delete any existing item (DELETE to /api/admin/{tasks,questions}).
+ *   Existing participant responses for the deleted item are preserved
+ *   in the database; the assessment_responses CSV simply leaves
+ *   correct_answer blank for orphan rows.
+ * - Add a new task or quiz question. The next free integer is assigned
+ *   automatically. New items live as a "pending draft" until saved —
+ *   cancelling discards them without touching the database.
  */
 export default function StudyContentEditor({ password }: { password: string }) {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -20,6 +25,8 @@ export default function StudyContentEditor({ password }: { password: string }) {
   const [loading, setLoading] = useState(true);
   const [editingTask, setEditingTask] = useState<number | null>(null);
   const [editingQuestion, setEditingQuestion] = useState<number | null>(null);
+  const [pendingNewTask, setPendingNewTask] = useState<Task | null>(null);
+  const [pendingNewQuestion, setPendingNewQuestion] = useState<Question | null>(null);
   const [statusMsg, setStatusMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -47,6 +54,11 @@ export default function StudyContentEditor({ password }: { password: string }) {
     refresh();
   }, []);
 
+  function flashStatus(msg: string) {
+    setStatusMsg(msg);
+    setTimeout(() => setStatusMsg(''), 4000);
+  }
+
   async function saveTask(t: Task) {
     setStatusMsg('');
     setErrorMsg('');
@@ -64,9 +76,8 @@ export default function StudyContentEditor({ password }: { password: string }) {
         setErrorMsg(body.error ?? `HTTP ${res.status}`);
         return false;
       }
-      setStatusMsg(`Task ${t.number} saved.`);
+      flashStatus(`Task ${t.number} saved.`);
       await refresh();
-      setTimeout(() => setStatusMsg(''), 4000);
       return true;
     } catch (e) {
       setErrorMsg(e instanceof Error ? e.message : 'Save failed');
@@ -91,14 +102,110 @@ export default function StudyContentEditor({ password }: { password: string }) {
         setErrorMsg(body.error ?? `HTTP ${res.status}`);
         return false;
       }
-      setStatusMsg(`Question ${q.number} saved.`);
+      flashStatus(`Question ${q.number} saved.`);
       await refresh();
-      setTimeout(() => setStatusMsg(''), 4000);
       return true;
     } catch (e) {
       setErrorMsg(e instanceof Error ? e.message : 'Save failed');
       return false;
     }
+  }
+
+  async function deleteTask(number: number) {
+    if (
+      !window.confirm(
+        `Delete Task ${number}? Participant responses to this task will remain in the database, but no participant will see the task again. This cannot be undone.`
+      )
+    ) {
+      return;
+    }
+    setStatusMsg('');
+    setErrorMsg('');
+    try {
+      const res = await fetch(`/api/admin/tasks?number=${number}`, {
+        method: 'DELETE',
+        headers: { 'x-admin-password': password },
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setErrorMsg(body.error ?? `HTTP ${res.status}`);
+        return;
+      }
+      flashStatus(`Task ${number} deleted.`);
+      await refresh();
+    } catch (e) {
+      setErrorMsg(e instanceof Error ? e.message : 'Delete failed');
+    }
+  }
+
+  async function deleteQuestion(number: number) {
+    if (
+      !window.confirm(
+        `Delete Question ${number}? Existing participant answers for this question will remain in the database. This cannot be undone.`
+      )
+    ) {
+      return;
+    }
+    setStatusMsg('');
+    setErrorMsg('');
+    try {
+      const res = await fetch(`/api/admin/questions?number=${number}`, {
+        method: 'DELETE',
+        headers: { 'x-admin-password': password },
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setErrorMsg(body.error ?? `HTTP ${res.status}`);
+        return;
+      }
+      flashStatus(`Question ${number} deleted.`);
+      await refresh();
+    } catch (e) {
+      setErrorMsg(e instanceof Error ? e.message : 'Delete failed');
+    }
+  }
+
+  function startAddTask() {
+    const nextN = Math.max(0, ...tasks.map((t) => t.number)) + 1;
+    setEditingTask(null);
+    setPendingNewTask({
+      number: nextN,
+      title: '',
+      prompt: '',
+      minChars: 200,
+      showAdditionalFindings: false,
+    });
+  }
+
+  function startAddMCQ() {
+    const nextN = Math.max(0, ...questions.map((q) => q.number)) + 1;
+    setEditingQuestion(null);
+    setPendingNewQuestion({
+      number: nextN,
+      type: 'mcq',
+      text: '',
+      options: [
+        { label: 'A', value: '' },
+        { label: 'B', value: '' },
+        { label: 'C', value: '' },
+        { label: 'D', value: '' },
+      ],
+      correctAnswer: 'A',
+    });
+  }
+
+  function startAddScale() {
+    const nextN = Math.max(0, ...questions.map((q) => q.number)) + 1;
+    setEditingQuestion(null);
+    setPendingNewQuestion({
+      number: nextN,
+      type: 'scale',
+      text: '',
+      min: 0,
+      max: 10,
+      minLabel: 'Not at all',
+      maxLabel: 'Very',
+    });
   }
 
   return (
@@ -108,7 +215,8 @@ export default function StudyContentEditor({ password }: { password: string }) {
           <h2 className="font-semibold text-foreground">Study Content</h2>
           <p className="text-xs text-muted">
             Edits go live immediately for participants who load /exercise or
-            /assessment after the save completes.
+            /assessment after the save completes. Deletions preserve any
+            existing participant responses.
           </p>
         </div>
         <button
@@ -131,6 +239,7 @@ export default function StudyContentEditor({ password }: { password: string }) {
         </div>
       )}
 
+      {/* Tasks */}
       <details open className="mb-4 group">
         <summary className="cursor-pointer text-sm font-semibold text-foreground py-2 select-none">
           Tasks ({tasks.length})
@@ -144,17 +253,44 @@ export default function StudyContentEditor({ password }: { password: string }) {
               onEdit={() => {
                 setEditingTask(t.number);
                 setEditingQuestion(null);
+                setPendingNewTask(null);
               }}
               onCancel={() => setEditingTask(null)}
+              onDelete={() => deleteTask(t.number)}
               onSave={async (next) => {
                 const ok = await saveTask(next);
                 if (ok) setEditingTask(null);
               }}
             />
           ))}
+          {pendingNewTask && (
+            <TaskRow
+              task={pendingNewTask}
+              isNew
+              editing
+              onEdit={() => {}}
+              onCancel={() => setPendingNewTask(null)}
+              onDelete={() => setPendingNewTask(null)}
+              onSave={async (next) => {
+                const ok = await saveTask(next);
+                if (ok) setPendingNewTask(null);
+              }}
+            />
+          )}
+          <div className="pt-1">
+            <button
+              type="button"
+              onClick={startAddTask}
+              disabled={!!pendingNewTask}
+              className="text-xs px-3 py-1.5 border border-dashed border-border rounded text-muted hover:text-primary hover:border-primary disabled:opacity-40"
+            >
+              + Add task
+            </button>
+          </div>
         </div>
       </details>
 
+      {/* Questions */}
       <details open className="group">
         <summary className="cursor-pointer text-sm font-semibold text-foreground py-2 select-none">
           Quiz Questions ({questions.length})
@@ -168,14 +304,48 @@ export default function StudyContentEditor({ password }: { password: string }) {
               onEdit={() => {
                 setEditingQuestion(q.number);
                 setEditingTask(null);
+                setPendingNewQuestion(null);
               }}
               onCancel={() => setEditingQuestion(null)}
+              onDelete={() => deleteQuestion(q.number)}
               onSave={async (next) => {
                 const ok = await saveQuestion(next);
                 if (ok) setEditingQuestion(null);
               }}
             />
           ))}
+          {pendingNewQuestion && (
+            <QuestionRow
+              question={pendingNewQuestion}
+              isNew
+              editing
+              onEdit={() => {}}
+              onCancel={() => setPendingNewQuestion(null)}
+              onDelete={() => setPendingNewQuestion(null)}
+              onSave={async (next) => {
+                const ok = await saveQuestion(next);
+                if (ok) setPendingNewQuestion(null);
+              }}
+            />
+          )}
+          <div className="pt-1 flex gap-2">
+            <button
+              type="button"
+              onClick={startAddMCQ}
+              disabled={!!pendingNewQuestion}
+              className="text-xs px-3 py-1.5 border border-dashed border-border rounded text-muted hover:text-primary hover:border-primary disabled:opacity-40"
+            >
+              + Add multiple-choice question
+            </button>
+            <button
+              type="button"
+              onClick={startAddScale}
+              disabled={!!pendingNewQuestion}
+              className="text-xs px-3 py-1.5 border border-dashed border-border rounded text-muted hover:text-primary hover:border-primary disabled:opacity-40"
+            >
+              + Add scale question
+            </button>
+          </div>
         </div>
       </details>
     </div>
@@ -187,14 +357,18 @@ export default function StudyContentEditor({ password }: { password: string }) {
 function TaskRow({
   task,
   editing,
+  isNew,
   onEdit,
   onCancel,
+  onDelete,
   onSave,
 }: {
   task: Task;
   editing: boolean;
+  isNew?: boolean;
   onEdit: () => void;
   onCancel: () => void;
+  onDelete: () => void;
   onSave: (t: Task) => Promise<void>;
 }) {
   const [draft, setDraft] = useState<Task>(task);
@@ -218,12 +392,17 @@ function TaskRow({
               {task.prompt}
             </p>
           </div>
-          <button
-            onClick={onEdit}
-            className="text-xs text-primary hover:underline whitespace-nowrap"
-          >
-            Edit
-          </button>
+          <div className="flex flex-col items-end gap-1.5 whitespace-nowrap">
+            <button onClick={onEdit} className="text-xs text-primary hover:underline">
+              Edit
+            </button>
+            <button
+              onClick={onDelete}
+              className="text-xs text-red-600 hover:text-red-800 hover:underline"
+            >
+              Delete
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -231,7 +410,9 @@ function TaskRow({
 
   return (
     <div className="border-2 border-primary rounded-lg p-3 bg-blue-50/30">
-      <div className="text-xs text-muted mb-2">Editing Task {task.number}</div>
+      <div className="text-xs text-muted mb-2">
+        {isNew ? `Adding new Task (number ${task.number})` : `Editing Task ${task.number}`}
+      </div>
       <label className="block text-xs font-semibold text-foreground mb-1">Title</label>
       <input
         type="text"
@@ -271,17 +452,14 @@ function TaskRow({
         </label>
       </div>
       <div className="flex items-center justify-end gap-2">
-        <button
-          onClick={onCancel}
-          className="px-3 py-1.5 text-xs text-muted hover:text-foreground"
-        >
+        <button onClick={onCancel} className="px-3 py-1.5 text-xs text-muted hover:text-foreground">
           Cancel
         </button>
         <button
           onClick={() => onSave(draft)}
           className="px-3 py-1.5 text-xs bg-primary text-white rounded hover:bg-primary-dark"
         >
-          Save
+          {isNew ? 'Add task' : 'Save'}
         </button>
       </div>
     </div>
@@ -293,14 +471,18 @@ function TaskRow({
 function QuestionRow({
   question,
   editing,
+  isNew,
   onEdit,
   onCancel,
+  onDelete,
   onSave,
 }: {
   question: Question;
   editing: boolean;
+  isNew?: boolean;
   onEdit: () => void;
   onCancel: () => void;
+  onDelete: () => void;
   onSave: (q: Question) => Promise<void>;
 }) {
   const [draft, setDraft] = useState<Question>(question);
@@ -324,12 +506,17 @@ function QuestionRow({
             </div>
             <p className="text-sm text-foreground line-clamp-2">{question.text}</p>
           </div>
-          <button
-            onClick={onEdit}
-            className="text-xs text-primary hover:underline whitespace-nowrap"
-          >
-            Edit
-          </button>
+          <div className="flex flex-col items-end gap-1.5 whitespace-nowrap">
+            <button onClick={onEdit} className="text-xs text-primary hover:underline">
+              Edit
+            </button>
+            <button
+              onClick={onDelete}
+              className="text-xs text-red-600 hover:text-red-800 hover:underline"
+            >
+              Delete
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -338,7 +525,9 @@ function QuestionRow({
   return (
     <div className="border-2 border-primary rounded-lg p-3 bg-blue-50/30">
       <div className="text-xs text-muted mb-2">
-        Editing Q{question.number} ({draft.type === 'scale' ? 'scale' : 'mcq'})
+        {isNew
+          ? `Adding new Q${draft.number} (${draft.type === 'scale' ? 'scale' : 'mcq'})`
+          : `Editing Q${question.number} (${draft.type === 'scale' ? 'scale' : 'mcq'})`}
       </div>
       <label className="block text-xs font-semibold text-foreground mb-1">
         Question text
@@ -357,17 +546,14 @@ function QuestionRow({
       )}
 
       <div className="flex items-center justify-end gap-2 mt-3">
-        <button
-          onClick={onCancel}
-          className="px-3 py-1.5 text-xs text-muted hover:text-foreground"
-        >
+        <button onClick={onCancel} className="px-3 py-1.5 text-xs text-muted hover:text-foreground">
           Cancel
         </button>
         <button
           onClick={() => onSave(draft)}
           className="px-3 py-1.5 text-xs bg-primary text-white rounded hover:bg-primary-dark"
         >
-          Save
+          {isNew ? 'Add question' : 'Save'}
         </button>
       </div>
     </div>
@@ -383,9 +569,7 @@ function MCQEditor({
 }) {
   return (
     <div className="space-y-2">
-      <label className="block text-xs font-semibold text-foreground mb-1">
-        Options
-      </label>
+      <label className="block text-xs font-semibold text-foreground mb-1">Options</label>
       {(['A', 'B', 'C', 'D'] as const).map((label) => {
         const opt = draft.options.find((o) => o.label === label);
         const value = opt?.value ?? '';

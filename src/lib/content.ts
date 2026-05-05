@@ -42,18 +42,21 @@ function taskToInsertRow(t: Task): TaskRow {
   };
 }
 
+/**
+ * Only-if-empty auto-seed. We never re-insert deleted rows, so admin
+ * deletions persist across reloads. The defaults are written exactly
+ * once: when the table is freshly created and contains no rows.
+ */
 async function ensureTasksSeeded(): Promise<void> {
   const sb = getSupabase();
-  const { data, error } = await sb.from('tasks').select('number');
+  const { count, error } = await sb
+    .from('tasks')
+    .select('*', { count: 'exact', head: true });
   if (error) throw new Error(`tasks read failed: ${error.message}`);
-  const seeded = new Set((data ?? []).map((r) => r.number));
-  const missing = defaultTasks
-    .filter((t) => !seeded.has(t.number))
-    .map(taskToInsertRow);
-  if (missing.length === 0) return;
+  if ((count ?? 0) > 0) return;
   const { error: insErr } = await sb
     .from('tasks')
-    .upsert(missing, { onConflict: 'number' });
+    .insert(defaultTasks.map(taskToInsertRow));
   if (insErr) throw new Error(`tasks seed failed: ${insErr.message}`);
 }
 
@@ -74,6 +77,27 @@ export async function upsertTask(t: Task): Promise<void> {
     .from('tasks')
     .upsert(row, { onConflict: 'number' });
   if (error) throw new Error(`task upsert failed: ${error.message}`);
+}
+
+/** Delete one task by number. Existing task_responses keep their data. */
+export async function deleteTask(number: number): Promise<void> {
+  const { error } = await getSupabase()
+    .from('tasks')
+    .delete()
+    .eq('number', number);
+  if (error) throw new Error(`task delete failed: ${error.message}`);
+}
+
+/** The smallest currently-unused task number, for "Add task". */
+export async function nextTaskNumber(): Promise<number> {
+  const { data, error } = await getSupabase()
+    .from('tasks')
+    .select('number')
+    .order('number', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw new Error(`tasks max read failed: ${error.message}`);
+  return ((data?.number ?? 0) as number) + 1;
 }
 
 // ---------------- Quiz questions ----------------
@@ -155,18 +179,17 @@ function questionToInsertRow(q: Question): Omit<QuizRow, 'task_domain' | 'notes'
   };
 }
 
+/** Only-if-empty auto-seed. See ensureTasksSeeded() for rationale. */
 async function ensureQuestionsSeeded(): Promise<void> {
   const sb = getSupabase();
-  const { data, error } = await sb.from('quiz_questions').select('number');
+  const { count, error } = await sb
+    .from('quiz_questions')
+    .select('*', { count: 'exact', head: true });
   if (error) throw new Error(`questions read failed: ${error.message}`);
-  const seeded = new Set((data ?? []).map((r) => r.number));
-  const missing = defaultQuestions
-    .filter((q) => !seeded.has(q.number))
-    .map(questionToInsertRow);
-  if (missing.length === 0) return;
+  if ((count ?? 0) > 0) return;
   const { error: insErr } = await sb
     .from('quiz_questions')
-    .upsert(missing, { onConflict: 'number' });
+    .insert(defaultQuestions.map(questionToInsertRow));
   if (insErr) throw new Error(`questions seed failed: ${insErr.message}`);
 }
 
@@ -190,4 +213,25 @@ export async function upsertQuestion(q: Question): Promise<void> {
     .from('quiz_questions')
     .upsert(row, { onConflict: 'number' });
   if (error) throw new Error(`question upsert failed: ${error.message}`);
+}
+
+/** Delete one question by number. Existing assessment_responses survive. */
+export async function deleteQuestion(number: number): Promise<void> {
+  const { error } = await getSupabase()
+    .from('quiz_questions')
+    .delete()
+    .eq('number', number);
+  if (error) throw new Error(`question delete failed: ${error.message}`);
+}
+
+/** The smallest currently-unused question number, for "Add question". */
+export async function nextQuestionNumber(): Promise<number> {
+  const { data, error } = await getSupabase()
+    .from('quiz_questions')
+    .select('number')
+    .order('number', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw new Error(`questions max read failed: ${error.message}`);
+  return ((data?.number ?? 0) as number) + 1;
 }

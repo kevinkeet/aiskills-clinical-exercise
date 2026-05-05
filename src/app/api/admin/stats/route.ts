@@ -3,8 +3,6 @@ import { getSupabase } from '@/lib/supabase';
 import { isMCQ } from '@/data/questions';
 import { loadQuestions } from '@/lib/content';
 
-const POST_COMFORT_QNUM = 13;
-
 interface ArmQuizStats {
   arm: 'AI' | 'CONTROL';
   participants: number; // total seeded in this arm
@@ -51,6 +49,15 @@ export async function GET(req: NextRequest) {
   // Load questions from DB so admin edits are reflected in scoring.
   const questions = await loadQuestions();
 
+  // The post-test comfort question is whichever scale-type question has
+  // the lowest number. If admin deletes the scale question, comfort
+  // analysis simply has no post values until they add one back.
+  const scaleNums = questions
+    .filter((q) => q.type === 'scale')
+    .map((q) => q.number)
+    .sort((a, b) => a - b);
+  const postComfortQNum: number | null = scaleNums[0] ?? null;
+
   const aiCount = participants?.filter((p) => p.arm === 'AI').length || 0;
   const controlCount = participants?.filter((p) => p.arm === 'CONTROL').length || 0;
   const intakeCompleteCount =
@@ -82,7 +89,7 @@ export async function GET(req: NextRequest) {
           (correctByPid[ar.participant_id] || 0) + 1;
       }
     }
-    if (ar.question_number === POST_COMFORT_QNUM) {
+    if (postComfortQNum !== null && ar.question_number === postComfortQNum) {
       const v = parseInt(ar.selected_answer, 10);
       if (!isNaN(v)) postComfortByPid[ar.participant_id] = v;
     }

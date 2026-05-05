@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { upsertQuestion } from '@/lib/content';
+import { upsertQuestion, deleteQuestion } from '@/lib/content';
 import type { Question, MCQQuestion, ScaleQuestion } from '@/data/questions';
 
+function requireAuth(req: NextRequest): NextResponse | null {
+  const password = req.headers.get('x-admin-password');
+  if (password !== process.env.ADMIN_PASSWORD) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  return null;
+}
+
 /**
- * Admin upsert for one quiz question. Auth: x-admin-password header.
+ * Upsert one quiz question. Used for both add and edit.
+ * Auth: x-admin-password header.
  *
  * MCQ body:
  *   { number, type: 'mcq', text, options:[{label,value}*4], correctAnswer }
@@ -11,10 +20,8 @@ import type { Question, MCQQuestion, ScaleQuestion } from '@/data/questions';
  *   { number, type: 'scale', text, min, max, minLabel?, maxLabel? }
  */
 export async function POST(req: NextRequest) {
-  const password = req.headers.get('x-admin-password');
-  if (password !== process.env.ADMIN_PASSWORD) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const unauth = requireAuth(req);
+  if (unauth) return unauth;
 
   let body: Partial<Question> & { type?: string };
   try {
@@ -24,9 +31,9 @@ export async function POST(req: NextRequest) {
   }
 
   const number = Number(body.number);
-  if (!Number.isInteger(number) || number < 1 || number > 13) {
+  if (!Number.isInteger(number) || number < 1) {
     return NextResponse.json(
-      { error: 'number must be an integer between 1 and 13' },
+      { error: 'number must be a positive integer' },
       { status: 400 }
     );
   }
@@ -104,4 +111,32 @@ export async function POST(req: NextRequest) {
     );
   }
   return NextResponse.json({ success: true, question: q });
+}
+
+/**
+ * Delete one question by number. Auth: x-admin-password.
+ * Query string: ?number=N. Existing assessment_responses for that
+ * question remain in the database so historical data is preserved.
+ */
+export async function DELETE(req: NextRequest) {
+  const unauth = requireAuth(req);
+  if (unauth) return unauth;
+
+  const numberStr = req.nextUrl.searchParams.get('number');
+  const number = Number(numberStr);
+  if (!Number.isInteger(number) || number < 1) {
+    return NextResponse.json(
+      { error: 'number query parameter must be a positive integer' },
+      { status: 400 }
+    );
+  }
+  try {
+    await deleteQuestion(number);
+  } catch (e) {
+    return NextResponse.json(
+      { error: e instanceof Error ? e.message : 'Delete failed' },
+      { status: 500 }
+    );
+  }
+  return NextResponse.json({ success: true, deleted: number });
 }

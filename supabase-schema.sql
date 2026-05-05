@@ -58,8 +58,9 @@ create table task_responses (
 create table assessment_responses (
   id uuid default gen_random_uuid() primary key,
   participant_id text not null references participants(participant_id) on delete cascade,
-  -- Q1–Q12 are graded MCQ; Q13 is the post-test comfort scale (0–10).
-  question_number integer not null check (question_number between 1 and 13),
+  -- Question numbers map to rows in `quiz_questions`. The lower bound is
+  -- enforced; the upper bound is open so admins can add new questions.
+  question_number integer not null check (question_number >= 1),
   selected_answer text not null,
   time_spent_seconds integer default 0,
   submitted_at timestamptz default now(),
@@ -78,7 +79,7 @@ create table chat_logs (
 -- Editable study content. Auto-seeded with src/data/tasks.ts and
 -- src/data/questions.ts on first GET; overridden by admin edits.
 create table tasks (
-  number int primary key check (number between 1 and 5),
+  number int primary key check (number >= 1),
   title text not null,
   prompt text not null,
   show_additional_findings boolean not null default false,
@@ -87,7 +88,7 @@ create table tasks (
 );
 
 create table quiz_questions (
-  number int primary key check (number between 1 and 13),
+  number int primary key check (number >= 1),
   type text not null check (type in ('mcq','scale')),
   text text not null,
   option_a text,
