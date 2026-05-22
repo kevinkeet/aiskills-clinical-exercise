@@ -200,7 +200,16 @@ export async function loadQuestions(): Promise<Question[]> {
     .select('*')
     .order('number');
   if (error) throw new Error(`questions load failed: ${error.message}`);
-  return (data as QuizRow[]).map(rowToQuestion);
+  // Sort MCQs first (in ascending number), scale questions last. Participants
+  // see all knowledge questions first, then the comfort scale at the end.
+  return (data as QuizRow[])
+    .map(rowToQuestion)
+    .sort((a, b) => {
+      const ay = a.type === 'scale' ? 1 : 0;
+      const by = b.type === 'scale' ? 1 : 0;
+      if (ay !== by) return ay - by;
+      return a.number - b.number;
+    });
 }
 
 /** Upsert one question by number. Used by /api/admin/questions. */

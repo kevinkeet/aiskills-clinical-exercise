@@ -508,6 +508,8 @@ function EnrollmentStep({
       <h2 className="text-lg font-bold text-foreground mb-1">Participant Enrollment Number</h2>
       <p className="text-sm text-muted mb-4">
         Enter the enrollment number provided to you by the study coordinator.
+        For pilot testing, enter <span className="font-mono">Pilot1</span>,{' '}
+        <span className="font-mono">Pilot2</span>, etc.
       </p>
 
       <label htmlFor="enrollment" className="block text-sm font-semibold text-foreground mb-1.5">

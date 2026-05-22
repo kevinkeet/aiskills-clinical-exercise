@@ -18,11 +18,12 @@ export default function UpToDateSidebar() {
             UpToDate cannot be embedded directly.
           </p>
           <p className="text-xs text-muted mb-4">
-            Click below to open UpToDate in a new tab. Use your institutional
-            login to access articles.
+            Click below to open UpToDate via the Stanford Lane Library
+            proxy in a new tab. Sign in with your Stanford SUNet ID to
+            access articles.
           </p>
           <a
-            href="https://www.uptodate.com"
+            href="https://www-uptodate-com.laneproxy.stanford.edu"
             target="_blank"
             rel="noopener noreferrer"
             className="px-5 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-dark transition-colors"
@@ -44,7 +45,7 @@ export default function UpToDateSidebar() {
           </div>
         </div>
         <a
-          href="https://www.uptodate.com"
+          href="https://www-uptodate-com.laneproxy.stanford.edu"
           target="_blank"
           rel="noopener noreferrer"
           className="text-xs text-primary hover:underline"
@@ -54,7 +55,7 @@ export default function UpToDateSidebar() {
       </div>
       <div className="flex-1 relative">
         <iframe
-          src="https://www.uptodate.com"
+          src="https://www-uptodate-com.laneproxy.stanford.edu"
           className="absolute inset-0 w-full h-full"
           title="UpToDate"
           sandbox="allow-same-origin allow-scripts allow-popups allow-forms"

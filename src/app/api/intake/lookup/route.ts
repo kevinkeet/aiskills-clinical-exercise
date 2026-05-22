@@ -33,11 +33,12 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { data: participant, error } = await sb
+  const PARTICIPANT_COLS =
+    'participant_id,pgy,arm,consent_at,intake_complete,session_completed_at,current_step';
+
+  let { data: participant, error } = await sb
     .from('participants')
-    .select(
-      'participant_id,pgy,arm,consent_at,intake_complete,session_completed_at,current_step'
-    )
+    .select(PARTICIPANT_COLS)
     .eq('participant_id', raw)
     .maybeSingle();
 
@@ -49,6 +50,37 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
+
+  // Pilot self-registration. An ID matching PILOT<digits> that is not in the
+  // database is auto-created on first lookup. Arm is derived from parity:
+  // odd -> AI, even -> CONTROL. PGY is recorded as a placeholder (1).
+  // Real recruits (P-NNN) are never auto-created — they must be pre-seeded.
+  if (!participant) {
+    const pilotMatch = raw.match(/^PILOT(\d+)$/);
+    if (pilotMatch) {
+      const n = parseInt(pilotMatch[1], 10);
+      if (Number.isFinite(n) && n >= 1) {
+        const arm = n % 2 === 1 ? 'AI' : 'CONTROL';
+        const { data: created, error: createErr } = await sb
+          .from('participants')
+          .insert({ participant_id: raw, pgy: 1, arm })
+          .select(PARTICIPANT_COLS)
+          .single();
+        if (createErr || !created) {
+          return NextResponse.json(
+            {
+              error:
+                'Failed to create pilot participant: ' +
+                (createErr?.message ?? 'unknown'),
+            },
+            { status: 500 }
+          );
+        }
+        participant = created;
+      }
+    }
+  }
+
   if (!participant) {
     return NextResponse.json(
       { error: 'We could not find that enrollment number. Please check with the study coordinator.' },
