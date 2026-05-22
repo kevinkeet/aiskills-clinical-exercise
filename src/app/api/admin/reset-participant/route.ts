@@ -54,6 +54,7 @@ export async function POST(req: NextRequest) {
     'assessment_responses',
     'task_responses',
     'intake_responses',
+    'pilot_feedback',
   ];
   for (const t of tables) {
     const { error } = await sb.from(t).delete().eq('participant_id', pid);

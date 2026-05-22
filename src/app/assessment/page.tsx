@@ -3,6 +3,11 @@
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { isMCQ, type Question } from '@/data/questions';
+import PilotFeedbackBox from '@/components/PilotFeedbackBox';
+
+function isPilot(pid: string): boolean {
+  return /^PILOT\d+$/i.test(pid);
+}
 
 export default function AssessmentPage() {
   const router = useRouter();
@@ -14,6 +19,7 @@ export default function AssessmentPage() {
   const [showTransition, setShowTransition] = useState(true);
   const [assessmentStartTime, setAssessmentStartTime] = useState<Date | null>(null);
   const [elapsed, setElapsed] = useState(0);
+  const [questionFeedback, setQuestionFeedback] = useState<Record<number, string>>({});
 
   const questionTimesRef = useRef<Record<number, number>>({});
   const questionStartRef = useRef<Date>(new Date());
@@ -23,8 +29,9 @@ export default function AssessmentPage() {
     Promise.all([
       fetch('/api/session/me').then((r) => (r.ok ? r.json() : null)),
       fetch('/api/questions').then((r) => (r.ok ? r.json() : { questions: [] })),
+      fetch('/api/pilot-feedback').then((r) => (r.ok ? r.json() : { feedback: [] })),
     ])
-      .then(([sessionData, questionsData]) => {
+      .then(([sessionData, questionsData, feedbackData]) => {
         if (cancelled) return;
         if (!sessionData?.authenticated) {
           router.push('/intake');
@@ -37,6 +44,11 @@ export default function AssessmentPage() {
         }
         setQuestions(loaded);
         setParticipantId(sessionData.participantId);
+        const fb: Record<number, string> = {};
+        for (const entry of feedbackData.feedback ?? []) {
+          if (entry.itemType === 'question') fb[entry.itemNumber] = entry.feedback;
+        }
+        setQuestionFeedback(fb);
       })
       .catch(() => router.push('/intake'));
     return () => {
@@ -270,6 +282,19 @@ export default function AssessmentPage() {
                 <span>{q.maxLabel ? `${q.max} — ${q.maxLabel}` : ''}</span>
               </div>
             )}
+          </div>
+        )}
+
+        {isPilot(participantId) && (
+          <div className="mt-6">
+            <PilotFeedbackBox
+              itemType="question"
+              itemNumber={q.number}
+              initialValue={questionFeedback[q.number] ?? ''}
+              onSavedChange={(v) =>
+                setQuestionFeedback((prev) => ({ ...prev, [q.number]: v }))
+              }
+            />
           </div>
         )}
 

@@ -76,6 +76,20 @@ create table chat_logs (
   created_at timestamptz default now()
 );
 
+-- Pilot user feedback on tasks and quiz questions. Inline textarea shown
+-- only to participants whose IDs begin with PILOT; real recruits do not
+-- see the feedback UI.
+create table pilot_feedback (
+  id uuid default gen_random_uuid() primary key,
+  participant_id text not null references participants(participant_id) on delete cascade,
+  item_type text not null check (item_type in ('task','question')),
+  item_number int not null check (item_number >= 1),
+  feedback text not null,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  unique(participant_id, item_type, item_number)
+);
+
 -- Editable study content. Auto-seeded with src/data/tasks.ts and
 -- src/data/questions.ts on first GET; overridden by admin edits.
 create table tasks (
@@ -114,6 +128,7 @@ alter table assessment_responses enable row level security;
 alter table chat_logs enable row level security;
 alter table tasks enable row level security;
 alter table quiz_questions enable row level security;
+alter table pilot_feedback enable row level security;
 
 create policy "Allow all on participants" on participants for all using (true) with check (true);
 create policy "Allow all on intake_responses" on intake_responses for all using (true) with check (true);
@@ -122,3 +137,4 @@ create policy "Allow all on assessment_responses" on assessment_responses for al
 create policy "Allow all on chat_logs" on chat_logs for all using (true) with check (true);
 create policy "Allow all on tasks" on tasks for all using (true) with check (true);
 create policy "Allow all on quiz_questions" on quiz_questions for all using (true) with check (true);
+create policy "Allow all on pilot_feedback" on pilot_feedback for all using (true) with check (true);

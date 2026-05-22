@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import StudyContentEditor from '@/components/StudyContentEditor';
+import PilotFeedbackPanel from '@/components/PilotFeedbackPanel';
 
 interface Participant {
   participant_id: string;
@@ -58,6 +59,7 @@ const EXPORT_TYPES: { type: string; label: string }[] = [
   { type: 'assessment', label: 'Assessment Responses' },
   { type: 'chat', label: 'Chat Logs' },
   { type: 'mailmerge', label: 'Mail-merge CSV' },
+  { type: 'pilot-feedback', label: 'Pilot Feedback' },
 ];
 
 export default function AdminPage() {
@@ -240,6 +242,9 @@ export default function AdminPage() {
 
         {/* Study content editor (tasks + quiz questions) */}
         <StudyContentEditor password={password} />
+
+        {/* Pilot feedback collected per item */}
+        <PilotFeedbackPanel password={password} />
 
         {/* Avg time per task */}
         <div className="bg-card rounded-xl border border-border p-5">

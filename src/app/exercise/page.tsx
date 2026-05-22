@@ -9,8 +9,13 @@ import ChatSidebar from '@/components/ChatSidebar';
 import UpToDateSidebar from '@/components/UpToDateSidebar';
 import ProgressBar from '@/components/ProgressBar';
 import Timer from '@/components/Timer';
+import PilotFeedbackBox from '@/components/PilotFeedbackBox';
 
 type Arm = 'AI' | 'CONTROL';
+
+function isPilot(pid: string): boolean {
+  return /^PILOT\d+$/i.test(pid);
+}
 
 export default function ExercisePage() {
   const router = useRouter();
@@ -24,6 +29,7 @@ export default function ExercisePage() {
   const [submitting, setSubmitting] = useState(false);
   const [promptCopied, setPromptCopied] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [taskFeedback, setTaskFeedback] = useState<Record<number, string>>({});
 
   // Resolve arm + load the (DB-backed) task list. Both must succeed before render.
   useEffect(() => {
@@ -31,8 +37,9 @@ export default function ExercisePage() {
     Promise.all([
       fetch('/api/session/me').then((r) => (r.ok ? r.json() : null)),
       fetch('/api/tasks').then((r) => (r.ok ? r.json() : { tasks: [] })),
+      fetch('/api/pilot-feedback').then((r) => (r.ok ? r.json() : { feedback: [] })),
     ])
-      .then(([sessionData, tasksData]) => {
+      .then(([sessionData, tasksData, feedbackData]) => {
         if (cancelled) return;
         if (!sessionData?.authenticated || !sessionData.intakeComplete) {
           router.push('/intake');
@@ -47,6 +54,13 @@ export default function ExercisePage() {
         setTasks(loadedTasks);
         setParticipantId(sessionData.participantId);
         setArm(sessionData.arm);
+        // Pre-populate feedback map for pilots so they can navigate back
+        // and forth between tasks without losing what they typed.
+        const fb: Record<number, string> = {};
+        for (const entry of feedbackData.feedback ?? []) {
+          if (entry.itemType === 'task') fb[entry.itemNumber] = entry.feedback;
+        }
+        setTaskFeedback(fb);
         const savedTask = sessionStorage.getItem('currentTask');
         let resumeIdx = 0;
         if (savedTask) {
@@ -215,6 +229,22 @@ export default function ExercisePage() {
                 placeholder="Type your response here..."
                 className="w-full h-64 px-4 py-3 border border-border rounded-lg text-sm resize-y focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary leading-relaxed"
               />
+
+              {isPilot(participantId) && (
+                <div className="mt-3">
+                  <PilotFeedbackBox
+                    itemType="task"
+                    itemNumber={task.number}
+                    initialValue={taskFeedback[task.number] ?? ''}
+                    onSavedChange={(v) =>
+                      setTaskFeedback((prev) => ({
+                        ...prev,
+                        [task.number]: v,
+                      }))
+                    }
+                  />
+                </div>
+              )}
 
               <div className="flex items-center justify-end mt-3">
                 <button

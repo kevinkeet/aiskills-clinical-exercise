@@ -82,6 +82,43 @@ export async function GET(req: NextRequest) {
     });
   }
 
+  if (type === 'pilot-feedback') {
+    const sb = getSupabase();
+    const { data: rows } = await sb
+      .from('pilot_feedback')
+      .select('*')
+      .order('item_type')
+      .order('item_number')
+      .order('updated_at', { ascending: false });
+    const { data: parts } = await sb.from('participants').select('participant_id,arm');
+    const armByPid: Record<string, string> = {};
+    (parts ?? []).forEach((p) => {
+      armByPid[p.participant_id] = p.arm;
+    });
+    const flat = (rows ?? []).map((r) => ({
+      participant_id: r.participant_id,
+      arm: armByPid[r.participant_id] ?? '',
+      item_type: r.item_type,
+      item_number: r.item_number,
+      feedback: r.feedback,
+      updated_at: r.updated_at,
+    }));
+    const csv = toCSV(flat, [
+      'participant_id',
+      'arm',
+      'item_type',
+      'item_number',
+      'feedback',
+      'updated_at',
+    ]);
+    return new Response(csv, {
+      headers: {
+        'Content-Type': 'text/csv',
+        'Content-Disposition': 'attachment; filename=pilot_feedback.csv',
+      },
+    });
+  }
+
   if (type === 'chat') {
     const { data } = await getSupabase()
       .from('chat_logs')
