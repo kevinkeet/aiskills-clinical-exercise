@@ -53,10 +53,14 @@ export const CONSENT_CHECKBOX_LABEL =
 
 export type DemographicField =
   | { key: 'pgy'; label: string; type: 'radio'; options: { value: string; label: string }[] }
-  | { key: 'track'; label: string; type: 'radio'; options: { value: string; label: string }[] }
-  | { key: 'medSchoolGradYear'; label: string; type: 'numberYear'; min: number; max: number };
+  | { key: 'track'; label: string; type: 'radio'; options: { value: string; label: string }[] };
 
-export const DEMOGRAPHIC_FIELDS = (currentYear: number): DemographicField[] => [
+// `currentYear` is unused now that the med-school-graduation question is gone,
+// but kept on the signature so the call site at /intake doesn't need to change
+// if we later add another year-bounded item.
+export const DEMOGRAPHIC_FIELDS = (
+  _currentYear: number
+): DemographicField[] => [
   {
     key: 'pgy',
     label: 'Post-graduate year',
@@ -75,13 +79,6 @@ export const DEMOGRAPHIC_FIELDS = (currentYear: number): DemographicField[] => [
       { value: 'Categorical Internal Medicine', label: 'Categorical Internal Medicine' },
       { value: 'Preliminary Medicine', label: 'Preliminary Medicine' },
     ],
-  },
-  {
-    key: 'medSchoolGradYear',
-    label: 'Year of medical school graduation',
-    type: 'numberYear',
-    min: 2015,
-    max: currentYear,
   },
 ];
 

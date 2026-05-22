@@ -214,13 +214,6 @@ export default function IntakePage() {
       const v = demographics[f.key];
       if (!v || v.trim() === '') {
         errs[f.key] = 'This field is required.';
-        continue;
-      }
-      if (f.type === 'numberYear') {
-        const n = parseInt(v, 10);
-        if (isNaN(n) || n < f.min || n > f.max) {
-          errs[f.key] = `Enter a year between ${f.min} and ${f.max}.`;
-        }
       }
     }
     setDemoErrors(errs);
@@ -611,21 +604,6 @@ function DemographicsStep({
                   </label>
                 ))}
               </div>
-            )}
-
-            {f.type === 'numberYear' && (
-              <input
-                type="number"
-                inputMode="numeric"
-                min={f.min}
-                max={f.max}
-                value={values[f.key] ?? ''}
-                onChange={(e) => setValue(f.key, e.target.value)}
-                placeholder="YYYY"
-                aria-invalid={!!errors[f.key]}
-                aria-describedby={errors[f.key] ? `${f.key}-err` : undefined}
-                className="w-32 px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm"
-              />
             )}
 
             {errors[f.key] && (

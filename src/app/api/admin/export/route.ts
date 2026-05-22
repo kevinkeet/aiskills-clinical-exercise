@@ -167,7 +167,6 @@ export async function GET(req: NextRequest) {
         arm: meta.arm ?? '',
         pgy_self_reported: demo.pgy ?? '',
         track: demo.track ?? '',
-        med_school_grad_year: demo.medSchoolGradYear ?? '',
         // Pre-test comfort rating (0–10). Same item is repeated as Q13 in
         // the assessment for paired pre/post analysis.
         pretest_comfort_rating: pretest.comfortRating ?? '',
@@ -182,7 +181,6 @@ export async function GET(req: NextRequest) {
       'arm',
       'pgy_self_reported',
       'track',
-      'med_school_grad_year',
       'pretest_comfort_rating',
       'mismatch_flags',
       'submitted_at',
