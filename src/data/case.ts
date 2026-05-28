@@ -1,21 +1,16 @@
 export const caseVignette = {
   chiefComplaint:
     '"My kidneys are getting worse and nobody can figure out why."',
-  hpi: `Marcus Thompson is a 32-year-old male referred to the internal medicine clinic by his primary care physician for evaluation of progressive chronic kidney disease (CKD) of unclear etiology. His creatinine has risen from 1.2 mg/dL eighteen months ago to 1.8 mg/dL on his most recent lab work, with persistent proteinuria (urine protein-to-creatinine ratio 1.4 g/g). Standard workup including ANA, hepatitis serologies, HIV, and complements have been unremarkable.
+  hpi: `Marcus Thompson is a 32-year-old man referred to the internal medicine clinic by his primary care physician for evaluation of progressive chronic kidney disease (CKD) of unclear etiology. His creatinine has risen from 1.2 mg/dL eighteen months ago to 1.8 mg/dL on his most recent labs, with persistent proteinuria (urine protein-to-creatinine ratio 1.4 g/g). He has no history of diabetes or hypertension, and a standard workup ordered by his primary care physician — including ANA, hepatitis serologies, HIV, and complement levels — has been unremarkable.
 
-On further questioning, he mentions that he has had "pain in his hands and feet on and off since he was a kid." He says multiple doctors have looked into it over the years without a clear answer. He was prescribed gabapentin a few years ago, which helps somewhat. He also reports intermittent episodes of abdominal pain and diarrhea every few weeks, previously attributed to irritable bowel syndrome.
-
-Over the past year, he has noticed increasing fatigue and some shortness of breath when climbing stairs. He denies chest pain or leg swelling.
-
-He mentions that his mother has "some kind of heart problem" and that a cousin on his mother's side is on dialysis, though he is unsure of the details.`,
-  pmh: 'Chronic pain in hands/feet (diagnosed as "neuropathy, unclear etiology" at age 16), IBS, CKD stage 3a (diagnosed 18 months ago), corneal opacities noted on routine optometry visit',
-  medications: 'Gabapentin 300 mg TID, omeprazole 20 mg daily, acetaminophen PRN',
+He is otherwise healthy-appearing and frustrated that, despite the workup, no one has been able to explain why a young person would be losing kidney function. The referral note contains little additional history, and it will be up to you to take a focused history during today's visit.`,
+  pmh: 'CKD stage 3a, diagnosed 18 months ago. No other chronic medical conditions documented.',
+  medications: 'Acetaminophen as needed. No other regular medications.',
   allergies: 'NKDA',
   socialHistory:
-    'Graphic designer. Non-smoker. Occasional alcohol. No recreational drugs. Lives with girlfriend. Planning to start a family.',
-  familyHistory:
-    'Mother: "heart problem," age 58. Maternal cousin (male): on dialysis, age 28, cause unclear. Father: healthy, age 60. No known genetic diseases in the family.',
-  ros: 'Positive: hand/foot pain (chronic), fatigue, exertional dyspnea, intermittent abdominal pain/diarrhea. Negative: no fevers, weight loss, hemoptysis, hematuria, joint swelling, rash (patient-reported).',
+    'Graphic designer. Non-smoker. Occasional alcohol. No recreational drug use. Lives with his partner.',
+  familyHistory: 'Not obtained at the referring visit.',
+  ros: 'Limited in the referral note. The patient denies fever and unintentional weight loss; other systems were not systematically reviewed.',
   vitals:
     'BP 138/88 mmHg, HR 78 bpm, RR 14, Temp 98.4\u00b0F, SpO2 98% on RA, BMI 24.1',
   labs: [

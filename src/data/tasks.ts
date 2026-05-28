@@ -16,7 +16,7 @@ export const defaultTasks: Task[] = [
     number: 1,
     title: 'Additional History',
     prompt:
-      'This patient has progressive CKD of unclear etiology, chronic neuropathic pain, and several other symptoms. Fabry disease is suspected. Based on the information provided, what additional history questions would you want to ask, and briefly explain your reasoning for each.',
+      'This is a young man with progressive chronic kidney disease of unclear etiology, and Fabry disease is being considered. The referral provided only a limited history, so it is up to you to take a focused history today. What additional history questions would you want to ask, and briefly explain your reasoning for each?',
     minChars: 200,
   },
   {
