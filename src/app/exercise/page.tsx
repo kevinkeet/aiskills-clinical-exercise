@@ -167,9 +167,14 @@ export default function ExercisePage() {
       </div>
 
       {/* Neutral guidance banner — does not name the resource */}
-      <div className="px-4 py-2 text-xs font-medium bg-slate-50 text-foreground border-b border-border">
-        You may use the resource panel on the right to help with Tasks 1&ndash;5. Do
-        NOT use any external resources for the Knowledge Assessment that follows.
+      <div className="px-4 py-2 text-xs bg-blue-50 text-blue-900 border-b border-blue-100 leading-relaxed">
+        <span className="font-semibold">
+          You are encouraged to use the resource panel on the right to work
+          through Tasks 1&ndash;5
+        </span>{' '}
+        — just as you would when caring for a real patient. Looking things up
+        here is expected and is not cheating. (You may <span className="font-semibold">not</span> use any
+        resources during the Knowledge Assessment that follows the case.)
       </div>
 
       {/* Main content area */}

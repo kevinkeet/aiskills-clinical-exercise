@@ -200,13 +200,15 @@ export async function loadQuestions(): Promise<Question[]> {
     .select('*')
     .order('number');
   if (error) throw new Error(`questions load failed: ${error.message}`);
-  // Sort MCQs first (in ascending number), scale questions last. Participants
-  // see all knowledge questions first, then the comfort scale at the end.
+  // Sort scale questions FIRST (e.g., the post-case comfort rating), then the
+  // graded MCQs by number. Asking comfort up front captures the effect of the
+  // case before the knowledge questions themselves reinforce additional
+  // learning and inflate the rating.
   return (data as QuizRow[])
     .map(rowToQuestion)
     .sort((a, b) => {
-      const ay = a.type === 'scale' ? 1 : 0;
-      const by = b.type === 'scale' ? 1 : 0;
+      const ay = a.type === 'scale' ? 0 : 1;
+      const by = b.type === 'scale' ? 0 : 1;
       if (ay !== by) return ay - by;
       return a.number - b.number;
     });

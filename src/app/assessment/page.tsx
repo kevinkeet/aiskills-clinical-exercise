@@ -161,16 +161,18 @@ export default function AssessmentPage() {
           </h1>
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
             <p className="text-sm text-red-800 font-medium">
-              You have completed the clinical exercise. You will now complete a
-              12-question knowledge assessment.
+              You have completed the clinical exercise. You will now answer a
+              brief self-rating followed by{' '}
+              {questions.filter((qq) => isMCQ(qq)).length} multiple-choice
+              knowledge questions.
             </p>
             <p className="text-sm text-red-700 mt-2">
-              You may <strong>NOT</strong> use any external resources for this section.
+              You may <strong>NOT</strong> use any external resources for the
+              knowledge questions.
             </p>
           </div>
           <p className="text-sm text-muted mb-6">
-            Each question is multiple choice. Answer to the best of your
-            ability based on what you have learned.
+            Answer to the best of your ability based on what you have learned.
           </p>
           <button
             onClick={startAssessment}
@@ -221,7 +223,7 @@ export default function AssessmentPage() {
                 i === currentQuestion
                   ? 'bg-primary text-white'
                   : answers[questions[i].number]
-                  ? 'bg-emerald-100 text-emerald-700'
+                  ? 'bg-slate-400 text-white'
                   : 'bg-slate-100 text-muted hover:bg-slate-200'
               }`}
             >
@@ -229,6 +231,10 @@ export default function AssessmentPage() {
             </button>
           ))}
         </div>
+        <p className="text-center text-[11px] text-muted mt-1.5">
+          A filled circle means answered — it does not indicate whether your
+          answer is correct.
+        </p>
       </div>
 
       <div className="max-w-2xl mx-auto p-6">
