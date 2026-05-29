@@ -28,11 +28,25 @@ export default function ChatSidebar({
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [justInserted, setJustInserted] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const prevTaskRef = useRef(taskNumber);
+  // Whether the participant is currently scrolled to (near) the bottom. When
+  // they scroll up to re-read earlier content we stop auto-scrolling so the
+  // view doesn't get yanked back down on every streamed token.
+  const stickToBottomRef = useRef(true);
+
+  function handleMessagesScroll() {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    stickToBottomRef.current = distanceFromBottom < 80;
+  }
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (stickToBottomRef.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
   }, [messages]);
 
   // Add separator when task changes
@@ -75,6 +89,9 @@ export default function ChatSidebar({
 
     const userMessage: Message = { role: 'user', content: input.trim() };
     const newMessages = [...messages, userMessage];
+    // Sending a new message should always scroll the conversation to the
+    // bottom, even if the participant had scrolled up to read earlier replies.
+    stickToBottomRef.current = true;
     setMessages(newMessages);
     setInput('');
     setIsStreaming(true);
@@ -176,7 +193,11 @@ export default function ChatSidebar({
         case patient is fictional.
       </div>
 
-      <div className="flex-1 overflow-y-auto p-3 space-y-3">
+      <div
+        ref={scrollContainerRef}
+        onScroll={handleMessagesScroll}
+        className="flex-1 overflow-y-auto p-3 space-y-3"
+      >
         {messages.length === 0 && (
           <div className="text-center text-muted text-sm py-8">
             <div className="text-3xl mb-2">💬</div>
@@ -259,7 +280,7 @@ export default function ChatSidebar({
             onKeyDown={handleKeyDown}
             placeholder="Type a message..."
             rows={2}
-            className="flex-1 px-3 py-2 border border-border rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+            className="flex-1 min-h-[2.75rem] max-h-64 px-3 py-2 border border-border rounded-lg text-sm resize-y focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
           />
           <button
             onClick={sendMessage}

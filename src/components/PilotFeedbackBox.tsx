@@ -30,14 +30,26 @@ export default function PilotFeedbackBox({
   );
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastSavedRef = useRef(initialValue);
+  const itemKey = `${itemType}-${itemNumber}`;
+  const prevItemKeyRef = useRef(itemKey);
 
-  // Reset when the item changes (e.g., navigating to a different question).
+  // Reset ONLY when the item itself changes (e.g., navigating to a different
+  // task/question). We deliberately do NOT reset when `initialValue` changes
+  // on its own: after each debounced save the parent feeds the saved value
+  // back down as `initialValue`, and resetting on that would clobber any
+  // characters the participant typed while the save was in flight.
   useEffect(() => {
+    if (prevItemKeyRef.current === itemKey) return;
+    prevItemKeyRef.current = itemKey;
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
     setValue(initialValue);
     setSavedValue(initialValue);
     lastSavedRef.current = initialValue;
     setStatus('idle');
-  }, [itemType, itemNumber, initialValue]);
+  }, [itemKey, initialValue]);
 
   async function save(v: string) {
     if (v === lastSavedRef.current) return;

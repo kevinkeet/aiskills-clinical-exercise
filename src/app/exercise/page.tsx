@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Task } from '@/data/tasks';
 import { additionalFindings, getCaseAsText } from '@/data/case';
@@ -17,6 +17,11 @@ function isPilot(pid: string): boolean {
   return /^PILOT\d+$/i.test(pid);
 }
 
+// Resource-sidebar width bounds (px). Module-scope so they're stable across
+// renders and never appear as effect/callback dependencies.
+const SIDEBAR_MIN = 320;
+const SIDEBAR_MAX = 760;
+
 export default function ExercisePage() {
   const router = useRouter();
   const [participantId, setParticipantId] = useState('');
@@ -30,6 +35,45 @@ export default function ExercisePage() {
   const [promptCopied, setPromptCopied] = useState(false);
   const [loading, setLoading] = useState(true);
   const [taskFeedback, setTaskFeedback] = useState<Record<number, string>>({});
+  // Resizable resource sidebar (chat / UpToDate). Persisted per browser.
+  const [sidebarWidth, setSidebarWidth] = useState(384); // 24rem default
+  const sidebarWidthRef = useRef(384);
+
+  const startSidebarResize = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      const startX = e.clientX;
+      const startWidth = sidebarWidthRef.current;
+      function onMove(ev: MouseEvent) {
+        // Dragging the handle left (decreasing clientX) widens the sidebar.
+        const next = Math.min(
+          Math.max(startWidth + (startX - ev.clientX), SIDEBAR_MIN),
+          SIDEBAR_MAX
+        );
+        sidebarWidthRef.current = next;
+        setSidebarWidth(next);
+      }
+      function onUp() {
+        window.removeEventListener('mousemove', onMove);
+        window.removeEventListener('mouseup', onUp);
+        document.body.style.userSelect = '';
+        document.body.style.cursor = '';
+        try {
+          localStorage.setItem(
+            'resourceSidebarWidth',
+            String(sidebarWidthRef.current)
+          );
+        } catch {
+          // ignore
+        }
+      }
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onUp);
+      document.body.style.userSelect = 'none';
+      document.body.style.cursor = 'col-resize';
+    },
+    []
+  );
 
   // Resolve arm + load the (DB-backed) task list. Both must succeed before render.
   useEffect(() => {
@@ -41,6 +85,20 @@ export default function ExercisePage() {
     ])
       .then(([sessionData, tasksData, feedbackData]) => {
         if (cancelled) return;
+        // Restore a previously chosen sidebar width (per browser).
+        try {
+          const savedWidth = localStorage.getItem('resourceSidebarWidth');
+          if (savedWidth) {
+            const n = parseInt(savedWidth, 10);
+            if (!Number.isNaN(n)) {
+              const clamped = Math.min(Math.max(n, SIDEBAR_MIN), SIDEBAR_MAX);
+              setSidebarWidth(clamped);
+              sidebarWidthRef.current = clamped;
+            }
+          }
+        } catch {
+          // localStorage unavailable; keep default width.
+        }
         if (!sessionData?.authenticated || !sessionData.intakeComplete) {
           router.push('/intake');
           return;
@@ -84,6 +142,15 @@ export default function ExercisePage() {
   }, [router]);
 
   const task = tasks[currentTaskIndex];
+
+  // The new workup/exam findings are revealed at the task flagged
+  // `showAdditionalFindings` (Task 4) and must REMAIN visible for every task
+  // after it — the participant needs them to write the after-visit summary
+  // (Task 5). So treat the reveal as sticky: show the findings if the current
+  // task, or any earlier task, triggered them.
+  const findingsRevealed = tasks
+    .slice(0, currentTaskIndex + 1)
+    .some((t) => t.showAdditionalFindings);
 
   const submitTask = useCallback(async () => {
     if (!task) return;
@@ -183,9 +250,7 @@ export default function ExercisePage() {
         <div className="flex-1 flex flex-col overflow-hidden min-w-0">
           <CasePanel
             defaultOpen={currentTaskIndex === 0}
-            additionalFindings={
-              task.showAdditionalFindings ? additionalFindings : undefined
-            }
+            additionalFindings={findingsRevealed ? additionalFindings : undefined}
           />
 
           <div className="flex-1 overflow-y-auto p-5">
@@ -268,13 +333,25 @@ export default function ExercisePage() {
           </div>
         </div>
 
+        {/* Drag handle to resize the resource sidebar (lg+ only). */}
+        <div
+          onMouseDown={startSidebarResize}
+          role="separator"
+          aria-orientation="vertical"
+          title="Drag to resize"
+          className="hidden lg:block w-1.5 flex-shrink-0 cursor-col-resize bg-border hover:bg-primary/50 active:bg-primary/60 transition-colors"
+        />
+
         {/* Right sidebar: arm-determined; never labelled by arm name */}
-        <div className="w-96 flex-shrink-0 hidden lg:flex flex-col">
+        <div
+          className="flex-shrink-0 hidden lg:flex flex-col"
+          style={{ width: sidebarWidth }}
+        >
           {arm === 'AI' ? (
             <ChatSidebar
               participantId={participantId}
               taskNumber={task.number}
-              caseContext={getCaseAsText(!!task.showAdditionalFindings)}
+              caseContext={getCaseAsText(findingsRevealed)}
               taskPrompt={task.prompt}
             />
           ) : (
