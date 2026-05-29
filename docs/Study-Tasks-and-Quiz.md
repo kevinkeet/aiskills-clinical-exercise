@@ -8,10 +8,13 @@ participants see during the case exercise. The canonical source of
 truth lives in the repository at:
 
 - `src/data/tasks.ts` (5 free-response tasks)
-- `src/data/questions.ts` (12 graded MCQs + 1 post-test comfort scale)
+- `src/data/questions.ts` (22 graded MCQs + 1 post-test comfort scale)
 - `src/data/intakeContent.ts` (intake comfort scale, IRB consent text)
 
-If anything in those files changes, this document should be regenerated.
+Note: the live runtime source of truth is the `quiz_questions` / `tasks`
+Supabase tables (editable from `/admin`); `src/data/*.ts` only seeds those
+tables when empty. If anything changes in either place, regenerate this
+document. Last regenerated 2026-05-29.
 
 ---
 
@@ -20,13 +23,18 @@ If anything in those files changes, this document should be regenerated.
 A 32-year-old man, **Marcus Thompson**, referred to internal medicine for
 progressive chronic kidney disease of unclear etiology. Creatinine has
 risen from 1.2 to 1.8 mg/dL over 18 months with persistent proteinuria
-(1.4 g/g). He has had burning pain in his hands and feet since
-childhood, intermittent abdominal pain and diarrhea attributed to IBS,
-exertional dyspnea, and corneal opacities noted on a routine
-optometry visit. Family history includes a mother with "some kind of
-heart problem" and a maternal cousin on dialysis. ECG shows a short PR
-interval (110 ms) and LVH by voltage criteria. Standard workup (ANA,
-hepatitis serologies, HIV, complements) is unremarkable.
+(1.4 g/g). He has no diabetes or hypertension, and a standard workup
+(ANA, hepatitis serologies, HIV, complements) is unremarkable. The
+referral is deliberately lean — the classic Fabry clues (acroparesthesia,
+GI symptoms, angiokeratomas, corneal findings) are **not** volunteered in
+the vignette, so the resident must elicit them through history and exam.
+
+The plausible reason Fabry is on the table: the ECG shows a short PR
+interval (110 ms) and **LVH by voltage criteria**, unexpected in a
+normotensive 32-year-old, and the family history points to an X-linked
+pattern — a mother with an unspecified "heart condition" diagnosed in her
+50s and a maternal uncle who reached dialysis in his 40s, with a healthy
+paternal side and no father-to-son transmission.
 
 The full case (HPI, PMH, meds, family history, ROS, vitals, labs)
 is rendered in a collapsible panel above each task and can be inserted
@@ -42,11 +50,11 @@ internal as a soft check.
 
 ### Task 1 — Additional History
 
-> *"This patient has progressive CKD of unclear etiology, chronic
-> neuropathic pain, and several other symptoms. Fabry disease is
-> suspected. Based on the information provided, what additional
-> history questions would you want to ask, and briefly explain your
-> reasoning for each."*
+> *"This is a young man with progressive chronic kidney disease of
+> unclear etiology, and Fabry disease is being considered. The referral
+> provided only a limited history, so it is up to you to take a focused
+> history today. What additional history questions would you want to ask,
+> and briefly explain your reasoning for each?"*
 
 ### Task 2 — Physical Examination
 
@@ -83,8 +91,12 @@ NT-proBNP / troponin I.
 
 ## Knowledge Assessment
 
-**Format:** 12 multiple-choice questions (Q1–Q12, graded) + 1 post-test
-comfort scale (Q13, not graded). External resources are not permitted.
+**Format:** 22 multiple-choice questions (graded) + 1 post-test comfort
+scale (Q13, not graded). Question numbers are stable IDs with intentional
+gaps: Q14, Q17, Q18, Q20 were retired as redundant (preserved in
+`Retired-Questions.md`), and Q23–Q27 were added later. The full graded set
+is Q1–Q12, Q15, Q16, Q19, Q21, Q22, Q23–Q27. External resources are not
+permitted during the assessment.
 
 **Difficulty calibration target (per study lead):**
 
@@ -97,11 +109,15 @@ comfort scale (Q13, not graded). External resources are not permitted.
 Distractors are deliberately chosen so that "common medical sense"
 points to the wrong answer (e.g., cold-triggered pain, the diabetic
 "stocking-glove" sensory pattern, autosomal-dominant inheritance).
-Correct answers are evenly distributed across positions A/B/C/D
-(3 each), and option lengths within a question are kept similar so
-"longest option" cannot be used as a guessing heuristic.
+Correct answers are balanced across positions A/B/C/D (A=6, B=5, C=5,
+D=6 across the 22 MCQs), and option lengths within a question are kept
+similar so "longest option" cannot be used as a guessing heuristic.
 
 **Question → task mapping:**
+
+The original twelve items map onto the five tasks. The later items
+(Q15, Q16, Q19, Q21, Q22 and Q23–Q27) test cross-cutting mechanism and
+"learned-at-the-bedside" knowledge that is not tied to a single task.
 
 | Questions | Maps to |
 |---|---|
@@ -110,6 +126,8 @@ Correct answers are evenly distributed across positions A/B/C/D
 | Q7–Q9 | Task 3 (diagnostic workup) |
 | Q10–Q11 | Task 4 (management) |
 | Q12 | Task 5 (patient counseling) |
+| Q15, Q16, Q19, Q21, Q22 | Mechanism / core-concept items |
+| Q23–Q27 | Harder "bedside" items (cardiac conduction, lyso-Gb3 monitoring, stroke pattern, hypohidrosis, transplant outcome) |
 | Q13 | Post-test comfort (paired with the intake item) |
 
 ---
@@ -304,6 +322,143 @@ is most accurate?**
 **Correct: D.** Hemizygous male passes his X to all daughters and
 his Y to all sons.
 
+### Q15 — Mechanism of neuropathic pain (mechanism)
+
+**The neuropathic pain experienced in Fabry disease is most directly
+related to:**
+
+- **A. ✓ Deposition of glycosphingolipids within small nerve fibers**
+- B. Immune-mediated demyelination
+- C. Compression neuropathy from tissue edema
+- D. Autoimmune vasculitis of peripheral nerves
+
+**Correct: A.** Small-fiber storage, not an inflammatory or compressive
+mechanism.
+
+### Q16 — Mechanism of LVH (mechanism)
+
+**Which mechanism most likely explains the development of left
+ventricular hypertrophy in Fabry disease?**
+
+- A. Chronic systemic hypertension alone
+- B. Coronary vasospasm causing fibrosis
+- C. Recurrent myocarditis
+- **D. ✓ Glycosphingolipid accumulation within cardiomyocytes**
+
+**Correct: D.** A storage cardiomyopathy, not pressure-overload LVH.
+
+### Q19 — Renal target of injury (mechanism)
+
+**Proteinuria in Fabry disease most directly reflects injury to which
+renal structure?**
+
+- A. Distal tubules
+- B. Collecting ducts
+- C. Renal arteries
+- **D. ✓ Podocytes**
+
+**Correct: D.** Podocyte injury drives the proteinuria.
+
+### Q21 — Rationale for early therapy (management)
+
+**The primary rationale for initiating disease-specific therapy early in
+Fabry disease is to:**
+
+- A. Reverse all accumulated organ damage
+- B. Eliminate inheritance risk
+- **C. ✓ Prevent irreversible organ fibrosis and dysfunction**
+- D. Normalize lifespan
+
+**Correct: C.** Therapy halts progression; established fibrosis is not
+reversed.
+
+### Q22 — When to suspect Fabry (recognition)
+
+**Which patient presentation should most strongly prompt consideration of
+Fabry disease?**
+
+- **A. ✓ Young man with unexplained CKD, neuropathic pain, and family
+  history of renal disease**
+- B. Elderly patient with diabetic nephropathy
+- C. Middle-aged smoker with hematuria
+- D. Woman with isolated nephrolithiasis
+
+**Correct: A.** Multisystem disease in a young patient with a suggestive
+family history.
+
+### Q23 — Conduction disease and device therapy (cardiac, advanced)
+
+**Beyond left ventricular hypertrophy, which cardiac complication most
+commonly leads to pacemaker or ICD placement in patients with Fabry
+disease?**
+
+- A. Recurrent supraventricular tachycardia
+- **B. ✓ Progressive conduction-system disease (sinus node dysfunction
+  and AV block)**
+- C. Congenital long-QT syndrome with torsades de pointes
+- D. Right heart failure from pulmonary arterial hypertension
+
+**Correct: B.** Conduction-system disease (and ventricular arrhythmia
+from fibrosis) drives device therapy.
+
+### Q24 — Biomarker for ERT monitoring (workup / monitoring)
+
+**In a patient on enzyme replacement therapy for Fabry disease, which
+blood test best reflects biochemical disease activity and treatment
+response over time?**
+
+- A. Plasma globotriaosylceramide (Gb3)
+- **B. ✓ Plasma globotriaosylsphingosine (lyso-Gb3)**
+- C. Leukocyte alpha-galactosidase A activity
+- D. 24-hour urine protein-to-creatinine ratio
+
+**Correct: B.** lyso-Gb3 tracks disease activity and treatment response;
+enzyme activity is diagnostic, not a monitoring marker.
+
+### Q25 — Stroke pattern (neurology, advanced)
+
+**Patients with Fabry disease are at markedly increased risk of stroke,
+often at a young age. Which stroke pattern is most characteristic?**
+
+- A. Cardioembolic stroke as the predominant mechanism
+- B. Lobar intracerebral hemorrhage from cerebral amyloid angiopathy
+- **C. ✓ Small-vessel ischemic stroke with a predilection for the
+  posterior (vertebrobasilar) circulation**
+- D. Subarachnoid hemorrhage from ruptured saccular aneurysms
+
+**Correct: C.** Small-vessel cerebrovasculopathy with posterior-circulation
+predilection (dolichoectasia).
+
+### Q26 — Heat intolerance and hypohidrosis (autonomic, advanced)
+
+**A young man with Fabry disease reports that he cannot tolerate hot
+weather or exercise and rarely sweats. The most likely explanation is:**
+
+- A. Anticholinergic side effect of one of his medications
+- B. Hypothalamic thermoregulatory dysfunction
+- C. Deconditioning and reduced cardiac output from his cardiomyopathy
+- **D. ✓ Fabry-related small-fiber and autonomic dysfunction impairing
+  sweating (hypohidrosis)**
+
+**Correct: D.** Hypohidrosis from small-fiber/autonomic involvement is a
+classic and under-recognized feature.
+
+### Q27 — Kidney transplant outcome (management, advanced)
+
+**A patient with Fabry disease reaches end-stage kidney disease and
+receives a kidney transplant. Which statement is most accurate?**
+
+- **A. ✓ The transplanted kidney is generally spared, but heart and brain
+  disease continue to progress without disease-specific therapy**
+- B. The transplanted kidney rapidly develops Fabry nephropathy and fails
+  within a year
+- C. Transplantation cures Fabry disease by restoring systemic enzyme
+  levels
+- D. Transplantation is contraindicated in Fabry disease
+
+**Correct: A.** The allograft is largely spared, but extrarenal disease
+progresses without enzyme/chaperone therapy.
+
 ### Q13 — Post-test comfort scale (not graded)
 
 > *"How comfortable would you be taking care of a patient with Fabry
@@ -320,5 +475,5 @@ measure.
 
 | A | B | C | D |
 |---|---|---|---|
-| Q1, Q6, Q8 | Q2, Q4, Q10 | Q3, Q5, Q11 | Q7, Q9, Q12 |
-| 3 | 3 | 3 | 3 |
+| Q1, Q6, Q8, Q15, Q22, Q27 | Q2, Q4, Q10, Q23, Q24 | Q3, Q5, Q11, Q21, Q25 | Q7, Q9, Q12, Q16, Q19, Q26 |
+| 6 | 5 | 5 | 6 |

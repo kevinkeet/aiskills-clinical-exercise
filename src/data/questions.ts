@@ -15,18 +15,20 @@
  *   lists the differentials, the female-diagnosis caveat, the cardiac
  *   imaging signatures, and the ERT/migalastat distinction.
  *
- * Each question maps to one of the five tasks:
- *   Q1–3  → Task 1 (additional history)
- *   Q4–6  → Task 2 (physical examination)
- *   Q7–9  → Task 3 (diagnostic workup)
- *   Q10–11 → Task 4 (next steps in management)
- *   Q12   → Task 5 (patient instructions)
+ * NOTE: The runtime source of truth is the `quiz_questions` Supabase
+ * table (editable from /admin). These defaults are only seeded when that
+ * table is empty, so they double as a backup of the curated live set.
+ * Last synced to the live DB on 2026-05-29 — 22 MCQs + 1 comfort scale.
  *
- * Correct-answer positions are evenly distributed: 3 each of A, B, C, D.
- * Position pattern: A, B, C, B, C, A, D, A, D, B, C, D
+ * Question numbers are stable IDs, not positions: numbers 14, 17, 18, 20
+ * were retired (see docs/Retired-Questions.md) and 23–27 were added later,
+ * so the sequence has intentional gaps. loadQuestions() sorts the comfort
+ * scale (Q13) first, then MCQs in ascending numeric order.
  *
- * Distractor lengths are kept similar to the correct answer within each
- * question so that "longest option" cannot be used as a guessing heuristic.
+ * Correct-answer positions across the 22 MCQs are balanced: A=6, B=5,
+ * C=5, D=6. Distractor lengths are kept similar to the correct answer
+ * within each question so that "longest option" cannot be used as a
+ * guessing heuristic.
  */
 
 /** Multiple-choice question (default). */
@@ -367,6 +369,179 @@ export const defaultQuestions: Question[] = [
       },
     ],
     correctAnswer: 'D',
+  },
+
+  // --- ADDITIONAL MECHANISM / CORE-CONCEPT ITEMS (Q15, Q16, Q19, Q21, Q22) ---
+  {
+    number: 15,
+    text: 'The neuropathic pain experienced in Fabry disease is most directly related to:',
+    options: [
+      {
+        label: 'A',
+        value: 'Deposition of glycosphingolipids within small nerve fibers',
+      },
+      { label: 'B', value: 'Immune-mediated demyelination' },
+      { label: 'C', value: 'Compression neuropathy from tissue edema' },
+      { label: 'D', value: 'Autoimmune vasculitis of peripheral nerves' },
+    ],
+    correctAnswer: 'A',
+  },
+  {
+    number: 16,
+    text: 'Which mechanism most likely explains the development of left ventricular hypertrophy in Fabry disease?',
+    options: [
+      { label: 'A', value: 'Chronic systemic hypertension alone' },
+      { label: 'B', value: 'Coronary vasospasm causing fibrosis' },
+      { label: 'C', value: 'Recurrent myocarditis' },
+      {
+        label: 'D',
+        value: 'Glycosphingolipid accumulation within cardiomyocytes',
+      },
+    ],
+    correctAnswer: 'D',
+  },
+  {
+    number: 19,
+    text: 'Proteinuria in Fabry disease most directly reflects injury to which renal structure?',
+    options: [
+      { label: 'A', value: 'Distal tubules' },
+      { label: 'B', value: 'Collecting ducts' },
+      { label: 'C', value: 'Renal arteries' },
+      { label: 'D', value: 'Podocytes' },
+    ],
+    correctAnswer: 'D',
+  },
+  {
+    number: 21,
+    text: 'The primary rationale for initiating disease-specific therapy early in Fabry disease is to:',
+    options: [
+      { label: 'A', value: 'Reverse all accumulated organ damage' },
+      { label: 'B', value: 'Eliminate inheritance risk' },
+      {
+        label: 'C',
+        value: 'Prevent irreversible organ fibrosis and dysfunction',
+      },
+      { label: 'D', value: 'Normalize lifespan' },
+    ],
+    correctAnswer: 'C',
+  },
+  {
+    number: 22,
+    text: 'Which patient presentation should most strongly prompt consideration of Fabry disease?',
+    options: [
+      {
+        label: 'A',
+        value:
+          'Young man with unexplained CKD, neuropathic pain, and family history of renal disease',
+      },
+      { label: 'B', value: 'Elderly patient with diabetic nephropathy' },
+      { label: 'C', value: 'Middle-aged smoker with hematuria' },
+      { label: 'D', value: 'Woman with isolated nephrolithiasis' },
+    ],
+    correctAnswer: 'A',
+  },
+
+  // --- HARDER "LEARNED-AT-THE-BEDSIDE" ITEMS (Q23–Q27) ---
+  {
+    number: 23,
+    text: 'Beyond left ventricular hypertrophy, which cardiac complication most commonly leads to pacemaker or ICD placement in patients with Fabry disease?',
+    options: [
+      { label: 'A', value: 'Recurrent supraventricular tachycardia' },
+      {
+        label: 'B',
+        value:
+          'Progressive conduction-system disease (sinus node dysfunction and AV block)',
+      },
+      {
+        label: 'C',
+        value: 'Congenital long-QT syndrome with torsades de pointes',
+      },
+      {
+        label: 'D',
+        value: 'Right heart failure from pulmonary arterial hypertension',
+      },
+    ],
+    correctAnswer: 'B',
+  },
+  {
+    number: 24,
+    text: 'In a patient on enzyme replacement therapy for Fabry disease, which blood test best reflects biochemical disease activity and treatment response over time?',
+    options: [
+      { label: 'A', value: 'Plasma globotriaosylceramide (Gb3)' },
+      { label: 'B', value: 'Plasma globotriaosylsphingosine (lyso-Gb3)' },
+      { label: 'C', value: 'Leukocyte alpha-galactosidase A activity' },
+      { label: 'D', value: '24-hour urine protein-to-creatinine ratio' },
+    ],
+    correctAnswer: 'B',
+  },
+  {
+    number: 25,
+    text: 'Patients with Fabry disease are at markedly increased risk of stroke, often at a young age. Which stroke pattern is most characteristic?',
+    options: [
+      {
+        label: 'A',
+        value: 'Cardioembolic stroke as the predominant mechanism',
+      },
+      {
+        label: 'B',
+        value: 'Lobar intracerebral hemorrhage from cerebral amyloid angiopathy',
+      },
+      {
+        label: 'C',
+        value:
+          'Small-vessel ischemic stroke with a predilection for the posterior (vertebrobasilar) circulation',
+      },
+      {
+        label: 'D',
+        value: 'Subarachnoid hemorrhage from ruptured saccular aneurysms',
+      },
+    ],
+    correctAnswer: 'C',
+  },
+  {
+    number: 26,
+    text: 'A young man with Fabry disease reports that he cannot tolerate hot weather or exercise and rarely sweats. The most likely explanation is:',
+    options: [
+      {
+        label: 'A',
+        value: 'Anticholinergic side effect of one of his medications',
+      },
+      { label: 'B', value: 'Hypothalamic thermoregulatory dysfunction' },
+      {
+        label: 'C',
+        value:
+          'Deconditioning and reduced cardiac output from his cardiomyopathy',
+      },
+      {
+        label: 'D',
+        value:
+          'Fabry-related small-fiber and autonomic dysfunction impairing sweating (hypohidrosis)',
+      },
+    ],
+    correctAnswer: 'D',
+  },
+  {
+    number: 27,
+    text: 'A patient with Fabry disease reaches end-stage kidney disease and receives a kidney transplant. Which statement is most accurate?',
+    options: [
+      {
+        label: 'A',
+        value:
+          'The transplanted kidney is generally spared, but heart and brain disease continue to progress without disease-specific therapy',
+      },
+      {
+        label: 'B',
+        value:
+          'The transplanted kidney rapidly develops Fabry nephropathy and fails within a year',
+      },
+      {
+        label: 'C',
+        value:
+          'Transplantation cures Fabry disease by restoring systemic enzyme levels',
+      },
+      { label: 'D', value: 'Transplantation is contraindicated in Fabry disease' },
+    ],
+    correctAnswer: 'A',
   },
 
   // --- POST-TEST COMFORT (Q13) ---
