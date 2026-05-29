@@ -3,13 +3,16 @@ export const caseVignette = {
     '"My kidneys are getting worse and nobody can figure out why."',
   hpi: `Marcus Thompson is a 32-year-old man referred to the internal medicine clinic by his primary care physician for evaluation of progressive chronic kidney disease (CKD) of unclear etiology. His creatinine has risen from 1.2 mg/dL eighteen months ago to 1.8 mg/dL on his most recent labs, with persistent proteinuria (urine protein-to-creatinine ratio 1.4 g/g). He has no history of diabetes or hypertension, and a standard workup ordered by his primary care physician — including ANA, hepatitis serologies, HIV, and complement levels — has been unremarkable.
 
-He is otherwise healthy-appearing and frustrated that, despite the workup, no one has been able to explain why a young person would be losing kidney function. The referral note contains little additional history, and it will be up to you to take a focused history during today's visit.`,
+Notably, an ECG obtained during the workup showed left ventricular hypertrophy, which is unexpected in a normotensive 32-year-old. Because unexplained kidney disease together with unexplained cardiac hypertrophy in a young patient can point to a hereditary multisystem condition, his primary care physician raised the question of Fabry disease and referred him for evaluation.
+
+He is otherwise healthy-appearing and frustrated that no one has been able to explain why a young person would be losing kidney function. The referral note contains little other history, so it is up to you to take a focused history during today's visit.`,
   pmh: 'CKD stage 3a, diagnosed 18 months ago. No other chronic medical conditions documented.',
   medications: 'Acetaminophen as needed. No other regular medications.',
   allergies: 'NKDA',
   socialHistory:
     'Graphic designer. Non-smoker. Occasional alcohol. No recreational drug use. Lives with his partner.',
-  familyHistory: 'Not obtained at the referring visit.',
+  familyHistory:
+    'Mother has an unspecified "heart condition" diagnosed in her 50s. A maternal uncle developed kidney failure requiring dialysis in his 40s. Father and his side of the family are healthy, with no father-to-son pattern of illness.',
   ros: 'Limited in the referral note. The patient denies fever and unintentional weight loss; other systems were not systematically reviewed.',
   vitals:
     'BP 138/88 mmHg, HR 78 bpm, RR 14, Temp 98.4\u00b0F, SpO2 98% on RA, BMI 24.1',
