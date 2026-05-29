@@ -7,6 +7,17 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY || '',
 });
 
+// Concise, helpful clinical-reasoning assistant. Pilot feedback flagged the
+// AI as too verbose (long exam lists, overlong after-visit summaries), so the
+// prompt explicitly pushes for brevity and length-matching.
+const AI_SYSTEM_PROMPT = `You are a clinical reasoning assistant helping an internal medicine resident work through a patient case during a learning exercise. Be smart, accurate, and very concise.
+
+- Lead with the highest-yield points. Prefer short, focused lists over exhaustive ones.
+- Match the length of your answer to the question: a brief question gets a brief answer.
+- Do not pad with disclaimers, restated context, or generic caveats.
+- When the resident shares their own reasoning, give targeted, specific feedback rather than rewriting everything.
+- Ask a short clarifying question only when the request is genuinely ambiguous.`;
+
 export async function POST(req: NextRequest) {
   try {
     // Authenticate via session cookie. Reject if not in AI arm.
@@ -42,8 +53,9 @@ export async function POST(req: NextRequest) {
     }
 
     const stream = anthropic.messages.stream({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-opus-4-7',
       max_tokens: 4096,
+      system: AI_SYSTEM_PROMPT,
       messages: messages.map((m: { role: string; content: string }) => ({
         role: m.role as 'user' | 'assistant',
         content: m.content,
