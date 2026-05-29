@@ -134,8 +134,7 @@ The original twelve items map onto the five tasks. The later items
 
 ### Q1 — Acroparesthesia triggers (history)
 
-**Episodes of severe burning pain in the hands and feet, present since
-childhood, in this disease are most characteristically triggered by:**
+**Episodes of severe burning pain in the hands and feet, present since childhood, in this disease are most characteristically triggered by:**
 
 - **A. ✓ Heat, fever, and physical exertion**
 - B. Cold exposure, stress, and certain foods
@@ -148,63 +147,46 @@ answer.
 
 ### Q2 — Family-history pattern (history)
 
-**A 32-year-old man with this disease is asking about inheritance.
-Which family-history pattern would most support the diagnosis?**
+**A 32-year-old man with this disease is asking about inheritance. Which family-history pattern would most support the diagnosis?**
 
-- A. Both parents unaffected, with approximately 25% of siblings
-  affected regardless of sex
-- **B. ✓ Affected maternal uncles and male cousins, with no
-  father-to-son transmission**
-- C. Affected men in multiple generations on the father's side,
-  including father-to-son transmission
+- A. Both parents unaffected, with approximately 25% of siblings affected regardless of sex
+- **B. ✓ Affected maternal uncles and male cousins, with no father-to-son transmission**
+- C. Affected men in multiple generations on the father’s side, including father-to-son transmission
 - D. No family history of similar symptoms in any relative
 
 **Correct: B (X-linked).** Naive guesses *autosomal dominant* (option C).
 
 ### Q3 — GI symptoms misdiagnosed as IBS (history)
 
-**A patient with this disease has a long-standing diagnosis of
-irritable bowel syndrome with episodic abdominal pain and diarrhea.
-This gastrointestinal pattern is most likely:**
+**A patient with this disease has a long-standing diagnosis of irritable bowel syndrome with episodic abdominal pain and diarrhea. This gastrointestinal pattern is most likely:**
 
-- A. An unrelated comorbidity that should be managed independently
-- B. A side effect of long-term gabapentin therapy
-- **C. ✓ A direct manifestation of the underlying disease, often
-  delaying its diagnosis**
-- D. An indication for empiric antibiotic therapy for small-intestinal
-  bacterial overgrowth
+- A. A coincidental functional bowel disorder unrelated to the underlying disease
+- B. An adverse effect of the chronic neuropathic-pain medications he takes
+- **C. ✓ A direct gastrointestinal manifestation of the disease, often predating its diagnosis**
+- D. A sign of mesenteric ischemia from vascular involvement, warranting urgent mesenteric angiography
 
 **Correct: C.** "Common sense" says unrelated. Tested in the case
 prompt itself.
 
 ### Q4 — Angiokeratoma distribution (physical exam)
 
-**On physical examination, which of the following dermatologic findings
-would most strongly support this diagnosis?**
+**On physical examination, which of the following dermatologic findings would most strongly support this diagnosis?**
 
-- A. Erythematous, scaly plaques on the extensor surfaces of the
-  elbows and knees *(psoriasis)*
-- **B. ✓ Clusters of small, dark-red papules on the lower abdomen,
-  groin, and upper thighs**
-- C. Hyperpigmented velvety patches in the axillae and posterior
-  neck *(acanthosis nigricans)*
-- D. Yellow nodules along the Achilles and extensor tendons of the
-  hands *(xanthomas)*
+- A. Erythematous, silvery-scaled plaques on the extensor surfaces of the elbows and knees
+- **B. ✓ Clusters of small, dark-red papules over the lower abdomen, groin, and upper thighs**
+- C. Hyperpigmented, velvety thickened patches in the axillae and the posterior neck folds
+- D. Firm yellow-orange nodules overlying the Achilles and the extensor tendons of the hands
 
 **Correct: B.** "Swimming-trunk" angiokeratoma distribution.
 
 ### Q5 — Cornea verticillata is *not* pathognomonic (physical exam)
 
-**Cornea verticillata (bilateral whorl-like opacities of the corneal
-epithelium) is observed on slit-lamp examination. Which of the
-following is true about this finding?**
+**Cornea verticillata (bilateral whorl-like opacities of the corneal epithelium) is observed on slit-lamp examination. Which of the following is true about this finding?**
 
-- A. It is pathognomonic for this disease and excludes other diagnoses
-- B. It typically causes significant visual loss requiring corneal
-  transplantation
-- **C. ✓ It is also seen with chronic amiodarone, chloroquine, and
-  other cationic amphiphilic drug use**
-- D. It is usually asymmetric, affecting only one eye in most patients
+- A. It is pathognomonic for this disease and reliably excludes all other diagnoses
+- B. It typically causes progressive visual loss that requires corneal transplantation
+- **C. ✓ It also occurs with chronic amiodarone, chloroquine, or hydroxychloroquine therapy**
+- D. It is usually markedly asymmetric, affecting only one eye in the majority of patients
 
 **Correct: C.** *Strong AI-vs-Control differentiator.* The AI is likely
 to call it "characteristic" and stop. UpToDate explicitly lists the
@@ -214,45 +196,32 @@ drug differential.
 
 **Sensory examination of a patient with this disease typically shows:**
 
-- **A. ✓ Decreased pinprick and temperature sensation distally, with
-  preserved vibration and proprioception**
-- B. Decreased vibration and proprioception in the feet, with preserved
-  pinprick and temperature
-- C. A patchy, asymmetric distribution consistent with mononeuritis
-  multiplex
-- D. A "stocking-glove" loss of all sensory modalities with absent
-  ankle reflexes
+- **A. ✓ Reduced pinprick and temperature sensation distally, with preserved vibration sense**
+- B. Reduced vibration and proprioception in the feet, with preserved pinprick and temperature
+- C. A patchy, asymmetric sensory deficit consistent with a mononeuritis multiplex pattern
+- D. A symmetric 'stocking-glove' loss of all sensory modalities with absent ankle reflexes
 
 **Correct: A.** Naive guesses the *diabetic* stocking-glove pattern (D).
 
 ### Q7 — Initial confirmatory test in males (workup)
 
-**For a male patient with clinical suspicion of this disease, the most
-appropriate initial confirmatory test is:**
+**For a male patient with clinical suspicion of this disease, the most appropriate initial confirmatory test is:**
 
-- A. Renal biopsy with electron microscopy looking for lamellated
-  inclusion bodies
+- A. Renal biopsy with electron microscopy looking for lamellated inclusion bodies
 - B. Whole-exome sequencing performed on a peripheral blood sample
-- C. Serum protein electrophoresis with immunofixation *(amyloid trap)*
-- **D. ✓ Plasma or leukocyte alpha-galactosidase A enzyme activity
-  assay**
+- C. Serum protein electrophoresis with immunofixation
+- **D. ✓ Plasma or leukocyte alpha-galactosidase A enzyme activity assay**
 
 **Correct: D.**
 
 ### Q8 — Why a "normal" enzyme activity in a female does NOT rule out (workup)
 
-**The patient's 35-year-old sister is being evaluated as a possible
-carrier. Her plasma alpha-galactosidase A activity is reported as
-normal. The most appropriate interpretation is:**
+**The patient’s 35-year-old sister is being evaluated as a possible carrier. Her plasma alpha-galactosidase A activity is reported as normal. The most appropriate interpretation is:**
 
-- **A. ✓ GLA gene sequencing is required, because enzyme activity is
-  unreliable in heterozygous females**
-- B. She is definitively unaffected and does not require further
-  evaluation
-- C. She has the disease confirmed; her enzyme activity is normal due
-  to compensatory pathways
-- D. She has a 50% chance of being a carrier and should defer testing
-  until she becomes symptomatic
+- **A. ✓ Send GLA gene sequencing, because enzyme activity is unreliable in carrier females**
+- B. She is definitively unaffected and requires no further evaluation or genetic testing
+- C. Her diagnosis is confirmed; the normal enzyme activity reflects compensatory pathways
+- D. She has a 50% chance of carrying it and should defer testing until she is symptomatic
 
 **Correct: A.** *Strongest AI-vs-Control differentiator.* UpToDate is
 explicit about X-inactivation. The AI may say "test her enzyme"
@@ -260,8 +229,7 @@ without flagging the false-negative problem in females.
 
 ### Q9 — Short PR interval on ECG (workup)
 
-**Which of the following ECG findings is characteristic of cardiac
-involvement in this disease, particularly in earlier stages?**
+**Which of the following ECG findings is characteristic of cardiac involvement in this disease, particularly in earlier stages?**
 
 - A. A prolonged QTc interval with marked T-wave inversion
 - B. Right bundle branch block with marked right axis deviation
@@ -276,81 +244,63 @@ to emphasize LVH instead. The case vignette actually shows PR 110 ms
 
 **Migalastat (Galafold) for this disease:**
 
-- A. Is a substrate reduction therapy that inhibits glucosylceramide
-  synthase *(Gaucher trap)*
-- **B. ✓ Is a pharmacologic chaperone effective only in patients with
-  specific "amenable" GLA mutations**
-- C. Is administered intravenously every two weeks alongside enzyme
-  replacement therapy
-- D. Is curative when combined with hematopoietic stem cell
-  transplantation
+- A. Is an oral substrate reduction therapy that inhibits the enzyme glucosylceramide synthase
+- **B. ✓ Is a pharmacologic chaperone that works only in patients with 'amenable' GLA mutations**
+- C. Is given intravenously every two weeks alongside standard enzyme replacement therapy
+- D. Is curative when it is combined with hematopoietic stem-cell transplantation early on
 
 **Correct: B.** *Strong differentiator.* UpToDate is explicit that it
 only works for amenable mutations.
 
 ### Q11 — Renal protection independent of disease-specific therapy (management)
 
-**In a patient with this disease, stage 3 CKD, and persistent
-proteinuria, a cornerstone of renal protection — independent of
-disease-specific therapy — is:**
+**In a patient with this disease, stage 3 CKD, and persistent proteinuria, a cornerstone of renal protection — independent of disease-specific therapy — is:**
 
-- A. A high-dose loop diuretic such as furosemide to control fluid
-  overload
-- B. Chronic empiric oral corticosteroids to slow glomerular injury
-- **C. ✓ An ACE inhibitor or angiotensin receptor blocker, titrated to
-  reduce proteinuria**
-- D. A calcineurin inhibitor such as tacrolimus to suppress glomerular
-  inflammation
+- A. A high-dose loop diuretic such as furosemide to control chronic fluid overload
+- B. Chronic empiric oral corticosteroids to slow progressive glomerular injury over time
+- **C. ✓ An ACE inhibitor or angiotensin receptor blocker titrated to reduce proteinuria**
+- D. A calcineurin inhibitor such as tacrolimus to suppress ongoing glomerular inflammation
 
 **Correct: C.**
 
 ### Q12 — Inheritance counselling (patient instructions)
 
-**You are counseling a male patient with this disease about
-implications for his future children. Which of the following statements
-is most accurate?**
+**You are counseling a male patient with this disease about implications for his future children. Which of the following statements is most accurate?**
 
-- A. Each of his children, regardless of sex, has a 50% chance of
-  inheriting the mutation *(autosomal-dominant trap)*
-- B. Only his sons are at risk; his daughters cannot inherit the
-  mutation
-- C. None of his children are at increased risk because the disease
-  typically arises de novo
-- **D. ✓ All of his daughters will inherit the mutation; none of his
-  sons will inherit it**
+- A. Each of his children, regardless of sex, has a 50% chance of inheriting the mutation
+- B. Only his sons are at risk; his daughters cannot inherit the mutation
+- C. None of his children are at increased risk because the disease typically arises de novo
+- **D. ✓ All of his daughters will inherit the mutation; none of his sons will inherit it**
 
 **Correct: D.** Hemizygous male passes his X to all daughters and
 his Y to all sons.
 
 ### Q15 — Mechanism of neuropathic pain (mechanism)
 
-**The neuropathic pain experienced in Fabry disease is most directly
-related to:**
+**The neuropathic pain experienced in Fabry disease is most directly related to:**
 
 - **A. ✓ Deposition of glycosphingolipids within small nerve fibers**
-- B. Immune-mediated demyelination
-- C. Compression neuropathy from tissue edema
-- D. Autoimmune vasculitis of peripheral nerves
+- B. Immune-mediated demyelination of the peripheral sensory nerves
+- C. Entrapment and compression neuropathy from soft-tissue edema
+- D. Autoimmune small-vessel vasculitis affecting the peripheral nerves
 
 **Correct: A.** Small-fiber storage, not an inflammatory or compressive
 mechanism.
 
 ### Q16 — Mechanism of LVH (mechanism)
 
-**Which mechanism most likely explains the development of left
-ventricular hypertrophy in Fabry disease?**
+**Which mechanism most likely explains the development of left ventricular hypertrophy in Fabry disease?**
 
-- A. Chronic systemic hypertension alone
-- B. Coronary vasospasm causing fibrosis
-- C. Recurrent myocarditis
-- **D. ✓ Glycosphingolipid accumulation within cardiomyocytes**
+- A. Chronic, poorly controlled systemic arterial hypertension
+- B. Coronary vasospasm causing recurrent ischemia and fibrosis
+- C. Recurrent viral myocarditis with inflammatory remodeling
+- **D. ✓ Glycosphingolipid accumulation within the cardiomyocytes**
 
 **Correct: D.** A storage cardiomyopathy, not pressure-overload LVH.
 
 ### Q19 — Renal target of injury (mechanism)
 
-**Proteinuria in Fabry disease most directly reflects injury to which
-renal structure?**
+**Proteinuria in Fabry disease most directly reflects injury to which renal structure?**
 
 - A. Distal tubules
 - B. Collecting ducts
@@ -361,100 +311,84 @@ renal structure?**
 
 ### Q21 — Rationale for early therapy (management)
 
-**The primary rationale for initiating disease-specific therapy early in
-Fabry disease is to:**
+**The primary rationale for initiating disease-specific therapy early in Fabry disease is to:**
 
-- A. Reverse all accumulated organ damage
-- B. Eliminate inheritance risk
-- **C. ✓ Prevent irreversible organ fibrosis and dysfunction**
-- D. Normalize lifespan
+- A. Reverse all of the organ damage that has already accumulated
+- B. Eliminate the risk of transmitting the disease to offspring
+- **C. ✓ Prevent irreversible organ fibrosis and loss of function**
+- D. Restore a normal life expectancy in essentially all patients
 
 **Correct: C.** Therapy halts progression; established fibrosis is not
 reversed.
 
 ### Q22 — When to suspect Fabry (recognition)
 
-**Which patient presentation should most strongly prompt consideration of
-Fabry disease?**
+**Which patient presentation should most strongly prompt consideration of Fabry disease?**
 
-- **A. ✓ Young man with unexplained CKD, neuropathic pain, and family
-  history of renal disease**
-- B. Elderly patient with diabetic nephropathy
-- C. Middle-aged smoker with hematuria
-- D. Woman with isolated nephrolithiasis
+- **A. ✓ Young man with proteinuric CKD, lifelong burning pain in the hands and feet, and a maternal uncle on dialysis**
+- B. Young woman with proteinuria, a photosensitive facial rash, and inflammatory polyarthralgia of the hands
+- C. Young man with persistent hematuria, progressive sensorineural hearing loss, and a family history of kidney failure
+- D. Young adult with episodic flank pain, gross hematuria, and numerous bilateral renal cysts seen on imaging
 
 **Correct: A.** Multisystem disease in a young patient with a suggestive
 family history.
 
 ### Q23 — Conduction disease and device therapy (cardiac, advanced)
 
-**Beyond left ventricular hypertrophy, which cardiac complication most
-commonly leads to pacemaker or ICD placement in patients with Fabry
-disease?**
+**Beyond left ventricular hypertrophy, which of the following is another characteristic cardiac manifestation of Fabry disease?**
 
-- A. Recurrent supraventricular tachycardia
-- **B. ✓ Progressive conduction-system disease (sinus node dysfunction
-  and AV block)**
-- C. Congenital long-QT syndrome with torsades de pointes
-- D. Right heart failure from pulmonary arterial hypertension
+- A. Recurrent paroxysmal supraventricular tachycardia arising from a congenital accessory pathway
+- **B. ✓ Progressive conduction disease and arrhythmias, such as AV block and atrial fibrillation**
+- C. Congenital long-QT syndrome that predisposes the patient to torsades de pointes
+- D. Pulmonary arterial hypertension that leads to progressive right heart failure
 
 **Correct: B.** Conduction-system disease (and ventricular arrhythmia
 from fibrosis) drives device therapy.
 
 ### Q24 — Biomarker for ERT monitoring (workup / monitoring)
 
-**In a patient on enzyme replacement therapy for Fabry disease, which
-blood test best reflects biochemical disease activity and treatment
-response over time?**
+**In a patient on enzyme replacement therapy for Fabry disease, which blood test best reflects biochemical disease activity and treatment response over time?**
 
-- A. Plasma globotriaosylceramide (Gb3)
+- A. Plasma globotriaosylceramide (Gb3) concentration
 - **B. ✓ Plasma globotriaosylsphingosine (lyso-Gb3)**
-- C. Leukocyte alpha-galactosidase A activity
-- D. 24-hour urine protein-to-creatinine ratio
+- C. Leukocyte alpha-galactosidase A enzyme activity
+- D. A 24-hour urine protein-to-creatinine ratio
 
 **Correct: B.** lyso-Gb3 tracks disease activity and treatment response;
 enzyme activity is diagnostic, not a monitoring marker.
 
 ### Q25 — Stroke pattern (neurology, advanced)
 
-**Patients with Fabry disease are at markedly increased risk of stroke,
-often at a young age. Which stroke pattern is most characteristic?**
+**Patients with Fabry disease are at markedly increased risk of stroke, often at a young age. Which stroke pattern is most characteristic?**
 
-- A. Cardioembolic stroke as the predominant mechanism
-- B. Lobar intracerebral hemorrhage from cerebral amyloid angiopathy
-- **C. ✓ Small-vessel ischemic stroke with a predilection for the
-  posterior (vertebrobasilar) circulation**
-- D. Subarachnoid hemorrhage from ruptured saccular aneurysms
+- A. Large-artery cardioembolic stroke as the single predominant mechanism
+- B. Lobar intracerebral hemorrhage caused by underlying cerebral amyloid angiopathy
+- **C. ✓ Small-vessel ischemic stroke with a predilection for the posterior circulation**
+- D. Subarachnoid hemorrhage from the rupture of a berry (saccular) aneurysm in the circle of Willis
 
 **Correct: C.** Small-vessel cerebrovasculopathy with posterior-circulation
 predilection (dolichoectasia).
 
 ### Q26 — Heat intolerance and hypohidrosis (autonomic, advanced)
 
-**A young man with Fabry disease reports that he cannot tolerate hot
-weather or exercise and rarely sweats. The most likely explanation is:**
+**A young man with Fabry disease reports that he cannot tolerate hot weather or exercise and rarely sweats. The most likely explanation is:**
 
-- A. Anticholinergic side effect of one of his medications
-- B. Hypothalamic thermoregulatory dysfunction
-- C. Deconditioning and reduced cardiac output from his cardiomyopathy
-- **D. ✓ Fabry-related small-fiber and autonomic dysfunction impairing
-  sweating (hypohidrosis)**
+- A. An anticholinergic adverse effect of one of his current medications
+- B. Primary hypothalamic thermoregulatory dysfunction of central origin
+- C. Physical deconditioning and reduced cardiac output from his cardiomyopathy
+- **D. ✓ Fabry-related small-fiber and autonomic dysfunction that impairs sweating**
 
 **Correct: D.** Hypohidrosis from small-fiber/autonomic involvement is a
 classic and under-recognized feature.
 
 ### Q27 — Kidney transplant outcome (management, advanced)
 
-**A patient with Fabry disease reaches end-stage kidney disease and
-receives a kidney transplant. Which statement is most accurate?**
+**A patient with Fabry disease reaches end-stage kidney disease and receives a kidney transplant. Which statement is most accurate?**
 
-- **A. ✓ The transplanted kidney is generally spared, but heart and brain
-  disease continue to progress without disease-specific therapy**
-- B. The transplanted kidney rapidly develops Fabry nephropathy and fails
-  within a year
-- C. Transplantation cures Fabry disease by restoring systemic enzyme
-  levels
-- D. Transplantation is contraindicated in Fabry disease
+- **A. ✓ The graft is largely spared, but cardiac and cerebrovascular disease keep progressing**
+- B. The graft re-accumulates glycosphingolipid and predictably fails within the first year
+- C. Transplantation corrects the enzyme deficiency systemically and halts disease elsewhere
+- D. A living related-donor graft is strongly preferred because relatives resist recurrence
 
 **Correct: A.** The allograft is largely spared, but extrarenal disease
 progresses without enzyme/chaperone therapy.
