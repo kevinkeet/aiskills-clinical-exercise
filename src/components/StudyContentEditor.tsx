@@ -19,9 +19,17 @@ import { isMCQ } from '@/data/questions';
  *   automatically. New items live as a "pending draft" until saved —
  *   cancelling discards them without touching the database.
  */
+interface QuestionStat {
+  taken: number;
+  correct: number;
+}
+
 export default function StudyContentEditor({ password }: { password: string }) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [questionStats, setQuestionStats] = useState<
+    Record<number, QuestionStat>
+  >({});
   const [loading, setLoading] = useState(true);
   const [editingTask, setEditingTask] = useState<number | null>(null);
   const [editingQuestion, setEditingQuestion] = useState<number | null>(null);
@@ -33,18 +41,27 @@ export default function StudyContentEditor({ password }: { password: string }) {
   async function refresh() {
     setLoading(true);
     try {
-      const [tRes, qRes] = await Promise.all([
+      const [tRes, qRes, sRes] = await Promise.all([
         fetch('/api/tasks'),
         // Admin endpoint returns ALL questions incl. hidden ones + the
         // `active` flag; the public /api/questions returns only live ones.
         fetch('/api/admin/questions', {
           headers: { 'x-admin-password': password },
         }),
+        // Per-question pilot performance (correct / taken).
+        fetch('/api/admin/question-stats', {
+          headers: { 'x-admin-password': password },
+        }),
       ]);
       const tBody = (await tRes.json()) as { tasks?: Task[]; error?: string };
       const qBody = (await qRes.json()) as { questions?: Question[]; error?: string };
+      const sBody = (await sRes.json().catch(() => ({}))) as {
+        stats?: Record<number, QuestionStat>;
+        error?: string;
+      };
       if (tBody.tasks) setTasks(tBody.tasks);
       if (qBody.questions) setQuestions(qBody.questions);
+      if (sBody.stats) setQuestionStats(sBody.stats);
       if (tBody.error) setErrorMsg(`tasks: ${tBody.error}`);
       else if (qBody.error) setErrorMsg(`questions: ${qBody.error}`);
       else setErrorMsg('');
@@ -341,6 +358,7 @@ export default function StudyContentEditor({ password }: { password: string }) {
             <QuestionRow
               key={q.number}
               question={q}
+              stat={questionStats[q.number]}
               editing={editingQuestion === q.number}
               onEdit={() => {
                 setEditingQuestion(q.number);
@@ -512,8 +530,49 @@ function TaskRow({
 
 // ---------------- Question row ----------------
 
+/** Small pill summarising how pilots have done on a question. */
+function ResultsPill({
+  question,
+  stat,
+}: {
+  question: Question;
+  stat?: QuestionStat;
+}) {
+  // Scale questions have no right answer — just show the response count.
+  if (question.type === 'scale') {
+    return (
+      <span className="text-[10px] font-medium bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">
+        {stat?.taken ?? 0} response{(stat?.taken ?? 0) === 1 ? '' : 's'}
+      </span>
+    );
+  }
+  if (!stat || stat.taken === 0) {
+    return (
+      <span className="text-[10px] font-medium bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded">
+        No responses yet
+      </span>
+    );
+  }
+  const pct = Math.round((stat.correct / stat.taken) * 100);
+  const color =
+    pct >= 70
+      ? 'bg-emerald-100 text-emerald-800'
+      : pct >= 40
+      ? 'bg-amber-100 text-amber-800'
+      : 'bg-red-100 text-red-800';
+  return (
+    <span
+      className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${color}`}
+      title="Correct answers / participants who answered (pilot responses so far)"
+    >
+      {stat.correct}/{stat.taken} correct ({pct}%)
+    </span>
+  );
+}
+
 function QuestionRow({
   question,
+  stat,
   editing,
   isNew,
   onEdit,
@@ -523,6 +582,7 @@ function QuestionRow({
   onSave,
 }: {
   question: Question;
+  stat?: QuestionStat;
   editing: boolean;
   isNew?: boolean;
   onEdit: () => void;
@@ -565,6 +625,7 @@ function QuestionRow({
                   correct = {question.correctAnswer}
                 </span>
               )}
+              <ResultsPill question={question} stat={stat} />
             </div>
             <p className="text-sm text-foreground line-clamp-2">{question.text}</p>
           </div>
