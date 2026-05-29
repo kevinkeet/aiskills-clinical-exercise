@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { upsertQuestion, deleteQuestion } from '@/lib/content';
+import {
+  upsertQuestion,
+  deleteQuestion,
+  loadQuestions,
+  setQuestionActive,
+} from '@/lib/content';
 import type { Question, MCQQuestion, ScaleQuestion } from '@/data/questions';
 
 function requireAuth(req: NextRequest): NextResponse | null {
@@ -8,6 +13,67 @@ function requireAuth(req: NextRequest): NextResponse | null {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   return null;
+}
+
+/**
+ * List ALL questions, including hidden (inactive) ones, with their `active`
+ * flag. Auth: x-admin-password. The admin Study Content editor uses this
+ * instead of the public /api/questions (which returns only live questions)
+ * so the PI can see and toggle hidden items.
+ */
+export async function GET(req: NextRequest) {
+  const unauth = requireAuth(req);
+  if (unauth) return unauth;
+  try {
+    const questions = await loadQuestions({ includeInactive: true });
+    return NextResponse.json({ questions });
+  } catch (e) {
+    return NextResponse.json(
+      { error: e instanceof Error ? e.message : 'Failed to load questions' },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * Toggle one question's live/hidden state. Auth: x-admin-password.
+ * Body: { number: int, active: boolean }. Hiding is non-destructive — the
+ * question and any collected responses remain in the database.
+ */
+export async function PATCH(req: NextRequest) {
+  const unauth = requireAuth(req);
+  if (unauth) return unauth;
+
+  let body: { number?: unknown; active?: unknown };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+  }
+
+  const number = Number(body.number);
+  if (!Number.isInteger(number) || number < 1) {
+    return NextResponse.json(
+      { error: 'number must be a positive integer' },
+      { status: 400 }
+    );
+  }
+  if (typeof body.active !== 'boolean') {
+    return NextResponse.json(
+      { error: 'active must be a boolean' },
+      { status: 400 }
+    );
+  }
+
+  try {
+    await setQuestionActive(number, body.active);
+  } catch (e) {
+    return NextResponse.json(
+      { error: e instanceof Error ? e.message : 'Toggle failed' },
+      { status: 500 }
+    );
+  }
+  return NextResponse.json({ success: true, number, active: body.active });
 }
 
 /**

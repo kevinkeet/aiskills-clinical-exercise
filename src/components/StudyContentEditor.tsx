@@ -35,7 +35,11 @@ export default function StudyContentEditor({ password }: { password: string }) {
     try {
       const [tRes, qRes] = await Promise.all([
         fetch('/api/tasks'),
-        fetch('/api/questions'),
+        // Admin endpoint returns ALL questions incl. hidden ones + the
+        // `active` flag; the public /api/questions returns only live ones.
+        fetch('/api/admin/questions', {
+          headers: { 'x-admin-password': password },
+        }),
       ]);
       const tBody = (await tRes.json()) as { tasks?: Task[]; error?: string };
       const qBody = (await qRes.json()) as { questions?: Question[]; error?: string };
@@ -135,6 +139,34 @@ export default function StudyContentEditor({ password }: { password: string }) {
       await refresh();
     } catch (e) {
       setErrorMsg(e instanceof Error ? e.message : 'Delete failed');
+    }
+  }
+
+  async function toggleQuestionActive(number: number, makeActive: boolean) {
+    setStatusMsg('');
+    setErrorMsg('');
+    try {
+      const res = await fetch('/api/admin/questions', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-password': password,
+        },
+        body: JSON.stringify({ number, active: makeActive }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setErrorMsg(body.error ?? `HTTP ${res.status}`);
+        return;
+      }
+      flashStatus(
+        makeActive
+          ? `Q${number} is now LIVE in the assessment.`
+          : `Q${number} is now HIDDEN from the assessment.`
+      );
+      await refresh();
+    } catch (e) {
+      setErrorMsg(e instanceof Error ? e.message : 'Toggle failed');
     }
   }
 
@@ -293,8 +325,17 @@ export default function StudyContentEditor({ password }: { password: string }) {
       {/* Questions */}
       <details open className="group">
         <summary className="cursor-pointer text-sm font-semibold text-foreground py-2 select-none">
-          Quiz Questions ({questions.length})
+          Quiz Questions ({questions.filter((q) => q.active !== false).length}{' '}
+          live / {questions.length} total)
         </summary>
+        <div className="mb-2 text-xs text-muted bg-slate-50 border border-border rounded px-3 py-2 leading-relaxed">
+          Only <span className="font-semibold text-emerald-700">Live</span>{' '}
+          questions appear in the participant assessment. Use{' '}
+          <span className="font-semibold">Hide</span> to take a question out of
+          the quiz without losing it or its collected responses — it stays here
+          and can be made live again anytime.{' '}
+          <span className="font-semibold">Delete</span> is permanent.
+        </div>
         <div className="mt-2 space-y-2">
           {questions.map((q) => (
             <QuestionRow
@@ -308,6 +349,9 @@ export default function StudyContentEditor({ password }: { password: string }) {
               }}
               onCancel={() => setEditingQuestion(null)}
               onDelete={() => deleteQuestion(q.number)}
+              onToggleActive={(makeActive) =>
+                toggleQuestionActive(q.number, makeActive)
+              }
               onSave={async (next) => {
                 const ok = await saveQuestion(next);
                 if (ok) setEditingQuestion(null);
@@ -475,6 +519,7 @@ function QuestionRow({
   onEdit,
   onCancel,
   onDelete,
+  onToggleActive,
   onSave,
 }: {
   question: Question;
@@ -483,23 +528,40 @@ function QuestionRow({
   onEdit: () => void;
   onCancel: () => void;
   onDelete: () => void;
+  onToggleActive?: (makeActive: boolean) => void;
   onSave: (q: Question) => Promise<void>;
 }) {
   const [draft, setDraft] = useState<Question>(question);
   useEffect(() => setDraft(question), [question, editing]);
 
   if (!editing) {
+    const isHidden = question.active === false;
     return (
-      <div className="border border-border rounded-lg p-3">
+      <div
+        className={`border rounded-lg p-3 ${
+          isHidden
+            ? 'border-border bg-slate-50 opacity-70'
+            : 'border-border'
+        }`}
+      >
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <div className="text-xs text-muted mb-0.5">
-              Q{question.number}
-              <span className="ml-2 text-[10px] uppercase font-bold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">
+            <div className="text-xs text-muted mb-0.5 flex items-center flex-wrap gap-x-2 gap-y-1">
+              <span>Q{question.number}</span>
+              {isHidden ? (
+                <span className="text-[10px] uppercase font-bold bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">
+                  Hidden
+                </span>
+              ) : (
+                <span className="text-[10px] uppercase font-bold bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded">
+                  Live
+                </span>
+              )}
+              <span className="text-[10px] uppercase font-bold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">
                 {question.type === 'scale' ? 'scale' : 'mcq'}
               </span>
               {isMCQ(question) && (
-                <span className="ml-2 text-[10px] font-mono text-emerald-700">
+                <span className="text-[10px] font-mono text-emerald-700">
                   correct = {question.correctAnswer}
                 </span>
               )}
@@ -507,6 +569,24 @@ function QuestionRow({
             <p className="text-sm text-foreground line-clamp-2">{question.text}</p>
           </div>
           <div className="flex flex-col items-end gap-1.5 whitespace-nowrap">
+            {onToggleActive &&
+              (isHidden ? (
+                <button
+                  onClick={() => onToggleActive(true)}
+                  className="text-xs font-medium text-emerald-700 hover:text-emerald-900 hover:underline"
+                  title="Show this question in the participant assessment"
+                >
+                  Make live
+                </button>
+              ) : (
+                <button
+                  onClick={() => onToggleActive(false)}
+                  className="text-xs font-medium text-amber-700 hover:text-amber-900 hover:underline"
+                  title="Remove this question from the participant assessment (kept in the database)"
+                >
+                  Hide
+                </button>
+              ))}
             <button onClick={onEdit} className="text-xs text-primary hover:underline">
               Edit
             </button>

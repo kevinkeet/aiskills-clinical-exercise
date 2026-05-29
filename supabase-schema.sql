@@ -116,6 +116,10 @@ create table quiz_questions (
   scale_max_label text,
   task_domain text,
   notes text,
+  -- Whether the question is shown to participants in the live assessment.
+  -- Hidden (active = false) questions stay in this table (and the admin
+  -- editor) but are excluded from /api/questions and participant scoring.
+  active boolean not null default true,
   updated_at timestamptz not null default now()
 );
 

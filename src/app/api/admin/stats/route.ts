@@ -46,8 +46,10 @@ export async function GET(req: NextRequest) {
     .from('intake_responses')
     .select('participant_id,fabry_pretest');
 
-  // Load questions from DB so admin edits are reflected in scoring.
-  const questions = await loadQuestions();
+  // Load questions from DB so admin edits are reflected in scoring. Include
+  // hidden (inactive) questions so the PI's aggregate stats still account for
+  // any responses already collected before a question was hidden.
+  const questions = await loadQuestions({ includeInactive: true });
 
   // The post-test comfort question is whichever scale-type question has
   // the lowest number. If admin deletes the scale question, comfort

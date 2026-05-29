@@ -117,9 +117,15 @@ interface QuizRow {
   scale_max_label: string | null;
   task_domain: string | null;
   notes: string | null;
+  // Whether the question is shown to participants. The column has a DB
+  // default of true; older rows (pre-migration) read back as undefined and
+  // are treated as active. See setQuestionActive() and loadQuestions().
+  active?: boolean | null;
 }
 
 function rowToQuestion(row: QuizRow): Question {
+  // `active` is `false` only when explicitly hidden; undefined/null = live.
+  const active = row.active !== false;
   if (row.type === 'mcq') {
     return {
       number: row.number,
@@ -132,6 +138,7 @@ function rowToQuestion(row: QuizRow): Question {
         { label: 'D', value: row.option_d ?? '' },
       ],
       correctAnswer: row.correct_answer ?? 'A',
+      active,
     };
   }
   return {
@@ -142,10 +149,17 @@ function rowToQuestion(row: QuizRow): Question {
     max: row.scale_max ?? 10,
     minLabel: row.scale_min_label ?? undefined,
     maxLabel: row.scale_max_label ?? undefined,
+    active,
   };
 }
 
-function questionToInsertRow(q: Question): Omit<QuizRow, 'task_domain' | 'notes'> {
+// `active` is intentionally excluded: upsert/seed must not clobber the live
+// flag. On a fresh insert the DB default (true) applies; on edit, omitting
+// the column from the upsert payload leaves the existing value untouched.
+// Use setQuestionActive() to change it.
+function questionToInsertRow(
+  q: Question
+): Omit<QuizRow, 'task_domain' | 'notes' | 'active'> {
   if (q.type === 'scale') {
     return {
       number: q.number,
@@ -193,7 +207,18 @@ async function ensureQuestionsSeeded(): Promise<void> {
   if (insErr) throw new Error(`questions seed failed: ${insErr.message}`);
 }
 
-export async function loadQuestions(): Promise<Question[]> {
+/**
+ * Load quiz questions.
+ *
+ * By default only LIVE questions are returned — this is what participants see
+ * in the assessment (`/api/questions`) and what their score is computed
+ * against (`/api/my-results`). Pass `{ includeInactive: true }` for the admin
+ * editor, stats, and CSV export so the PI never loses access to hidden
+ * questions or the responses already collected for them.
+ */
+export async function loadQuestions(
+  opts?: { includeInactive?: boolean }
+): Promise<Question[]> {
   await ensureQuestionsSeeded();
   const { data, error } = await getSupabase()
     .from('quiz_questions')
@@ -206,12 +231,28 @@ export async function loadQuestions(): Promise<Question[]> {
   // learning and inflate the rating.
   return (data as QuizRow[])
     .map(rowToQuestion)
+    .filter((q) => opts?.includeInactive || q.active !== false)
     .sort((a, b) => {
       const ay = a.type === 'scale' ? 0 : 1;
       const by = b.type === 'scale' ? 0 : 1;
       if (ay !== by) return ay - by;
       return a.number - b.number;
     });
+}
+
+/**
+ * Toggle a single question's live/hidden state without rewriting the rest of
+ * the row. Used by the /admin "Hide from quiz / Make live" control.
+ */
+export async function setQuestionActive(
+  number: number,
+  active: boolean
+): Promise<void> {
+  const { error } = await getSupabase()
+    .from('quiz_questions')
+    .update({ active, updated_at: new Date().toISOString() })
+    .eq('number', number);
+  if (error) throw new Error(`question active toggle failed: ${error.message}`);
 }
 
 /** Upsert one question by number. Used by /api/admin/questions. */

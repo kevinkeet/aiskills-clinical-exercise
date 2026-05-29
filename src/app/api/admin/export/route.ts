@@ -42,8 +42,10 @@ export async function GET(req: NextRequest) {
       .order('participant_id')
       .order('question_number');
     // Load the current question set from DB so admin edits to correct
-    // answers flow through to the is_correct column.
-    const questions = await loadQuestions();
+    // answers flow through to the is_correct column. Include hidden
+    // (inactive) questions so responses collected before a question was
+    // hidden still grade correctly in the export.
+    const questions = await loadQuestions({ includeInactive: true });
 
     // Add correct/incorrect column. Scale-type questions (e.g., the
     // post-test comfort rating Q13) have no right answer, so leave both

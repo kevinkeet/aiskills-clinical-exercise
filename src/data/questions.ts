@@ -38,6 +38,14 @@ export interface MCQQuestion {
   text: string;
   options: { label: string; value: string }[];
   correctAnswer: string;
+  /**
+   * Whether this question is shown to participants in the live assessment.
+   * Undefined is treated as `true` (live). Set to `false` from /admin to
+   * hide a question non-destructively (it stays in the database and the
+   * editor, but real participants no longer see it). Defaults / seeds never
+   * set this — the database column default (true) governs new rows.
+   */
+  active?: boolean;
 }
 
 /** Numeric-scale question (e.g., 0–10 comfort rating). No correct answer. */
@@ -49,6 +57,8 @@ export interface ScaleQuestion {
   max: number;
   minLabel?: string;
   maxLabel?: string;
+  /** See MCQQuestion.active. */
+  active?: boolean;
 }
 
 export type Question = MCQQuestion | ScaleQuestion;
