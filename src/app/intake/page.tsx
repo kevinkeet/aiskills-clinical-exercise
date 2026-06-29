@@ -419,13 +419,22 @@ function ConsentStep({
       <p className="text-xs text-muted mb-4 uppercase tracking-wide">{IRB_LINE}</p>
 
       <div className="space-y-4 text-sm leading-relaxed text-foreground">
-        {CONSENT_SECTIONS.map((s) => (
-          <div key={s.label}>
-            <p className="mb-1">
-              <span className="font-bold">{s.label}:</span> {s.body}
-            </p>
-          </div>
-        ))}
+        {CONSENT_SECTIONS.map((s) => {
+          // Bodies may contain multiple paragraphs separated by a blank line.
+          const paragraphs = s.body.split('\n\n');
+          return (
+            <div key={s.label}>
+              <p className="mb-1">
+                <span className="font-bold">{s.label}:</span> {paragraphs[0]}
+              </p>
+              {paragraphs.slice(1).map((para, i) => (
+                <p key={i} className="mb-1">
+                  {para}
+                </p>
+              ))}
+            </div>
+          );
+        })}
 
         <div>
           <p className="font-bold mb-1">CONTACT INFORMATION:</p>

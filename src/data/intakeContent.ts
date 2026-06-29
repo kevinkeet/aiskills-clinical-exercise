@@ -24,9 +24,15 @@ export const CONSENT_SECTIONS: ReadonlyArray<{ label: string; body: string }> = 
     body: 'Your participation will take approximately 30 to 45 minutes.',
   },
   {
+    // Revised per IRB-86737 Cycle-1 review (reviewer comment #11): removed the
+    // "payment only on completion" condition, added proration, and added the
+    // required IRS tax statement. Verbatim from the revised Section 9 consent.
+    // NOTE: as of 2026-05-29 this revision is still IN REVIEW — re-confirm
+    // against the final approved consent before enrolling real participants.
+    // Two paragraphs separated by `\n\n` (the renderer splits on it).
     label: 'PAYMENTS',
     body:
-      'You will receive $100 as payment for your participation, disbursed through the Stanford Department of Medicine after you complete the full session.',
+      'You will receive $100 as payment for your participation, disbursed through the Stanford Department of Medicine. You may stop at any time. If you withdraw before finishing, you will be paid a prorated amount proportional to the portion of the session you completed, up to the full $100; payment is not conditioned on completing the study.\n\nPayments you receive for participating in research are generally considered taxable income. If the total amount you receive from Stanford for research participation in a calendar year is $2,000 or more, Stanford is required to report these payments to the Internal Revenue Service (IRS) and may issue you an IRS tax form. If the total amount you receive is less than $2,000, a tax form may not be issued. However, you are still responsible for reporting all taxable income on your tax return.',
   },
   {
     label: 'PRIVACY AND CONFIDENTIALITY',
