@@ -122,8 +122,9 @@ function CoreInsight() {
             Cognitive engagement
           </h3>
           <p className="mt-3 text-sm leading-relaxed text-emerald-900/80">
-            You stay in the driver’s seat: asking why, writing it yourself, checking your own
-            understanding, fixing your own errors. The AI is a tutor and a sounding board.
+            You stay in the driver’s seat: asking why, reasoning it through yourself, checking your
+            own understanding, working through your own uncertainty. The AI is a tutor and a
+            sounding board.
           </p>
           <p className="mt-4 text-sm font-medium text-emerald-800">Skill is preserved. 65–86%.</p>
         </div>
@@ -133,7 +134,7 @@ function CoreInsight() {
             Cognitive offloading
           </h3>
           <p className="mt-3 text-sm leading-relaxed text-rose-900/80">
-            You hand the thinking over: generate it, paste it, paste the error back, move on.
+            You hand the thinking over: ask for the answer, accept it, move on to the next case.
             You finish — sometimes faster — but the skill never forms.
           </p>
           <p className="mt-4 text-sm font-medium text-rose-800">Skill erodes. Under 40%.</p>
@@ -307,8 +308,8 @@ function Sorter() {
           Skill-building, or skill-eroding?
         </h2>
         <p className="mt-3 max-w-2xl text-slate-600">
-          These are real prompts people typed to the AI. For each one, decide whether the{' '}
-          <em>approach</em> builds the learner’s skill or quietly offloads it.
+          Each of these is something a resident might type while working up a case. For each one,
+          decide whether the <em>approach</em> builds clinical skill or quietly offloads it.
         </p>
 
         <div className="mt-8 space-y-4">
@@ -374,8 +375,8 @@ function Sorter() {
               {correctCount} / {SORT_ITEMS.length} right.
             </p>
             <p className="mt-1 text-sm text-slate-600">
-              The tell isn’t the topic — it’s whether you stay in the loop. Generation is fine{' '}
-              <em>if</em> you also build understanding around it.
+              The tell isn’t the topic — it’s whether you stay in the loop. Getting the answer is
+              fine <em>if</em> you also build understanding around it.
             </p>
           </div>
         )}

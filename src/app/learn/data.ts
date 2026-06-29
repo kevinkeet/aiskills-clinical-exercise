@@ -3,7 +3,9 @@
 // Source: Shen & Tamkin, "How AI Impacts Skill Formation" (Anthropic, Feb 2026)
 // — the randomized study this module is built on. The six interaction patterns,
 // quiz scores, and completion times below are taken from Figure 11 and §6 of
-// that paper. Example queries are from Table 3.
+// that paper. The study measured a technical skill; the interaction patterns
+// generalize to any skill acquired with AI, so the example prompts here are
+// framed for a resident learning a clinical case.
 
 export type Tier = 'high' | 'low';
 
@@ -22,17 +24,17 @@ export interface Pattern {
 // Ordered low → high so the "ladder" reads as a progression toward engagement.
 export const PATTERNS: Pattern[] = [
   {
-    id: 'debugging',
-    name: 'Iterative AI Debugging',
+    id: 'verification',
+    name: 'Iterative AI Verification',
     tier: 'low',
     score: 24,
     time: 31,
     n: 4,
-    tagline: '“Here’s my error — fix it.”',
+    tagline: '“Is this read right? …and this? …and now?”',
     what:
-      'Repeatedly asked the AI to troubleshoot or verify their code (5–15 queries), often pasting error messages straight in rather than reading them.',
+      'Leaned on the AI to verify or correct each interpretation in turn (5–15 rounds) — confirming labs, the ECG, the next step — rather than reasoning to a conclusion themselves.',
     why:
-      'Leaning on AI to debug skips the single richest moment for learning. The lowest scores in the whole study — and not even fast, because every error became another round-trip.',
+      'Outsourcing judgment was the lowest-scoring pattern in the study — and not even fast, because every uncertainty became another round-trip instead of a moment of learning.',
   },
   {
     id: 'progressive',
@@ -41,9 +43,9 @@ export const PATTERNS: Pattern[] = [
     score: 35,
     time: 22,
     n: 4,
-    tagline: '“I’ll just ask one thing… okay, do the rest.”',
+    tagline: '“I’ll just check one thing… okay, you take it from here.”',
     what:
-      'Started out engaged — a question or two — then gradually handed all the code-writing to the AI as the task got harder.',
+      'Started out engaged — a question or two — then gradually handed the whole problem to the AI as the case got harder.',
     why:
       'The most seductive failure mode: it begins as genuine inquiry and slides into delegation exactly when the material gets hard enough to be worth learning.',
   },
@@ -54,11 +56,11 @@ export const PATTERNS: Pattern[] = [
     score: 39,
     time: 19.5,
     n: 4,
-    tagline: '“Write this for me.”',
+    tagline: '“Just give me the diagnosis and the plan.”',
     what:
-      'Only ever asked the AI to generate code, then pasted it in as the answer. No explanations, no follow-ups.',
+      'Only ever asked the AI for the answer — the differential, the workup, the plan — and adopted it wholesale, with no follow-up.',
     why:
-      'The fastest group — and it shows on the quiz. Productivity without comprehension. You finish the task and learn almost nothing about how it works.',
+      'The fastest group — and it shows on the test. You get a finished workup and learn almost nothing about how to reach one yourself.',
   },
   {
     id: 'conceptual',
@@ -67,24 +69,24 @@ export const PATTERNS: Pattern[] = [
     score: 65,
     time: 22,
     n: 7,
-    tagline: '“Help me understand how this works.”',
+    tagline: '“Help me understand how to think about this.”',
     what:
-      'Asked only conceptual questions, then wrote the code themselves and resolved their own errors independently.',
+      'Asked only conceptual questions — frameworks, mechanisms, the “why” — then reasoned to their own conclusions and worked through their own uncertainty.',
     why:
-      'Hit plenty of errors — and fixing them is exactly where the learning happened. The fastest of the high-scoring patterns, and the most common one in the study.',
+      'Hit plenty of dead ends — and reasoning through them is exactly where the learning happened. The fastest of the high-scoring patterns, and the most common one in the study.',
   },
   {
     id: 'hybrid',
-    name: 'Hybrid Code-Explanation',
+    name: 'Hybrid Answer-Explanation',
     tier: 'high',
     score: 68,
     time: 24,
     n: 3,
-    tagline: '“Write it — and explain what you wrote.”',
+    tagline: '“Give me the answer — and the reasoning behind it.”',
     what:
-      'Composed queries that asked for generated code together with an explanation of that code, and actually read the explanations.',
+      'Asked for the answer together with the reasoning that justified it, and actually read and engaged with the explanation.',
     why:
-      'Pairs the speed of generation with the understanding of explanation. Reading the “why” took longer, but the comprehension stuck.',
+      'Pairs the efficiency of getting an answer with the understanding of working through why. Reading the reasoning took longer, but the comprehension stuck.',
   },
   {
     id: 'generation',
@@ -93,16 +95,16 @@ export const PATTERNS: Pattern[] = [
     score: 86,
     time: 24,
     n: 2,
-    tagline: '“Got it — now quiz my understanding.”',
+    tagline: '“Got it — now test whether I actually understand it.”',
     what:
-      'Let the AI generate the code, then asked follow-up questions specifically to check and deepen their own understanding of it.',
+      'Let the AI lay out the answer, then asked follow-up questions specifically to check and deepen their own understanding of it.',
     why:
-      'The highest score in the study. Looks almost identical to pure Delegation — except they used the AI to interrogate their own understanding, not just to finish.',
+      'The highest score in the study. Looks almost identical to pure delegation — except they used the AI to interrogate their own understanding, not just to finish.',
   },
 ];
 
-// Sorter game: classify each real prompt by the approach it represents.
-// Queries adapted from Table 3 of the paper.
+// Sorter game: classify each prompt by the approach it represents.
+// Clinical prompts illustrating each pattern.
 export interface SortItem {
   id: string;
   prompt: string;
@@ -114,50 +116,51 @@ export interface SortItem {
 export const SORT_ITEMS: SortItem[] = [
   {
     id: 's1',
-    prompt: '“Can you remind me what the different async operations are, and when I’d use each?”',
+    prompt:
+      '“How should I frame my approach to a young patient with unexplained progressive kidney disease — what’s the right way to think about the differential?”',
     answer: 'high',
     pattern: 'Conceptual Inquiry',
     explain:
-      'A conceptual question. You build a mental model you can reuse — and you still write the code yourself.',
+      'A conceptual question. You build a framework you can reuse on the next patient — and you still do the reasoning yourself.',
   },
   {
     id: 's2',
-    prompt: '“Given these instructions, can you implement the missing parts of main.py?”',
+    prompt: '“Here’s the case. Just give me the diagnosis and the workup plan.”',
     answer: 'low',
     pattern: 'AI Delegation',
     explain:
-      'Pure delegation. You get a working file and almost no understanding of why it works.',
+      'Pure delegation. You get a finished plan and almost no understanding of why it’s the right one.',
   },
   {
     id: 's3',
     prompt:
-      '“Traceback (most recent call last)… NotImplementedError. I’m getting this — what’s wrong?”',
+      '“Here’s the ECG read I wrote — is it right? And these labs? And does my next step look correct?”',
     answer: 'low',
-    pattern: 'Iterative AI Debugging',
+    pattern: 'Iterative AI Verification',
     explain:
-      'Pasting the error for the AI to fix skips the part where you’d actually learn the concept the error is pointing at.',
+      'Asking the AI to confirm each judgment skips the part where you’d actually develop the judgment yourself.',
   },
   {
     id: 's4',
     prompt:
-      '“Write the timer function, and walk me through how the await keyword behaves here.”',
+      '“Give me a differential for this presentation, and explain the reasoning that links each diagnosis to the findings.”',
     answer: 'high',
-    pattern: 'Hybrid Code-Explanation',
+    pattern: 'Hybrid Answer-Explanation',
     explain:
-      'Generation paired with explanation. You get the code and the reasoning — as long as you read it.',
+      'The answer paired with its reasoning. You get the differential and the “why” — as long as you read it.',
   },
   {
     id: 's5',
-    prompt: '“Complete get_user_data.”',
+    prompt: '“Write the assessment and plan for this patient.”',
     answer: 'low',
     pattern: 'AI Delegation',
     explain:
-      'A terse generate-and-paste request. Fast, but it teaches you nothing about the library.',
+      'A generate-and-paste request. Fast, but it teaches you nothing about how to build an A&P.',
   },
   {
     id: 's6',
     prompt:
-      '“Here’s the function you generated — can you ask me a couple of questions to check I actually understand it?”',
+      '“Here’s the management plan you suggested — quiz me on why each step is indicated, so I know I actually understand it.”',
     answer: 'high',
     pattern: 'Generation-Then-Comprehension',
     explain:
@@ -179,32 +182,32 @@ export const REWRITES: RewritePair[] = [
   {
     id: 'r1',
     beforeLabel: 'Delegation',
-    before: '“Write the function that retrieves a record and handles a missing-record error.”',
+    before: '“Give me the full differential and workup for this patient.”',
     afterLabel: 'Generation-then-comprehension',
     after:
-      '“Write that function — then explain how the error handling works, and ask me one question to check I’ve got it.”',
+      '“Give me the differential — then explain the reasoning for the top three, and ask me one question to check I follow it.”',
     note:
-      'Same starting point, one extra clause. You still get the code; now you also get the understanding — and a check that it stuck.',
+      'Same starting point, one extra clause. You still get the differential; now you also get the reasoning — and a check that it stuck.',
   },
   {
     id: 'r2',
-    beforeLabel: 'Iterative debugging',
-    before: '“I’m getting a RuntimeWarning, fix my code.”',
+    beforeLabel: 'Iterative verification',
+    before: '“Is my ECG read right? Just tell me.”',
     afterLabel: 'Conceptual inquiry',
     after:
-      '“What does a RuntimeWarning about a coroutine usually mean? I want to find the bug myself.”',
+      '“What features should I be looking for on this ECG, and why do they matter here? I want to read it myself first.”',
     note:
-      'Errors are where skill forms. Ask what the error means, then fix it yourself — that’s the moment the concept lands.',
+      'Uncertainty is where skill forms. Learn what to look for, commit to your own read, then check it — that’s the moment it lands.',
   },
   {
     id: 'r3',
     beforeLabel: 'Progressive reliance',
-    before: '“Just do the rest of the task for me.”',
-    afterLabel: 'Hybrid code-explanation',
+    before: '“Just write the rest of the assessment and plan for me.”',
+    afterLabel: 'Hybrid answer-explanation',
     after:
-      '“Sketch the approach for the rest and explain the key idea — I’ll write it and check back if I’m stuck.”',
+      '“Outline the key issues and explain the one I’m least sure about — I’ll write the plan and check back if I’m stuck.”',
     note:
-      'Reliance creeps in when the work gets hard. Keep your hands on the keyboard for exactly the parts worth learning.',
+      'Reliance creeps in when the case gets hard. Keep your hands on exactly the parts worth learning.',
   },
 ];
 
@@ -219,31 +222,31 @@ export const PRINCIPLES: Principle[] = [
   {
     num: '01',
     title: 'It’s not whether you use AI — it’s how.',
-    body: 'The engaged patterns scored 65–86%. The reliant ones scored under 40%. Same tool, same task. The gap is entirely in the interaction.',
+    body: 'The engaged patterns scored 65–86%. The reliant ones scored under 40%. Same tool, same case. The gap is entirely in the interaction.',
   },
   {
     num: '02',
-    title: 'Generate, then comprehend.',
-    body: 'If the AI writes it, make it explain it — and have it check your understanding. The highest scorers used AI to interrogate their own grasp, not just to finish.',
+    title: 'Get the answer, then comprehend it.',
+    body: 'If the AI gives you the answer, make it explain the reasoning — and have it check your understanding. The highest scorers used AI to interrogate their own grasp, not just to finish.',
   },
   {
     num: '03',
-    title: 'Resolve your own errors first.',
-    body: 'The control group hit more errors — and learned more, because fixing them is where skill forms. Don’t paste the traceback and move on.',
+    title: 'Work through your own uncertainty first.',
+    body: 'The group without AI hit more dead ends — and learned more, because reasoning through difficulty is where skill forms. Don’t accept the answer and move on.',
   },
   {
     num: '04',
     title: 'Ask why, not just what.',
-    body: 'Conceptual questions build a model you can reuse. Generate-only requests build a file you’ll forget.',
+    body: 'Conceptual questions build a model you can reuse on the next patient. Answer-only requests build a note you’ll forget.',
   },
   {
     num: '05',
     title: 'Watch reliance creep.',
-    body: 'Progressive reliance starts as honest inquiry and slides into delegation right when the material gets hard. Notice when you stop typing.',
+    body: 'Progressive reliance starts as honest inquiry and slides into delegation right when the case gets hard. Notice when you stop reasoning.',
   },
   {
     num: '06',
     title: 'Time saved isn’t skill gained.',
-    body: 'On average AI use gave no real speed-up here — but it did lower conceptual understanding, code-reading, and debugging. Finishing is not learning.',
+    body: 'On average AI use gave no real speed-up here — but it did lower conceptual understanding and independent reasoning. Finishing the workup is not the same as learning to do one.',
   },
 ];
