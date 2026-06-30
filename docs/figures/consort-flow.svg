@@ -1,0 +1,86 @@
+<svg viewBox="0 0 920 660" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+  </defs>
+  <style>
+    .box { fill:#ffffff; stroke:#333333; stroke-width:1.3; }
+    .t { fill:#1a1a1a; font-size:13px; }
+    .h { fill:#1a1a1a; font-size:13px; font-weight:bold; }
+    .phase { fill:#2e5e8c; font-size:13px; font-weight:bold; letter-spacing:1px; }
+    .bar { fill:#e7eef5; }
+    .ln { stroke:#333333; stroke-width:1.3; fill:none; }
+    .title { fill:#1a1a1a; font-size:15px; font-weight:bold; }
+  </style>
+
+  <text x="110" y="20" class="title">Figure 1. CONSORT participant flow</text>
+
+  <!-- phase label bars -->
+  <rect class="bar" x="18" y="34" width="64" height="170"/>
+  <text class="phase" transform="translate(54,119) rotate(-90)" text-anchor="middle">Enrollment</text>
+  <rect class="bar" x="18" y="252" width="64" height="86"/>
+  <text class="phase" transform="translate(54,295) rotate(-90)" text-anchor="middle">Allocation</text>
+  <rect class="bar" x="18" y="402" width="64" height="64"/>
+  <text class="phase" transform="translate(54,434) rotate(-90)" text-anchor="middle">Follow-Up</text>
+  <rect class="bar" x="18" y="542" width="64" height="64"/>
+  <text class="phase" transform="translate(54,574) rotate(-90)" text-anchor="middle">Analysis</text>
+
+  <!-- Enrollment -->
+  <rect class="box" x="300" y="34" width="300" height="44"/>
+  <text class="h" x="450" y="61" text-anchor="middle">Assessed for eligibility (n = [N])</text>
+
+  <rect class="box" x="650" y="92" width="252" height="104"/>
+  <text class="h" x="662" y="116">Excluded (n = [N])</text>
+  <text class="t" x="662" y="138">• Declined to participate (n = [N])</text>
+  <text class="t" x="662" y="158">• Did not meet eligibility (n = [N])</text>
+  <text class="t" x="662" y="178">• Other (n = [N])</text>
+
+  <rect class="box" x="300" y="160" width="300" height="40"/>
+  <text class="h" x="450" y="185" text-anchor="middle">Randomized (n = 100)</text>
+
+  <!-- enrollment connectors -->
+  <path class="ln" d="M450,78 L450,160" marker-end="url(#arrow)"/>
+  <path class="ln" d="M450,118 L650,118" marker-end="url(#arrow)"/>
+
+  <!-- split to two arms -->
+  <path class="ln" d="M450,200 L450,228"/>
+  <path class="ln" d="M290,228 L630,228"/>
+  <path class="ln" d="M290,228 L290,252" marker-end="url(#arrow)"/>
+  <path class="ln" d="M630,228 L630,252" marker-end="url(#arrow)"/>
+
+  <!-- Allocation -->
+  <rect class="box" x="140" y="252" width="300" height="86"/>
+  <text class="h" x="152" y="276">Allocated to AI assistant (n = 50)</text>
+  <text class="t" x="152" y="300">• Began the case (n = [N])</text>
+  <text class="t" x="152" y="322">• Did not begin the case (n = [N])</text>
+
+  <rect class="box" x="480" y="252" width="300" height="86"/>
+  <text class="h" x="492" y="276">Allocated to UpToDate (n = 50)</text>
+  <text class="t" x="492" y="300">• Began the case (n = [N])</text>
+  <text class="t" x="492" y="322">• Did not begin the case (n = [N])</text>
+
+  <!-- Follow-up -->
+  <rect class="box" x="140" y="402" width="300" height="64"/>
+  <text class="h" x="152" y="426">Completed assessment (n = [N])</text>
+  <text class="t" x="152" y="450">Discontinued session (n = [N])</text>
+
+  <rect class="box" x="480" y="402" width="300" height="64"/>
+  <text class="h" x="492" y="426">Completed assessment (n = [N])</text>
+  <text class="t" x="492" y="450">Discontinued session (n = [N])</text>
+
+  <path class="ln" d="M290,338 L290,402" marker-end="url(#arrow)"/>
+  <path class="ln" d="M630,338 L630,402" marker-end="url(#arrow)"/>
+
+  <!-- Analysis -->
+  <rect class="box" x="140" y="542" width="300" height="64"/>
+  <text class="h" x="152" y="566">Analysed — primary outcome (n = [N])</text>
+  <text class="t" x="152" y="590">Excluded from analysis (n = [N])</text>
+
+  <rect class="box" x="480" y="542" width="300" height="64"/>
+  <text class="h" x="492" y="566">Analysed — primary outcome (n = [N])</text>
+  <text class="t" x="492" y="590">Excluded from analysis (n = [N])</text>
+
+  <path class="ln" d="M290,466 L290,542" marker-end="url(#arrow)"/>
+  <path class="ln" d="M630,466 L630,542" marker-end="url(#arrow)"/>
+</svg>
