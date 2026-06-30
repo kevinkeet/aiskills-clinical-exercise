@@ -17,7 +17,7 @@
 **Hypotheses (pre-specified, directional reasoning; primary test two-sided).**
 - **H1 (primary).** Post-case unassisted knowledge scores differ between the AI and control arms. The motivating literature (cognitive offloading; AI-associated deskilling) raises the possibility that AI assistance yields **equal or lower** retained knowledge despite comparable or better in-task performance; the primary test is two-sided to allow detection of benefit or harm.
 - **H2 (secondary).** Change in self-rated comfort (pre→post) differs between arms; we will examine whether any comfort gain is **dissociated** from knowledge (i.e., confidence rising without commensurate learning).
-- **H3 (secondary/exploratory).** Within the AI arm, more cognitively engaged interaction (e.g., asking "why," reasoning before asking, verifying) is associated with higher retained knowledge than answer-seeking interaction.
+- **H3 (secondary/exploratory; mixed-methods).** Within the AI arm, residents whose conversations are coded as cognitively *engaged* (asking "why/what-if," reasoning before asking, treating outputs as hypotheses to verify) acquire more knowledge than those whose conversations are coded as *offloading* (requesting answers to transcribe, delegating the reasoning, accepting outputs unscrutinized). Interaction style is self-selected, so this is correlational and hypothesis-generating.
 
 ---
 
@@ -59,7 +59,7 @@ All participants complete an identical case and an identical resource-free asses
 2. **Time on task**: per-task and total seconds.
 3. **Resource-interaction metrics**: AI arm — number of messages, message content/engagement classification; both arms — time with the resource.
 
-**Exploratory (measured).** Free-response task answers (reasoning-quality coding); PGY subgroup; relationship between comfort change and knowledge.
+**Exploratory (measured).** AI-arm conversation logs (qualitatively coded for interaction patterns — see H3 analysis); free-response task answers (reasoning-quality coding); PGY subgroup; relationship between comfort change and knowledge.
 
 ---
 
@@ -67,7 +67,9 @@ All participants complete an identical case and an identical resource-free asses
 
 **Primary analysis.** Intention-to-treat. Compare the knowledge score between arms with a **linear regression adjusting for the PGY randomization stratum**; the adjusted between-arm difference and 95% CI is the primary estimand. Sensitivity: two-sample t-test (unadjusted).
 
-**Secondary analyses.** Comfort: ANCOVA (post adjusted for pre), with an exploratory mixed model for the paired pre/post structure. Time and interaction metrics: t-test or Wilcoxon as distribution dictates. H3: within-AI-arm association between engagement metric and knowledge score (regression).
+**Secondary analyses.** Comfort: ANCOVA (post adjusted for pre), with an exploratory mixed model for the paired pre/post structure. Time and interaction metrics: t-test or Wilcoxon as distribution dictates.
+
+**H3 — interaction-pattern analysis (exploratory, mixed-methods).** Two trained coders, blinded to knowledge scores, will independently code each AI-arm conversation by directed content analysis against an a priori *engaged-vs-offloading* interaction-pattern framework adapted from skill-formation research (Shen & Tamkin), refined inductively for clinical content. Inter-rater reliability will be reported (Cohen's κ) and disagreements resolved by consensus. Each participant's dominant pattern (and a continuous engagement score) will be related to the post-case knowledge score by linear regression adjusting for PGY stratum and message count. Correlational and hypothesis-generating (interaction style is self-selected, not randomized).
 
 **Inference criteria.** Two-sided α = 0.05 for the primary outcome. Secondary/exploratory analyses are interpreted as hypothesis-generating with attention to multiplicity (no formal alpha allocation beyond the primary).
 
