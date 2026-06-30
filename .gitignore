@@ -36,6 +36,14 @@ yarn-error.log*
 # vercel
 .vercel
 
+# Participant-level study/pilot data — keep out of version control (governance).
+# Aggregate summaries and READMEs in these folders are committed; raw exports are not.
+participants_seed.csv
+docs/pilot-data-snapshot-*/assessment_responses.csv
+docs/pilot-data-snapshot-*/intake_responses.csv
+docs/pilot-data-snapshot-*/pilot_feedback.csv
+docs/pilot-data-snapshot-*/chat_logs.csv
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
