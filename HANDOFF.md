@@ -1,8 +1,9 @@
 # Project handoff — Skill AI RCT
 
 > Read this first. Single source of context for picking up this project in a fresh session.
-> **Last updated 2026-07-01.** Phase: platform built & piloted; quiz finalized; **manuscript +
-> preregistration drafted**; pre-launch tasks remain before enrolling real residents.
+> **Last updated 2026-07-12.** Phase: **launch-ready.** Platform finalized & piloted; quiz = 12; AI
+> out-of-the-box; consent updated; **DB wiped clean**; **Supabase Pro**; **OSF preregistration
+> submitted (embargoed)**. Remaining: final smoke test → recruitment → run the study → fill Results.
 
 ---
 
@@ -155,9 +156,11 @@ against the final approved consent before enrolling.
   summary + README are committed). Hiding questions kept all responses in the DB too.
 - ⚠️ Pilots ran with the **old prompted AI and the 22-question set**. A **fresh pilot pass** on the
   final config (out-of-box AI, 12 questions) would give clean baseline data.
-- **The DB still holds pilot/test data** (≈135 participant rows incl. 120 seeded P-NNN + pilots).
-  **Wipe test/response data before the real study** so it doesn't contaminate analysis (a
-  pre-launch task — not yet done).
+- **Test-data wipe DONE (2026-07-01):** deleted 2 stray test rows (`CONTROL`, `AI`) and reset the one
+  contaminated real slot (`P-001`); **all 120 P-NNN enrollment slots are clean**, pilots preserved.
+  Full DB backup at `db-backup-2026-07-01/` (git-ignored, local). To re-wipe/inspect: a Node script
+  using the anon key from `.env.local` (RLS is permissive — `allow all`) — see the wipe pattern used
+  this session (delete stray rows; `POST /api/admin/reset-participant {participantId}` to reset a slot).
 
 ---
 
@@ -177,9 +180,12 @@ The study now has a full paper-in-progress. All are markdown + a pandoc-generate
   - **Interaction-pattern analysis** (pre-specified, exploratory, mixed-methods): qualitatively code
     AI-arm conversations as *engaged* vs *offloading* (framework adapted from Shen & Tamkin), κ, then
     correlate with the knowledge score. Full convo logs are already captured.
-- **`Preregistration-Outline`** — OSF-format; hypotheses (two-sided primary; H3 = interaction patterns),
-  PGY-stratified permuted-block design, n=100 power (d≈0.57), analysis plan, ClinicalTrials.gov map.
-  ⚠️ **Register on OSF before the first participant enrolls** — highest-leverage credibility step.
+- **`Preregistration-Outline`** + **`OSF-Preregistration-Ready`** (mapped field-by-field to the OSF
+  "Preregistration" schema) — hypotheses (two-sided primary; H3 = interaction patterns), PGY-stratified
+  permuted-block design, n=100 power (d≈0.57), analysis plan. ✅ **REGISTERED on OSF (2026-07-12),
+  EMBARGOED** — OSF project **osf.io/h5mvt** → its Registrations tab. Lift the embargo at/after
+  publication. (Content matches the docs; if editing, remember OSF registrations are frozen — you'd
+  withdraw + re-register, not edit.)
 - **`Literature-Review-Annotated`** — 31 annotated sources across AI+med-ed, AI+deskilling outside
   medicine, learning science. Superset of the manuscript's 17; use to expand post-results.
 - **`figures/consort-flow.svg`** (+ png) — CONSORT diagram with `[N]` placeholders.
@@ -195,22 +201,32 @@ footnote; **one corresponding author**. Recent (2024–26) citations in the manu
 
 ## 10. Open items & next actions
 
-1. **Wipe test/pilot data** from the DB before enrolling real residents (see §8).
-2. **Re-capture eProtocol screenshots** — `WebsiteConsent` / `WebsiteEnrollmentPage` (the PI dropped
-   `WebsiteConsent.png` / `WebsiteEnrollmentPage.png` in the folder). Browser/Cowork task, on the PI's
-   trigger — touches the authenticated Stanford IRB system; **do not do unprompted.**
-3. **Consent** still in IRB review — match the final approved Section 9 before launch (§6).
-4. **Supabase Pro** before the study (stop the auto-pause).
-5. **Register the prereg on OSF** before first enrollment (§9).
-6. **Verify manuscript references** flagged `(verify)`; decide preprint-vs-published.
-7. **Fresh pilot pass** on the final config would give clean baseline data (§8).
-8. Two **planned follow-on studies** (PI): (a) can residents be *taught* skill-preserving AI-interaction
-   posture; (b) do purpose-built tools (e.g., OpenEvidence) or configurations promote learning vs. the
-   out-of-box baseline. Both are *set up* in the manuscript Discussion, not asserted.
+**✅ Done:** test-data wipe · Supabase Pro · OSF preregistration (embargoed, osf.io/h5mvt) · IRB steps (per PI).
 
-✅ **Resolved since the last handoff:** answer-key leak fixed; quiz pared 22→12 (hide); AI switched to
-out-of-the-box (system prompt removed); consent proration+IRS added; UpToDate now a right-docked side
-window (not new tab); pilot-feedback UX bugs fixed; project moved to `~/Desktop/Skill AI RCT`.
+**Before recruiting:**
+1. **Final two-arm smoke test** on the finalized live config (out-of-box AI + 12 questions + new consent)
+   — pilots ran the *old* version, so no one has run the final version end-to-end. *(In progress this session.)*
+2. **Recruitment + code distribution** — send the invitation (`Recruitment materials.docx`); the coordinator
+   assigns each opted-in resident a `P-NNN` code (mail-merge at `/api/admin/export?type=mailmerge`, admin
+   password header) and sends the post-randomization email.
+
+**During enrollment:** monitor `/admin` (completion by arm; per-question performance); watch the Control-arm
+UpToDate/Lane-proxy login (the one known participant-facing risk).
+
+**After data collection:**
+3. Export data → run pre-registered analyses → **fill manuscript Results + Table 1/2 + Figures 1–3**
+   (CONSORT, score distribution, interaction-pattern) + the qualitative interaction-pattern coding.
+4. **Verify manuscript references** flagged `(verify)`; submit to **NEJM AI**; lift the OSF embargo at/after acceptance.
+
+**Also useful (can prep now):** the interaction-pattern **coding manual** (engaged/offloading rubric + clinical
+examples) so the two coders have a ready instrument.
+
+**Planned follow-on studies (PI):** (a) can residents be *taught* skill-preserving AI posture; (b) do purpose-built
+tools (e.g., OpenEvidence)/configs promote learning vs. the out-of-box baseline. Set up in the Discussion, not asserted.
+*(eProtocol `WebsiteConsent`/`WebsiteEnrollmentPage` screenshots: refresh only if the IRB still needs them — browser/Cowork task, PI's trigger.)*
+
+✅ **Resolved earlier:** answer-key leak fixed; quiz pared 22→12 (hide); AI out-of-the-box (system prompt removed);
+consent proration+IRS; UpToDate side-window; pilot-feedback UX bugs; project moved to `~/Desktop/Skill AI RCT`.
 
 ---
 
