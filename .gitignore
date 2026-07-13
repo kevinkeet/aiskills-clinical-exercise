@@ -47,3 +47,6 @@ docs/pilot-data-snapshot-*/chat_logs.csv
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Full DB backups (participant-level) — local only
+db-backup-*/

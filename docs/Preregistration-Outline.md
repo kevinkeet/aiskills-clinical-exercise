@@ -28,7 +28,7 @@
 **Blinding.** Participants cannot be blinded to the on-screen resource they use, but (a) study materials never name or characterize the arms (neutral language), (b) participants are not told the hypothesis, and (c) the primary outcome is objectively, automatically scored. Outcome analysts will be blinded to arm during analysis.
 
 **Study design.** Two arms, 1:1 allocation:
-- **AI arm:** embedded LLM chat assistant (Anthropic Claude [model/version]) available during the five-task case.
+- **AI arm:** embedded LLM chat assistant (Anthropic Claude Opus 4.7, used **out of the box — no system prompt or configuration**) available during the five-task case.
 - **Control arm:** UpToDate via the Stanford Lane Library institutional proxy during the same case.
 All participants complete an identical case and an identical resource-free assessment immediately afterward. No resource is permitted during the assessment.
 
