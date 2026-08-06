@@ -1,36 +1,30 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Skill AI RCT
 
-## Getting Started
+Research platform for **Stanford IRB-86737** — a randomized trial testing whether internal medicine
+residents who work a clinical case *with* an AI assistant acquire knowledge they can later deploy
+*without* it.
 
-First, run the development server:
+**Live study site:** https://aiskills.kevinkeet.com
+
+### Start here
+
+| If you want to… | Read |
+|---|---|
+| **Understand the study at a glance** | **[`PROJECT-OVERVIEW.md`](PROJECT-OVERVIEW.md)** ← one page, start here |
+| Work on the code / run operations | [`HANDOFF.md`](HANDOFF.md) — stack, deploy, database, playbooks, conventions |
+| Read the paper or study materials | [`docs/`](docs/) — manuscript, preregistration, literature review, quiz + answer key |
+
+### Quick start (development)
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev          # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Requires `.env.local` (Supabase, Anthropic, admin/session secrets) — see `.env.local.example`.
+Verify changes with `npx tsc --noEmit` and `npx next build`; pushes to `main` auto-deploy to Vercel.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+> ⚠️ **Tasks and quiz questions live in the database**, edited via `/admin` — not in `src/data/*.ts`
+> (those are seed-if-empty backups). Deploying code alone will not change what participants see.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Stack:** Next.js 16 · React 19 · TypeScript · Tailwind · Supabase (Postgres) · Anthropic SDK · Vercel.

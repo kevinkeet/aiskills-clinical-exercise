@@ -1,6 +1,9 @@
 # Project handoff — Skill AI RCT
 
-> Read this first. Single source of context for picking up this project in a fresh session.
+> **New to the project? Read [`PROJECT-OVERVIEW.md`](PROJECT-OVERVIEW.md) first** — one page on the
+> question, design, and status. This file is the engineering/operations detail underneath it.
+>
+> Single source of context for picking up this project in a fresh session.
 > **Last updated 2026-07-12.** Phase: **launch-ready.** Platform finalized & piloted; quiz = 12; AI
 > out-of-the-box; consent updated; **DB wiped clean**; **Supabase Pro**; **OSF preregistration
 > submitted (embargoed)**. Remaining: final smoke test → recruitment → run the study → fill Results.
