@@ -1,102 +1,45 @@
-# Skill AI RCT — Project Overview
+# Skill AI RCT
 
-**One page. If you're new to this project, read this first.**
-*Stanford IRB-86737 · PI: Kevin Keet, MD · Status as of 2026-07-13: **launch-ready, awaiting enrollment***
+Stanford IRB-86737. PI: Kevin Keet, MD. As of July 2026 the study is built and ready to enroll.
 
----
+## What we're asking
 
-## The question
+Residents now work up patients with a chatbot open beside them. The randomized trials published so far ask whether AI makes clinicians perform better while they are using it. For someone in training that is the wrong question. What matters is whether a resident who works a case with AI ends up knowing more once the AI is gone.
 
-Residents increasingly work up patients with an AI chatbot at their side. Existing randomized
-trials ask *"does AI make clinicians perform better right now?"* — how well they do **while
-holding the tool**. Nobody has asked the question that actually matters for a trainee:
+Medical educators have named the risk, calling it de-skilling, never-skilling, and mis-skilling. But for thinking tasks the argument rests on theory and on analogy to perceptual work such as AI-assisted colonoscopy. It has not been tested in a randomized trial. That is what this study does.
 
-> **Do residents who work a case *with* AI end up knowing more *without* it?**
+The distinction we care about is between using AI to study deliberately, which can work well, and the incidental learning that happens while taking care of patients. The second is what fills a residency, and it is what we test.
 
-Educators have named the risk — **de-skilling**, **never-skilling**, **mis-skilling** — but for
-*cognitive* tasks in medicine it's argued from theory and by analogy to perceptual tasks
-(AI colonoscopy, radiology). This is the first randomized test for a reasoning-and-knowledge task.
+## The design
 
-**Key distinction the study rests on:** AI used to *deliberately* learn (board-prep tutors — which
-can work well) vs. the ***incidental*** learning that happens while caring for patients. We test the
-incidental case, which is what actually pervades training.
+One hundred Stanford internal medicine residents, PGY-1 through PGY-3, randomized one to one. Everyone works the same unfamiliar case, a fictional patient with Fabry disease, through five free-response tasks: history, physical exam, workup, management, and after-visit instructions.
 
----
+Half get an AI chat assistant built into the page. It runs Claude Opus 4.7 with no system prompt, so it behaves like an ordinary chatbot rather than a tutor. The other half get UpToDate through the Stanford Lane proxy. Immediately afterward, with no resource available, everyone takes a 12-item knowledge test.
 
-## The design (in one breath)
+That unassisted score is the primary outcome. The session is deliberately split in two: a phase where the resource is at hand and performance is assisted, and a phase where it is not, so only what the resident actually absorbed can show up.
 
-100 Stanford internal medicine residents (PGY 1–3), randomized 1:1, work an **identical unfamiliar
-case** (fictional Fabry disease patient) through **5 free-response tasks** — with one of two resources:
+Secondary outcomes are self-rated comfort with Fabry disease, asked identically before and after, and time on task. Every AI conversation is logged, and a pre-specified exploratory analysis will code those conversations as engaged or offloading, following Shen and Tamkin's work on skill formation, to test whether the way a resident uses the tool predicts what they learned.
 
-| Arm | Resource during the case |
-|---|---|
-| **AI** (n=50) | Embedded chat assistant — Claude Opus 4.7, **out of the box, no system prompt** (a generic chatbot, deliberately *not* a tutor) |
-| **Control** (n=50) | **UpToDate** via the Stanford Lane proxy |
+Fabry disease was chosen because it is rare and multisystem, outside what residents already know, so the test measures what was learned during the session rather than prior knowledge.
 
-Then — **immediately, with no resource available** — a **12-item knowledge assessment**.
+Safeguards: PGY-stratified permuted blocks, allocation concealed server-side until the case opens, automated and blinded scoring, and an answer key that is never sent to the browser. The trial is preregistered on OSF with the analysis plan fixed in advance. Fifty per arm gives 80% power to detect a difference of about 0.57 standard deviations.
 
-- **Primary outcome:** that unassisted score (0–12). This is the whole point: it separates an
-  *assisted-performance* phase from an *unassisted-acquisition* phase.
-- **Secondary:** self-rated comfort (0–10, identical pre/post), time on task.
-- **Exploratory (pre-specified):** every AI conversation is logged and will be **qualitatively coded**
-  as *engaged* vs. *offloading* (à la Shen & Tamkin) and correlated with the score — testing whether
-  ***how*** you use AI matters more than *whether* you use it.
+## Where it stands
 
-**Rigor:** PGY-stratified permuted blocks, server-side allocation concealment, automated blinded
-scoring, answer key never sent to the browser, **preregistered on OSF before enrollment** with a
-pre-specified analysis plan. Powered (80%, two-sided α=.05) for a ~0.57 SD difference.
+The platform is built, piloted, and finalized. The quiz is down to 12 items, the AI runs out of the box, the consent carries the IRB's proration and tax language, and an answer-key leak has been closed. The database is wiped to 120 clean enrollment slots with the pilot data preserved, Supabase is on a paid plan, the OSF preregistration is filed under embargo, a two-arm smoke test passed on the live site, and the manuscript is drafted for NEJM AI with the results section templated.
 
-*Why Fabry?* Rare and multisystem — outside residents' existing knowledge, so the test measures
-what they learned **in the session**, not what they already knew.
+Next comes recruiting, handing out enrollment codes, running the study, filling in the results and figures, checking the references, and submitting.
 
----
+Three things are still open. ClinicalTrials.gov registration, which ICMJE accepts and OSF does not, has to happen before the first resident enrolls. Two references are still placeholders. And the live consent needs to be checked against the final IRB-approved version.
 
-## Where things stand
+## Where things live
 
-**✅ Done:** platform built, piloted, and finalized · quiz curated to 12 items · AI switched to
-out-of-the-box · consent updated (proration + IRS language, per IRB) · answer-key leak fixed ·
-database wiped clean (120 empty enrollment slots, pilot data preserved) · Supabase on Pro ·
-**OSF preregistration filed & embargoed** · full two-arm smoke test passed on the live site ·
-**manuscript drafted** (NEJM AI, ~2,900 words, Results templated for the data).
+The study runs at aiskills.kevinkeet.com, with an admin dashboard at /admin for statistics, content editing, and CSV export. Code is at github.com/kevinkeet/aiskills-clinical-exercise, and the preregistration is at osf.io/h5mvt.
 
-**▶️ Next:** recruit residents → distribute `P-NNN` enrollment codes → run the study →
-fill in Results/figures → verify references → submit.
+The docs folder holds the manuscript draft, the preregistration, an annotated review of 31 sources, the 12 quiz items with answer key and the reasoning behind each, the CONSORT figure, and a snapshot of the pilot data. HANDOFF.md covers the engineering side: stack, deployment, database, and operational playbooks. The application is Next.js and React on Vercel, deploying automatically from main, with Supabase for data and the Anthropic SDK for the AI arm.
 
-**⚠️ Open:** ClinicalTrials.gov registration (ICMJE-acceptable registry; OSF alone doesn't satisfy
-it — needs a Stanford PRS account, must be **before** first enrollment) · two placeholder references ·
-confirm the live consent matches the final IRB-approved version.
-
----
-
-## The pieces
-
-| What | Where |
-|---|---|
-| **Live study site** | https://aiskills.kevinkeet.com |
-| Admin dashboard (stats, content editor, CSV exports) | `/admin` (password in `.env.local`) |
-| **Code repo** | https://github.com/kevinkeet/aiskills-clinical-exercise |
-| **OSF preregistration** (embargoed) | https://osf.io/h5mvt |
-| **Manuscript** (target: *NEJM AI*) | `docs/NEJM-AI-Manuscript-Draft.docx` |
-| Preregistration (OSF-format + full outline) | `docs/OSF-Preregistration-Ready.docx`, `docs/Preregistration-Outline.docx` |
-| Annotated literature review (31 sources) | `docs/Literature-Review-Annotated.docx` |
-| The 12 quiz items + answer key + rationale | `docs/Fabry-Final-12-Questions-Rationale.docx` |
-| CONSORT figure | `docs/figures/consort-flow.svg` |
-| Pilot data snapshot | `docs/pilot-data-snapshot-2026-05-29/` |
-| **Engineering/ops detail** (deploy, DB, playbooks, conventions) | **`HANDOFF.md`** ← read next if you're working on the code |
-
-**Stack:** Next.js 16 + React 19 + TypeScript on Vercel (auto-deploys from `main`); Supabase
-(Postgres) for data; Anthropic SDK for the AI arm.
-
-⚠️ **One thing to know before editing content:** tasks and quiz questions live in the **database**
-(edit via `/admin`), *not* in the source files — `src/data/*.ts` are only seed-if-empty backups.
-Deploying code changes alone will **not** change what participants see.
-
----
+One thing to know before editing anything. Tasks and quiz questions live in the database and are edited through /admin. The files in src/data only seed an empty database, so changing them and deploying will not change what participants see.
 
 ## Why it matters
 
-If a generic AI assistant lets residents complete clinical work **without** building the knowledge
-underneath, that's a direct challenge to how AI is being adopted in medical training — and it means
-trainee-facing AI should be evaluated against **learning**, not task completion. Two follow-on
-studies are set up by this one: (a) can residents be *taught* skill-preserving AI habits, and
-(b) do purpose-built tools do better than the out-of-the-box baseline?
+If an ordinary assistant lets residents finish clinical work without building the knowledge underneath it, that is a problem for how AI is being folded into training, and it suggests trainee-facing tools should be judged on what people learn rather than on what they produce. Two follow-up studies come out of this one: whether residents can be taught habits that preserve their own learning, and whether purpose-built tools do better than an ordinary chatbot.
