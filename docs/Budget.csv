@@ -1,31 +1,35 @@
 Section,Line,Basis,Amount
 Current study,Participant payments,100 residents at $100 each,10000
-Current study,Research coordinator,5% FTE (2 hr/wk at $35/hr x 26 weeks),1820
-Current study,Coordinator fringe,10% placeholder,182
+Current study,PI salary (Keet),5% FTE x 6 months; placeholder base $250000,6250
+Current study,PI fringe,30% faculty placeholder,1875
+Current study,Research coordinator,$35/hr x 10 hr/wk x 26 weeks,9100
+Current study,Coordinator fringe,10% placeholder,910
 Current study,Second qualitative coder,20 hr at $35/hr plus fringe,770
 Current study,AI model usage,~50 AI-arm sessions at ~$15 plus testing,1000
 Current study,Hosting,Supabase Pro + Vercel ~$50/mo x 8 months,400
 Current study,Biostatistics consultation (optional),~10 hr QSU,2000
 Current study,Publication and open access (optional),APC/OA fee,3500
-Current study,Contingency,~5% of direct costs,1000
-Current study,Direct total,,20672
-Current study,Indirect costs (example 8%),depends on mechanism,1654
-Current study,Total with indirects,,22326
+Current study,Contingency,~5% of direct costs,1790
+Current study,Direct total,,37595
+Current study,Indirect costs (example 8%),depends on mechanism,3008
+Current study,Total with indirects,,40603
 Option A intervention trial,Participant payments,100 at $100 + $50 workshop supplement (n=50),12500
+Option A intervention trial,PI salary and fringe,5% FTE x 6 months placeholder base,8125
 Option A intervention trial,Research coordinator,10 hr/wk x 26 wk + fringe,10010
 Option A intervention trial,Workshop materials,,500
 Option A intervention trial,AI model usage,~100 sessions (both arms),1500
 Option A intervention trial,Hosting,,400
 Option A intervention trial,Second qualitative coder,~30 hr + fringe,1000
 Option A intervention trial,Biostatistics consultation,,2000
-Option A intervention trial,Contingency,~5%,1400
-Option A intervention trial,Direct total,,29310
+Option A intervention trial,Contingency,~5%,1800
+Option A intervention trial,Direct total,,37835
 Option B multi-site replication,Participant payments,150 at $100,15000
+Option B multi-site replication,PI salary and fringe,5% FTE x 9 months placeholder base,12188
 Option B multi-site replication,Research coordinator,10 hr/wk x 39 wk + fringe,15015
 Option B multi-site replication,Site stipends,3 sites at $1000,3000
 Option B multi-site replication,AI model usage,~75 AI-arm sessions,1200
 Option B multi-site replication,Hosting,12 months,600
 Option B multi-site replication,Second qualitative coder,~40 hr + fringe,1540
 Option B multi-site replication,Biostatistics consultation,site-effect models,3000
-Option B multi-site replication,Contingency,~5%,1970
-Option B multi-site replication,Direct total,,41325
+Option B multi-site replication,Contingency,~5%,2577
+Option B multi-site replication,Direct total,,54120
