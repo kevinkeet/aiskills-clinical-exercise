@@ -46,10 +46,12 @@ export async function GET(req: NextRequest) {
     .from('intake_responses')
     .select('participant_id,fabry_pretest');
 
-  // Load questions from DB so admin edits are reflected in scoring. Include
-  // hidden (inactive) questions so the PI's aggregate stats still account for
-  // any responses already collected before a question was hidden.
-  const questions = await loadQuestions({ includeInactive: true });
+  // Load ACTIVE questions only: the dashboard tracks the running study, so
+  // scores and the completer threshold must reflect the live assessment
+  // (currently 12 MCQs), not hidden/retired items. Historical answers to
+  // hidden questions still grade correctly in the CSV export, which loads
+  // with includeInactive there.
+  const questions = await loadQuestions();
 
   // The post-test comfort question is whichever scale-type question has
   // the lowest number. If admin deletes the scale question, comfort
