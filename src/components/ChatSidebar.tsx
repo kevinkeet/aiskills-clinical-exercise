@@ -188,10 +188,6 @@ export default function ChatSidebar({
         </div>
         <div className="text-xs text-muted">Ask anything</div>
       </div>
-      <div className="px-3 py-1.5 bg-amber-50 border-b border-amber-100 text-[11px] text-amber-800 leading-tight">
-        Do not enter real patient identifiers (names, MRNs, dates of birth, etc.) in this chat. The
-        case patient is fictional.
-      </div>
 
       <div
         ref={scrollContainerRef}
