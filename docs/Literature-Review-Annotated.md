@@ -136,3 +136,36 @@ The Introduction is currently anchored on clinical-AI RCTs + learning science + 
 6. **One scoping review** (UME or GME) + **one uptake survey** — to show command of the field and to motivate urgency (60–85% trainee adoption).
 
 This would roughly double the reference list (to ~28–31) and shift the review from "selective and defensible" to "comprehensive." **Caveat:** entries marked *(verify)* were assembled by literature search — confirm authors, volume, and pages against the primary sources before submission, and decide which preprints (Kosmyna; novice-programmer; Goh management) to cite as preprints vs. await final publication.
+
+---
+
+## New since the last sweep (compiled 2026-08-25, covering roughly Feb–Aug 2026)
+
+**Headline for the manuscript: novelty is intact.** Nothing published in this window randomizes clinicians to AI versus a standard reference during clinical work and then measures unassisted knowledge afterward. The new literature strengthens the framing (the taxonomy is now mainstream and the deliberate-use evidence has a meta-analysis) and adds one genuine counterpoint to engage in the Discussion.
+
+**NEW — Ke Y, et al. AI-induced never-skilling in medical education. Nat Med. 2026;32(6):1997–2006.** *(verify author list)*
+Full peer-reviewed treatment of never-skilling, with a competency-protective framework, distinguishing it from de-skilling in experienced clinicians and from mis-skilling. Nature Medicine venue makes this the strongest citation for the taxonomy alongside Abdulnour. Add to the manuscript at the taxonomy sentence (currently ref 15 alone).
+
+**NEW — The deskilling effect: is artificial intelligence eroding clinical competence? Ann Intern Med. 2026 (doi 10.7326/ANNALS-26-00613).** *(verify authors/type)*
+The concern has reached the flagship internal-medicine journal — the study population's own literature. Useful in the Introduction to show the worry is now mainstream in IM, still without randomized evidence for cognitive tasks.
+
+**NEW — Systematic review and meta-analysis: integrating generative AI into medical education, short-term learning outcomes. 2026 (PMC13274167).** *(verify citation)*
+Twenty RCTs, n = 1,413: generative-AI teaching interventions improved post-intervention knowledge and skill scores, retained at follow-up. This is the *deliberate-use* evidence base in aggregate — AI configured as a teaching tool works — which sharpens our distinction: the incidental case remains untested. Strong candidate to fill placeholder ref 16.
+
+**NEW — The effectiveness of large language models in medical AI research for physicians: a randomized controlled trial. Cell Rep Med. 2025 (Nov; PMC12765838).** *(verify citation)*
+Sixty-four junior ophthalmologists learned to build a machine-learning project with or without ChatGPT-3.5. The LLM group had higher completion (87.5% vs 25.0%) and higher *unassisted* completion, and after a two-week washout 41.2% completed a new project without LLM support. A genuine counterpoint: in a technical-skills domain, AI assistance scaffolded rather than eroded subsequent independent capability. Engage in the Discussion — outcome direction may be domain- and task-dependent.
+
+**NEW — Comment on Kosmyna et al. arXiv:2601.00856 (Jan 2026).**
+Formal methodological critique of the "cognitive debt" EEG preprint (design, reproducibility, interpretation). Our manuscript cites Kosmyna (ref 7); keep the claim modest, keep the preprint label, or drop the neural-persistence clause if a reviewer pushes.
+
+**NEW — Upskilling, deskilling, or never skilling — who benefits from AI in colonoscopy? 2026 (PMID 42250888).**
+Editorial applying the taxonomy within GI after the Budzyń data; evidence the vocabulary has propagated into specialty discourse.
+
+**NEW — Generative AI-enabled clinical decision support in primary care: pragmatic cluster-randomized trial. Nat Med. 2026 (s41591-026-04503-6).** *(verify)*
+Large point-of-care trial of GenAI decision support — assisted performance again, no learning outcome; updates the "trials measure assisted performance" sentence with a current flagship example.
+
+**NEW — Specialized reasoning LLM for rare-disease diagnosis: randomized physician-assistance trial. arXiv:2606.24510 (Jun 2026).**
+Assisted-performance RCT in rare-disease diagnosis specifically — adjacent to our Fabry case; same endpoint gap.
+
+**NEW — Path dependence under adaptive AI delegation. arXiv:2603.02950 (Mar 2026); Brainrot: deskilling and addiction are overlooked AI risks. arXiv:2605.03512 (May 2026); Oettl et al., From de-skilling to up-skilling, J Exp Orthop 2026.**
+Supporting texture: delegation dynamics and skill trajectories, a risks framing, and an optimistic up-skilling counterpoint. Optional citations; useful for the Discussion's balance.
