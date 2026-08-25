@@ -1,0 +1,13 @@
+Line,Basis,Amount
+Participant payments,100 residents at $100 each,10000
+Research coordinator,$35/hr x 10 hr/wk x 26 weeks,9100
+Coordinator fringe,10% placeholder,910
+Second qualitative coder,20 hr at $35/hr plus fringe,770
+AI model usage,~50 AI-arm sessions at ~$15 plus testing,1000
+Hosting,Supabase Pro + Vercel ~$50/mo x 8 months,400
+Biostatistics consultation (optional),~10 hr QSU,2000
+Publication and open access (optional),APC/OA fee,3500
+Contingency,~5% of direct costs,1400
+Direct total,,29080
+Indirect costs (example 8%),depends on mechanism,2326
+Total with indirects,,31406
