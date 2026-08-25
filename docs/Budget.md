@@ -1,30 +1,58 @@
 # Budget, Skill AI RCT
 
-Total request is approximately $29,100 in direct costs, or about $22,200 without the optional biostatistics and publication lines. The largest assumptions are a six-month coordinator period covering launch preparation through data closeout, and full enrollment of 100 residents. Both scale linearly and are itemized below so either can be adjusted.
+Total request is approximately $20,700 in direct costs, or about $14,900 without the optional biostatistics and publication lines. The largest assumptions are a six-month coordinator period at 5% FTE covering launch preparation through data closeout, and full enrollment of 100 residents. Both scale linearly and are itemized so either can be adjusted. A planning-level budget for the follow-on study appears at the end in two versions.
 
 | Line | Basis | Amount |
 |---|---|---|
 | Participant payments | 100 residents at $100 each | $10,000 |
-| Research coordinator | $35/hr, 10 hr/wk, 26 weeks | $9,100 |
-| Coordinator fringe | 10% placeholder; use the rate for the hire's employee class | $910 |
+| Research coordinator | 5% FTE (2 hr/wk at $35/hr, 26 weeks) | $1,820 |
+| Coordinator fringe | 10% placeholder; use the rate for the hire's employee class | $182 |
 | Second qualitative coder | 20 hr at $35/hr plus fringe, for dual coding of AI transcripts | $770 |
 | AI model usage (Anthropic API) | ~50 AI-arm sessions at ~$15 each, plus testing headroom | $1,000 |
 | Hosting | Supabase Pro and Vercel, ~$50/mo for 8 months | $400 |
 | Biostatistics consultation (optional) | ~10 hr, e.g. Stanford QSU | $2,000 |
 | Publication and open access (optional) | article processing or open-access fee at submission | $3,500 |
-| Contingency | ~5% of direct costs | $1,400 |
-| Direct total | | $29,080 |
-| Indirect costs (if required) | shown at 8% as an example; depends on funding mechanism | $2,326 |
-| Total with indirects | | $31,406 |
+| Contingency | ~5% of direct costs | $1,000 |
+| Direct total | | $20,672 |
+| Indirect costs (if required) | shown at 8% as an example; depends on funding mechanism | $1,654 |
+| Total with indirects | | $22,326 |
 
 ## Notes and justification
 
 Participant payments are the largest and firmest line. Payment is $100 per completed session, prorated for partial completion and disbursed through the Department of Medicine, so under-enrollment or partial sessions only reduce this line, never exceed it.
 
-The coordinator covers recruitment and code distribution, completion monitoring, payment processing, per-batch data exports and quality checks, and assembly of the de-identified analysis dataset. Ten hours a week for six months is deliberately generous for an asynchronous single-site study; if enrollment completes quickly, four months (17 weeks, about $5,950 plus fringe) is realistic, and the fringe rate should be replaced with the actual rate for the hire's classification.
+The coordinator covers recruitment and code distribution, completion monitoring, payment processing, per-batch data exports and quality checks, and assembly of the de-identified analysis dataset. At 5% FTE the total is 52 hours across six months. Because the work arrives in bursts around recruitment waves and payment batches, the hours should be understood as flexing around those peaks rather than a flat two per week; if a steadier commitment is preferred, 10 hr/wk (25% FTE) raises the salary line to $9,100 plus fringe and the direct total to about $29,100.
 
-The interaction-pattern analysis requires two independent coders. If the second coder is a coauthor contributing effort in kind, the line can be dropped.
+The interaction-pattern analysis requires two independent coders; if the second coder is a coauthor contributing effort in kind, the line can be dropped. AI usage is metered per conversation at roughly $7 to $15 per session, incurred only by the 50 AI-arm residents, with headroom for piloting. Hosting covers the study database and platform through analysis. UpToDate access is through the existing Lane Library license at no cost; IRB review (exempt), ClinicalTrials.gov, and OSF carry no fees; platform development was completed before this budget period and is not requested. The optional lines are judgment calls: the primary analysis is a pre-specified two-arm comparison the study team can run, but independent biostatistical review strengthens a submission to a high-visibility journal, and the publication line covers an open-access fee if the accepting journal charges one. Indirect costs depend on the funding mechanism and should be set to the sponsor's rate.
 
-AI usage is metered per conversation. A full session on the study model costs roughly $7 to $15 depending on conversation length, and only the 50 AI-arm residents incur it; the estimate includes headroom for piloting and QA. Hosting covers the study database and web platform through analysis. UpToDate access is through the existing Lane Library license at no cost, and IRB review (exempt), ClinicalTrials.gov, and OSF registration carry no fees. Platform development was completed before this budget period and is not requested.
+## Follow-on study options (planning figures)
 
-The optional lines are judgment calls. The primary analysis is a pre-specified two-arm comparison that the study team can run, but independent biostatistical review strengthens a submission to a high-visibility journal; the publication line covers an open-access fee if the accepting journal charges one. Indirect costs depend entirely on the funding mechanism (departmental funds typically carry none; the 8% line mirrors internal-award templates) and should be set to the sponsor's rate.
+The present trial establishes whether an out-of-the-box assistant builds or bypasses knowledge. Two natural next studies follow, and the figures below are planning-level estimates for whichever is chosen, not committed budgets.
+
+**Option A. Intervention trial: teaching skill-preserving AI behaviors (single site, n = 100).** Residents are randomized to a brief workshop teaching engaged interaction patterns or to a delayed-workshop control, and both arms then complete a case with the AI assistant followed by the resource-free assessment on the existing platform. Assumes a coordinator at 10 hr/wk for six months because workshop sessions must be scheduled into protected time.
+
+| Line | Basis | Amount |
+|---|---|---|
+| Participant payments | 100 at $100, plus $50 workshop supplement for the intervention arm | $12,500 |
+| Research coordinator | 10 hr/wk at $35/hr, 26 weeks, plus 10% fringe | $10,010 |
+| Workshop materials and curriculum production | | $500 |
+| AI model usage | both arms use the assistant during the case, ~100 sessions | $1,500 |
+| Hosting | | $400 |
+| Second qualitative coder | ~30 hr plus fringe; transcripts from both arms | $1,000 |
+| Biostatistics consultation | | $2,000 |
+| Contingency | ~5% | $1,400 |
+| Direct total | | $29,310 |
+
+**Option B. Multi-site replication of the present trial (3 to 4 sites, n = 150).** The same asynchronous protocol run at collaborating residency programs, which strengthens generalizability, the main limitation of the single-site design. Assumes a coordinator at 10 hr/wk for nine months to manage site onboarding, IRB reliance agreements, and cross-site data pooling; site leads are typically coauthors contributing effort in kind, with modest site stipends included.
+
+| Line | Basis | Amount |
+|---|---|---|
+| Participant payments | 150 at $100 | $15,000 |
+| Research coordinator | 10 hr/wk at $35/hr, 39 weeks, plus 10% fringe | $15,015 |
+| Site stipends | 3 collaborating sites at $1,000 | $3,000 |
+| AI model usage | ~75 AI-arm sessions | $1,200 |
+| Hosting | 12 months | $600 |
+| Second qualitative coder | ~40 hr plus fringe | $1,540 |
+| Biostatistics consultation | site-effect models | $3,000 |
+| Contingency | ~5% | $1,970 |
+| Direct total | | $41,325 |
