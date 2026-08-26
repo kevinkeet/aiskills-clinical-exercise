@@ -21,6 +21,7 @@ Skill AI RCT is a single-site randomized trial (Stanford IRB-86737) testing whet
 - Check the dashboard every day or two: completions by arm, and codes that started but stalled. Send one reminder to stalled participants after about a week.
 - The most likely participant-facing failure is the UpToDate proxy login in the control arm. If a control-arm resident reports login trouble or a connection refusal, ask for a screenshot and escalate.
 - Do not edit the case, the tasks, or the assessment items during enrollment, and do not use the content editor. The instrument is fixed by the preregistration. The editing features exist for setup and are off-limits while the study runs.
+- Document the control-arm resource at study launch, midpoint, and close: sign out of any personal UpToDate account, open UpToDate through the Lane proxy, and screenshot the landing page and one search-results page. File the screenshots with the study records so the comparator interface during the study window is documented, including the presence and gating of any AI features.
 
 ## Payments
 
