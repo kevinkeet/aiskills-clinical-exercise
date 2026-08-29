@@ -32,4 +32,4 @@ Enrollment is asynchronous rather than scheduled into protected time. Each resid
 
 ## Locations
 
-The study runs at aiskills.kevinkeet.com, with the administrative dashboard at /admin. Code is at github.com/kevinkeet/aiskills-clinical-exercise and the preregistration at osf.io/h5mvt. The docs folder holds the manuscript, the preregistration, the annotated literature review, the twelve assessment items with answer key and selection rationale, the CONSORT figure, and the pilot data snapshot. HANDOFF.md covers deployment, database, and operational detail.
+The study runs at learnairct.com, with the administrative dashboard at /admin. The previous address, aiskills.kevinkeet.com, remains live and serves the same site. Code is at github.com/kevinkeet/aiskills-clinical-exercise and the preregistration at osf.io/h5mvt. The docs folder holds the manuscript, the preregistration, the annotated literature review, the twelve assessment items with answer key and selection rationale, the CONSORT figure, and the pilot data snapshot. HANDOFF.md covers deployment, database, and operational detail.

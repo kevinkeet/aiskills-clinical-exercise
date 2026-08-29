@@ -5,7 +5,7 @@ import { getSupabase } from '@/lib/supabase';
  * Coordinator-only endpoint. Accepts a CSV upload (multipart, field name "csv")
  * with header row: participant_id,pgy,arm
  *
- *   curl -X POST https://aiskills.kevinkeet.com/api/admin/seed-participants \
+ *   curl -X POST https://www.learnairct.com/api/admin/seed-participants \
  *     -H "Authorization: Bearer $COORDINATOR_TOKEN" \
  *     -F "csv=@participants_seed.csv"
  *

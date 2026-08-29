@@ -22,7 +22,7 @@ skill (the "de-/never-/mis-skilling" concern).
 - Both then take a **12-item knowledge assessment with no resource available** (the primary
   outcome), plus a pre/post comfort rating. Case = **fictional Fabry disease** (Marcus Thompson, 32M).
 
-- **Live site:** https://aiskills.kevinkeet.com
+- **Live site:** https://learnairct.com (apex 308-redirects to https://www.learnairct.com, which serves; https://aiskills.kevinkeet.com remains live as a secondary)
 - **GitHub:** https://github.com/kevinkeet/aiskills-clinical-exercise (branch `main`)
 - **Vercel:** `aiskills-clinical-exercise` (auto-deploys on push to `main`)
 - **Local path:** `~/Desktop/Skill AI RCT` (npm package still named `aiskills`)

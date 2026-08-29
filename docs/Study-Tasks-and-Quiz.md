@@ -1,7 +1,7 @@
 # Study Content — Tasks & Knowledge Assessment
 
 **Stanford IRB-86737 — Clinical Case-Based Learning in Internal Medicine Residency**
-**Live at:** https://aiskills.kevinkeet.com
+**Live at:** https://learnairct.com
 
 This document is a snapshot of every task prompt and quiz item that
 participants see during the case exercise. The canonical source of

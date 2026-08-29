@@ -102,7 +102,7 @@ RANDOMIZATION_SEED=<your-fixed-seed> \
 ### Uploading the CSV to the running app
 
 ```bash
-curl -X POST https://aiskills.kevinkeet.com/api/admin/seed-participants \
+curl -X POST https://www.learnairct.com/api/admin/seed-participants \
   -H "Authorization: Bearer $COORDINATOR_TOKEN" \
   -F "csv=@participants_seed.csv"
 ```
@@ -126,7 +126,7 @@ RANDOMIZATION_SEED=<same-seed> \
   --start 121 \
   --out participants_seed_batch2.csv
 
-curl -X POST https://aiskills.kevinkeet.com/api/admin/seed-participants \
+curl -X POST https://www.learnairct.com/api/admin/seed-participants \
   -H "Authorization: Bearer $COORDINATOR_TOKEN" \
   -F "csv=@participants_seed_batch2.csv"
 ```

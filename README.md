@@ -4,7 +4,7 @@ Research platform for **Stanford IRB-86737** — a randomized trial testing whet
 residents who work a clinical case *with* an AI assistant acquire knowledge they can later deploy
 *without* it.
 
-**Live study site:** https://aiskills.kevinkeet.com
+**Live study site:** https://learnairct.com (secondary: https://aiskills.kevinkeet.com)
 
 ### Start here
 

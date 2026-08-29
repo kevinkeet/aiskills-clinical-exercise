@@ -4,7 +4,7 @@ Skill AI RCT is a single-site randomized trial (Stanford IRB-86737) testing whet
 
 ## Access needed on day one
 
-- The study site at aiskills.kevinkeet.com and the admin dashboard at aiskills.kevinkeet.com/admin. The dashboard password comes from Kevin directly; do not put it in email or shared documents.
+- The study site at learnairct.com and the admin dashboard at learnairct.com/admin. The dashboard password comes from Kevin directly; do not put it in email or shared documents.
 - The recruitment materials (the program-wide invitation and the two arm-specific instruction emails) in the study folder.
 - A location for the master roster, shared with Kevin only. The roster contains identities and stays separate from study data at all times.
 

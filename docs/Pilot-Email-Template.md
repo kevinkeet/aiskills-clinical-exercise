@@ -29,7 +29,7 @@ the case.
 
 **How to participate.**
 
-1. Open https://aiskills.kevinkeet.com on a laptop or desktop (the layout
+1. Open https://learnairct.com on a laptop or desktop (the layout
    is split-screen and doesn't fit phones).
 2. When asked for your enrollment number, enter your pilot code: **Pilot[X]**
 3. Walk through the exercise as you would in a real session.
